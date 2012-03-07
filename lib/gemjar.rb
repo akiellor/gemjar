@@ -3,8 +3,11 @@ require 'sinatra/base'
 require 'tmpdir'
 require 'fileutils'
 require 'rubygems/specification'
+require 'rubygems/dependency_installer'
 require 'haml'
 require 'builder'
+require 'digest/md5'
+require 'digest/sha1'
 
 module RubyGems
   WORKDIR = "#{Dir.tmpdir}/gemjars" and FileUtils.mkdir_p(WORKDIR)
@@ -12,9 +15,9 @@ module RubyGems
   class Gem < Struct.new(:installed_dir, :name, :version)
     def self.install name, version
       tmpdir = Dir.mktmpdir
-      if system("gem install --ignore-dependencies #{name} -v '#{version}' -i #{tmpdir}/gem_home")
-        Gem.new "#{tmpdir}/gem_home", name, version
-      end
+      installer = ::Gem::DependencyInstaller.new :install_dir => "#{tmpdir}/gem_home", :ignore_dependencies => true
+      installer.install name, version
+      Gem.new "#{tmpdir}/gem_home", name, version
     end
     
     def ivy_module_xml
@@ -111,12 +114,12 @@ module RubyGems
 
     get "/jars/org.rubygems/:name-:version.jar.sha1" do |name, version|
       gem_jar = GemJar.ensure(name, version) or raise Sinatra::NotFound
-      body `shasum -a 1 #{gem_jar.jar}`.split[0]
+      body Digest::SHA1.file(gem_jar.ivy)
     end
 
     get "/jars/org.rubygems/:name-:version.jar.md5" do |name, version|
       gem_jar = GemJar.ensure(name, version) or raise Sinatra::NotFound
-      body `md5 -q #{gem_jar.jar}`
+      body Digest::MD5.file(gem_jar.jar)
     end
 
     get "/ivys/org.rubygems/ivy-:name-:version.xml" do |name, version|
@@ -126,12 +129,12 @@ module RubyGems
 
     get "/ivys/org.rubygems/ivy-:name-:version.xml.sha1" do |name, version|
       gem_jar = GemJar.ensure(name, version) or raise Sinatra::NotFound
-      body `shasum -a 1 #{gem_jar.ivy}`.split[0]
+      body Digest::SHA1.file(gem_jar.ivy)
     end
  
     get "/ivys/org.rubygems/ivy-:name-:version.xml.md5" do |name, version|
       gem_jar = GemJar.ensure(name, version) or raise Sinatra::NotFound
-      body `md5 -q #{gem_jar.ivy}`.split[0]
+      body Digest::MD5.file(gem_jar.ivy)
     end
   end
 end
