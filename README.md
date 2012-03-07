@@ -4,16 +4,16 @@ README
 So what does it do?
 -------------------
 
-Its an ivy-only (currently) compatible proxy for rubygems, which translates gems into jruby compatible jars.
+It's an Ivy-compatible proxy for RubyGems, which translates gems into JRuby-compatible JARs.
 
 This tool is for people who:
 
-  * Are working with the java tool chain, (good'ol javac, maven, ivy, ant, buildr and IDE's)
-  * Want to use some (j)ruby
+  * Are working with the Java tool chain: good ol' `javac`, Maven, Ivy, Ant, Buildr and IDEs
+  * Want to use some (J)Ruby
   * Want to use gems from RubyGems
-  * Don't want to use multiple VM's (jvm and CRuby)
-  * Don't want to hand roll a GemJar everytime their ruby deps change
-  * Don't want to use two dependencies management tools (bundler + ivy)
+  * Don't want to use multiple VMs (JVM and CRuby)
+  * Don't want to hand-roll a GemJar everytime their ruby deps change
+  * Don't want to use two dependencies management tools (Bundler + Ivy)
 
 I'm hoping thats not just me...
 
@@ -57,7 +57,7 @@ Trying it out.
 Hooking it up with ivy
 ----------------------
 
-1) In your ivysettings.xml set up the following resolver:
+1) In your `ivysettings.xml`, set up the following resolver:
 
 ```xml
 <ivysettings>
@@ -74,7 +74,7 @@ Hooking it up with ivy
 </ivysettings>
 ```
 
-2) In your ivy.xml add a dependency from rubygems.
+2) In your `ivy.xml`, add a dependency from `org.rubygems`.
 
 ```xml
 <ivy-module version="2.0">
@@ -82,20 +82,20 @@ Hooking it up with ivy
 </ivy-module>
 ```
 
-3) Perform an ivy resolve and watch ivy resolve cucumber and all its transitive dependencies.
+3) Perform an `ivy resolve` and watch Ivy resolve cucumber and all its transitive dependencies.
 
-Wheres it at?
+Where's it at?
 -------------
 **THIS IS A PROTOTYPE**
 
-### DONE'ISH ###
+### DONE-ISH ###
 * Construction of jruby compatible gemjars. 
 * Construction of ivy modules based on the gemspec. 
 * MD5 and SHA1 of all constructed artifacts. 
 * Can be built as a war.
 
-### SOON'ISH ###
-* Maven pom.xml generation.
+### SOON-ISH ###
+* Maven `pom.xml` generation.
 * Tests
 
 ### HOW CAN YOU HELP ###
