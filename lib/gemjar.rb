@@ -114,12 +114,12 @@ module RubyGems
 
     get "/jars/org.rubygems/:name-:version.jar.sha1" do |name, version|
       gem_jar = GemJar.ensure(name, version) or raise Sinatra::NotFound
-      body Digest::SHA1.file(gem_jar.ivy)
+      body Digest::SHA1.file(gem_jar.ivy).to_s
     end
 
     get "/jars/org.rubygems/:name-:version.jar.md5" do |name, version|
       gem_jar = GemJar.ensure(name, version) or raise Sinatra::NotFound
-      body Digest::MD5.file(gem_jar.jar)
+      body Digest::MD5.file(gem_jar.jar).to_s
     end
 
     get "/ivys/org.rubygems/ivy-:name-:version.xml" do |name, version|
@@ -129,12 +129,12 @@ module RubyGems
 
     get "/ivys/org.rubygems/ivy-:name-:version.xml.sha1" do |name, version|
       gem_jar = GemJar.ensure(name, version) or raise Sinatra::NotFound
-      body Digest::SHA1.file(gem_jar.ivy)
+      body Digest::SHA1.file(gem_jar.ivy).to_s
     end
  
     get "/ivys/org.rubygems/ivy-:name-:version.xml.md5" do |name, version|
       gem_jar = GemJar.ensure(name, version) or raise Sinatra::NotFound
-      body Digest::MD5.file(gem_jar.ivy)
+      body Digest::MD5.file(gem_jar.ivy).to_s
     end
   end
 end
