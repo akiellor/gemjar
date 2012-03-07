@@ -7,6 +7,7 @@ So what does it do?
 Its an ivy-only (currently) compatible proxy for rubygems, which translates gems into jruby compatible jars.
 
 This tool is for people who:
+
   * Are working with the java tool chain, (good'ol javac, maven, ivy, ant, buildr and IDE's)
   * Want to use some (j)ruby
   * Want to use gems from RubyGems
