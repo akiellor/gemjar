@@ -101,3 +101,8 @@ Where's it at?
 ### HOW CAN YOU HELP ###
 * Try it out.
 * Give me feed back.
+
+License
+-------
+<http://www.opensource.org/licenses/Apache-2.0>
+
