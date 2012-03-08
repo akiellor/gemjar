@@ -113,7 +113,7 @@ module RubyGems
 
     get "/jars/org.rubygems/:name-:version.jar.sha1" do |name, version|
       gem_jar = GemJar.ensure(name, version) or raise Sinatra::NotFound
-      body Digest::SHA1.file(gem_jar.ivy).to_s
+      body Digest::SHA1.file(gem_jar.jar).to_s
     end
 
     get "/jars/org.rubygems/:name-:version.jar.md5" do |name, version|
