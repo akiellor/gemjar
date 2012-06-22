@@ -135,6 +135,20 @@ module RubyGems
       gem_jar = GemJar.ensure(name, version) or raise Sinatra::NotFound
       body Digest::MD5.file(gem_jar.ivy).to_s
     end
+    
+    #artifactory ivy default pattern
+    get "/org.rubygems/:name/:version/:type/*" do |name, version, type, rs|
+      ext = rs.scan(/(jar.*|xml.*)/).last
+      redirect "/jars/org.rubygems/#{name}-#{version}.#{ext}" if type =~ /jar/
+      redirect "/ivys/org.rubygems/ivy-#{name}-#{version}.#{ext}" if type =~ /ivy/
+    end
+
+    #gradle ivy default pattern
+    get "/org.rubygems/:name/:version/*" do |name, version, rs|
+      ext = rs.scan(/(jar.*|xml.*)/).last
+      redirect "/jars/org.rubygems/#{name}-#{version}.#{ext}" if rs =~ /jar/
+      redirect "/ivys/org.rubygems/ivy-#{name}-#{version}.#{ext}" if rs =~ /ivy/
+    end
   end
 end
 
