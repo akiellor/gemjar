@@ -68,6 +68,7 @@ module RubyGems
         ivy_path = "#{WORKDIR}/ivy-#{gem.name}-#{gem.version}.xml"
         File.open(ivy_path, 'w+') {|f| f.write(gem.ivy_module_xml) }
         jar_path = "#{WORKDIR}/#{gem.name}-#{gem.version}.jar"
+        FileUtils.rm_rf [File.expand_path("cache", gem.installed_dir)]
         if system("zip -r #{jar_path} *")
           return GemJar.new jar_path, ivy_path
         end

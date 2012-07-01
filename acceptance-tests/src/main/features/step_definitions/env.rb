@@ -1,5 +1,6 @@
 require 'java'
 require 'tmpdir'
+require 'rspec/expectations'
 
 module Acceptance
   class Configuration
