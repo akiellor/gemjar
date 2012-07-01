@@ -1,0 +1,6 @@
+subprojects {
+  repositories {
+    flatDir name: 'deps', dirs: "../deps"
+  }
+}
+

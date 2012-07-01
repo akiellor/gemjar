@@ -1,0 +1,16 @@
+apply plugin: 'war'
+
+dependencies {
+  compile name: 'gems'
+  compile name: 'jruby-complete-1.6.6'
+  compile name: 'jruby-rack-1.1.4'
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir 'src/main/ruby'
+        }
+    }
+}
+
