@@ -3,6 +3,7 @@ apply plugin: 'java'
 dependencies {
     compile 'org.jruby:jruby:1.7.0.preview1'
     compile 'org.jruby:jruby-stdlib:1.7.0.preview1'
+    compile 'org.apache.ivy:ivy:2.2.0'
     compile 'org.rubygems:cucumber:1.2.1'
 }
 
@@ -10,5 +11,5 @@ task(features, type: JavaExec) {
     main 'org.jruby.Main'
     classpath runtimeClasspath
     systemProperty 'user.dir', "$projectDir/src/main"
-    args 'classpath:bin/cucumber', 'features'
+    args 'classpath:bin/cucumber', '--color', 'features'
 }
