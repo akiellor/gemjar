@@ -5,3 +5,6 @@ pkg/*
 out
 .gradle
 build
+*.iml
+*.iws
+*.ipr

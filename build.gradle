@@ -1,6 +1,11 @@
+apply plugin: 'idea'
+
 subprojects {
+  apply plugin: 'idea'
+
   repositories {
     flatDir name: 'deps', dirs: "../deps"
+    mavenCentral()
   }
 }
 
