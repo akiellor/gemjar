@@ -34,6 +34,10 @@ war {
     }
 }
 
+artifacts {
+    war
+}
+
 task(run, type: JavaExec, dependsOn: 'war') {
     main 'gemjar.WebServer'
     classpath war.archivePath

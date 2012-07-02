@@ -1,0 +1,51 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+evaluationDependsOn(':webapp')
+
+configurations {
+    deb
+}
+
+dependencies {
+    compile 'org.jruby:jruby-complete:1.7.0.preview1'
+    compile 'org.rubygems:jruby-openssl:0.7.7'
+
+    compile 'org.rubygems:fpm:0.4.10'
+}
+
+processResources.dependsOn << ':webapp:war'
+
+processResources << {
+    copy {
+        from sourceSets.main.resources
+        into 'build/tmp'
+    }
+
+    copy {
+        from project(':webapp').war.archivePath
+        into 'build/tmp/var/lib/gemjars'
+    }
+}
+
+task(resources) << {
+    file("$buildDir/tmpdir").mkdirs()
+    file("$buildDir/libs").mkdirs()
+}
+
+artifacts {
+    deb file("$buildDir/libs/gemjars_1.0_all.deb")
+}
+
+task('fpm', type: JavaExec, dependsOn: ['resources', 'processResources']) {
+    inputs.dir sourceSets.main.resources
+    inputs.file project(':webapp').war.archivePath
+    outputs.file "$buildDir/libs/gemjars_1.0_all.deb"
+
+    main 'org.jruby.Main'
+    classpath runtimeClasspath
+    args "-r", "$projectDir/src/main/ruby/patches/fpm.rb"
+    args "-S fpm -p $buildDir/libs/gemjars_1.0_all.deb -s dir -t deb -n gemjar -v 1.0 -a all -d openjdk-6-jdk -d zip -C $buildDir/tmp .".split(' ')
+}
+
+build.dependsOn << 'fpm'

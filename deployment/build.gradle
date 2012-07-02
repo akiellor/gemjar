@@ -1,0 +1,39 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+evaluationDependsOn(':deb')
+
+configurations {
+    debianArchive
+}
+
+dependencies {
+    debianArchive project(path: ":deb", configuration: "deb")
+
+    compile 'org.jruby:jruby-complete:1.6.7.2'
+    compile 'org.rubygems:jruby-openssl:0.7.7'
+
+    compile 'org.rubygems:net-ssh:2.5.2'
+    compile 'org.rubygems:net-scp:1.0.4'
+
+    compile 'org.rubygems:aws-sdk:1.5.6'
+    compile 'org.rubygems:nokogiri:1.5.5'
+    compile 'org.rubygems:httparty:0.8.3'
+    compile 'org.rubygems:json:1.7.3'
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir 'src/main/ruby'
+        }
+    }
+}
+
+task(provision, type: JavaExec, dependsOn: ':deb:fpm') {
+    main 'org.jruby.Main'
+    classpath runtimeClasspath
+    args 'classpath:provision.rb', configurations.debianArchive.files.collect { it.canonicalPath }[0]
+}
+
+

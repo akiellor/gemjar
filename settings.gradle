@@ -1,1 +1,1 @@
-include 'webapp', 'acceptance-tests'
+include 'webapp', 'acceptance-tests', 'deployment', 'deb'
