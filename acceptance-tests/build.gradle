@@ -4,6 +4,7 @@ dependencies {
     compile 'org.jruby:jruby:1.7.0.preview1'
     compile 'org.jruby:jruby-stdlib:1.7.0.preview1'
     compile 'org.apache.ivy:ivy:2.2.0'
+
     compile 'org.rubygems:cucumber:1.2.1'
     compile 'org.rubygems:rspec-expectations:2.10.0'
 }
@@ -12,7 +13,7 @@ task(features, type: JavaExec) {
     main 'org.jruby.Main'
     classpath runtimeClasspath
     systemProperty 'user.dir', "$projectDir/src/main"
-    args 'classpath:bin/cucumber', '--color', 'features'
+    args '-S', 'cucumber', '--color', 'features'
 }
 
 test.dependsOn << "features"
