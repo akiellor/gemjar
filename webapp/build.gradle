@@ -1,11 +1,21 @@
 apply plugin: 'war'
-apply plugin: 'jetty'
+
+configurations {
+    bootstrap
+    compile.extendsFrom bootstrap
+}
 
 dependencies {
-  compile 'org.jruby:jruby-complete:1.6.7.2'
-  compile 'org.jruby.rack:jruby-rack:1.1.7'
+    bootstrap 'org.eclipse.jetty:jetty-server:8.0.4.v20111024'
+    bootstrap 'org.eclipse.jetty:jetty-servlet:8.0.4.v20111024'
+    bootstrap 'org.eclipse.jetty:jetty-io:8.0.4.v20111024'
+    bootstrap 'org.eclipse.jetty:jetty-util:8.0.4.v20111024'
+    bootstrap 'org.eclipse.jetty:jetty-webapp:8.0.4.v20111024'
 
-  compile name: 'gems'
+    compile 'org.jruby:jruby-complete:1.6.7.2'
+    compile 'org.jruby.rack:jruby-rack:1.1.7'
+
+    compile name: 'gems'
 }
 
 sourceSets {
@@ -16,7 +26,15 @@ sourceSets {
     }
 }
 
-[jettyRun, jettyRunWar]*.configure {
-    contextPath ''
-    daemon true
+war {
+    from configurations.bootstrap.collect { it.isDirectory() ? it : zipTree(it) } + files(sourceSets.main.output.classesDir)
+    classpath = runtimeClasspath - configurations.bootstrap
+    manifest {
+        attributes 'Main-Class': 'gemjar.WebServer'
+    }
+}
+
+task(run, type: JavaExec, dependsOn: 'war') {
+    main 'gemjar.WebServer'
+    classpath war.archivePath
 }

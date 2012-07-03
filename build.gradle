@@ -13,11 +13,3 @@ subprojects {
   }
 }
 
-allprojects { project ->
-    if(project.name != "webapp"){
-        afterEvaluate {
-            tasks.each { it.dependsOn << ':webapp:jettyRunWar' }
-        }
-    }
-}
-
