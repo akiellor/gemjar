@@ -19,7 +19,7 @@ bucket.acl = :public_read
 gemjars_deb = bucket.objects[File.basename(webapp)]
 gemjars_deb.write(:file => File.expand_path(webapp), :acl => :public_read)
 
-puts gemjars_deb.public_url
+puts "Debian Package uploaded to: #{gemjars_deb.public_url}"
 
 ec2 = AWS::EC2.new(
     :region => 'us-east-1',
@@ -64,6 +64,18 @@ instance = ec2.instances.create(
 $stdout << "Waiting for instance..."
 ($stdout << "."; sleep 1) while instance.status != :running
 
-puts
-
 puts instance.public_dns_name
+
+Timeout::timeout(360) do
+  up = false
+  until up
+    puts "Checking: http://#{instance.public_dns_name}:8080/ping"
+    begin
+      res = Net::HTTP.get_response(URI.parse("http://#{instance.public_dns_name}:8080/ping"))
+      up = res.code == "200"
+    rescue Errno::ECONNREFUSED => e
+      $stdout << "."
+    end
+    sleep 10
+  end
+end

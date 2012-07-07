@@ -106,7 +106,10 @@ module RubyGems
     before('*.sha1') { content_type 'plain/text' }
     before('*.md5') { content_type 'plain/text' }
     before('*.xml') { content_type 'application/xml' }
-    
+
+    get "/ping" do
+    end
+
     get "/jars/org.rubygems/:name-:version.jar" do |name, version|
       gem_jar = GemJar.ensure(name, version) or raise Sinatra::NotFound
       send_file gem_jar.jar, :filename => gem_jar.jar
