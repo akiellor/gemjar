@@ -2,18 +2,26 @@ apply plugin: 'war'
 
 configurations {
     bootstrap
+    bootstrap.exclude group: 'org.eclipse.jetty.orbit', module: 'javax.servlet'
+
     compile.extendsFrom bootstrap
 }
 
 dependencies {
-    bootstrap 'org.eclipse.jetty:jetty-server:8.0.4.v20111024'
-    bootstrap 'org.eclipse.jetty:jetty-servlet:8.0.4.v20111024'
-    bootstrap 'org.eclipse.jetty:jetty-io:8.0.4.v20111024'
-    bootstrap 'org.eclipse.jetty:jetty-util:8.0.4.v20111024'
-    bootstrap 'org.eclipse.jetty:jetty-webapp:8.0.4.v20111024'
+    bootstrap 'org.eclipse.jetty:jetty-server:8.1.4.v20120524'
+    bootstrap 'org.eclipse.jetty:jetty-servlet:8.1.4.v20120524'
+    bootstrap 'org.eclipse.jetty:jetty-io:8.1.4.v20120524'
+    bootstrap 'org.eclipse.jetty:jetty-util:8.1.4.v20120524'
+    bootstrap 'org.eclipse.jetty:jetty-webapp:8.1.4.v20120524'
+    bootstrap 'javax.servlet:javax.servlet-api:3.0.1'
 
-    compile 'org.jruby:jruby-complete:1.6.7.2'
-    compile 'org.jruby.rack:jruby-rack:1.1.7'
+    compile 'org.jruby:jruby-core:1.6.7.2'
+    compile 'org.jruby:jruby-stdlib:1.6.7.2'
+    compile 'com.jcraft:jzlib:1.1.1'
+
+    compile('org.jruby.rack:jruby-rack:1.1.7') {
+        transitive = false
+    }
 
     compile name: 'gems'
 }
