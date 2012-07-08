@@ -66,10 +66,10 @@ $stdout << "Waiting for instance..."
 
 puts instance.public_dns_name
 
+puts "Checking: http://#{instance.public_dns_name}:8080/ping"
 Timeout::timeout(360) do
   up = false
   until up
-    puts "Checking: http://#{instance.public_dns_name}:8080/ping"
     begin
       res = Net::HTTP.get_response(URI.parse("http://#{instance.public_dns_name}:8080/ping"))
       up = res.code == "200"
