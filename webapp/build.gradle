@@ -23,7 +23,8 @@ dependencies {
         transitive = false
     }
 
-    compile name: 'gems'
+    compile 'org.rubygems:sinatra:1.3.2'
+    compile 'org.rubygems:builder:3.0.0'
 }
 
 sourceSets {

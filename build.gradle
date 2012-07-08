@@ -8,7 +8,6 @@ subprojects {
       ivyPattern "http://gemjars.org:8080/ivys/[organisation]/ivy-[module]-[revision].xml"
       artifactPattern "http://gemjars.org:8080/jars/[organisation]/[module]-[revision].jar"
     }
-    flatDir name: 'deps', dirs: "../deps"
     mavenCentral()
   }
 }
