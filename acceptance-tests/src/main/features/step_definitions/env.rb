@@ -15,18 +15,20 @@ module Acceptance
   end
 end
 
-AfterConfiguration do
-  IO.popen("java -jar #{Java::JavaLang::System.get_property("target.application")}")
+io = IO.popen("java -jar #{Java::JavaLang::System.get_property("target.application")}")
 
-  Timeout::timeout(360) do
-    up = false
-    until up
-      begin
-        res = Net::HTTP.get_response(URI.parse("#{Acceptance::Configuration.server}/ping"))
-        up = res.code == "200"
-      rescue Errno::ECONNREFUSED => e
-      end
-      sleep 10
+Timeout::timeout(360) do
+  up = false
+  until up
+    begin
+      res = Net::HTTP.get_response(URI.parse("#{Acceptance::Configuration.server}/ping"))
+      up = res.code == "200"
+    rescue Errno::ECONNREFUSED => e
     end
+    sleep 10
   end
+end
+
+at_exit do
+  io.close
 end
