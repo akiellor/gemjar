@@ -1,15 +1,11 @@
 module Gemjar
-  class Logger
-    def self.for name
-      new name
+  module Logger
+    def self.included base
+      base.extend Gemjar::Logger
     end
 
-    def initialize name
-      @logger = Java::OrgSlf4j::LoggerFactory.get_logger name
-    end
-
-    def method_missing name, *args, &block
-      @logger.send name, *args
+    def log
+      @log ||= Java::OrgSlf4j::LoggerFactory.get_logger self.name
     end
   end
 end
