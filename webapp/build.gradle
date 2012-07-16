@@ -51,5 +51,6 @@ artifacts {
 
 task(run, type: JavaExec, dependsOn: 'war') {
     main 'gemjar.WebServer'
+    environment RACK_ENV: 'development'
     classpath war.archivePath
 }
