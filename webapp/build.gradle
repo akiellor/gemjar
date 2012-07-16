@@ -15,12 +15,14 @@ dependencies {
     bootstrap 'org.eclipse.jetty:jetty-webapp:8.1.4.v20120524'
     bootstrap 'javax.servlet:javax.servlet-api:3.0.1'
 
-    compile 'org.jruby:jruby-core:1.6.7.2'
-    compile 'org.jruby:jruby-stdlib:1.6.7.2'
-    compile 'com.jcraft:jzlib:1.1.1'
+    bootstrap 'org.slf4j:slf4j-api:1.6.6'
+    bootstrap 'ch.qos.logback:logback-classic:1.0.6'
+    bootstrap 'ch.qos.logback:logback-access:1.0.6'
 
-    compile('org.jruby.rack:jruby-rack:1.1.7') {
-        transitive = false
+    compile module('org.jruby.rack:jruby-rack:1.1.7') {
+        dependency 'org.jruby:jruby-core:1.6.7.2'
+        dependency 'org.jruby:jruby-stdlib:1.6.7.2'
+        dependency 'com.jcraft:jzlib:1.1.1'
     }
 
     compile 'org.rubygems:sinatra:1.3.2'
@@ -36,7 +38,7 @@ sourceSets {
 }
 
 war {
-    from configurations.bootstrap.collect { it.isDirectory() ? it : zipTree(it) } + files(sourceSets.main.output.classesDir)
+    from configurations.bootstrap.collect { it.isDirectory() ? it : zipTree(it) } + files(sourceSets.main.output)
     classpath = runtimeClasspath - configurations.bootstrap
     manifest {
         attributes 'Main-Class': 'gemjar.WebServer'
