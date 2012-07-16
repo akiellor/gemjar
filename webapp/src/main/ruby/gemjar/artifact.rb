@@ -8,8 +8,8 @@ module Gemjar
     end
 
     def self.find name, version
-      jar = "#{Gemjar::WORKDIR}/#{name}-#{version}.jar"
-      ivy = "#{Gemjar::WORKDIR}/ivy-#{name}-#{version}.xml"
+      jar = "#{Gemjar::WORK_DIRECTORY}/#{name}-#{version}.jar"
+      ivy = "#{Gemjar::WORK_DIRECTORY}/ivy-#{name}-#{version}.xml"
       if File.exists?(jar) && File.exists?(ivy)
         Artifact.new jar, ivy
       end

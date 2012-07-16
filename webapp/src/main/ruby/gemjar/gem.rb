@@ -7,6 +7,7 @@ require 'rubygems/dependency_installer'
 module Gemjar
   class Gem < Struct.new(:installed_dir, :name, :version)
     def self.install name, version
+      ::Gem.configuration.verbose = true
       tmpdir = Dir.mktmpdir
       installer = ::Gem::DependencyInstaller.new :install_dir => "#{tmpdir}/gem_home", :ignore_dependencies => true
       installer.install name, version

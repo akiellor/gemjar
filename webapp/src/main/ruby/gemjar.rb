@@ -1,5 +1,5 @@
 module Gemjar
-  WORKDIR = "#{Dir.tmpdir}/gemjars" and FileUtils.mkdir_p(WORKDIR)
+  WORK_DIRECTORY = "#{Dir.tmpdir}/gemjars" and FileUtils.mkdir_p(WORK_DIRECTORY)
 end
 
 require 'gemjar/app'
