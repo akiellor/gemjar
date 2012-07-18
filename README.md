@@ -114,7 +114,6 @@ Where's it at?
 
 ### SOON-ISH ###
 * Maven `pom.xml` generation.
-* Tests
 
 ### HOW CAN YOU HELP ###
 * Try it out.
