@@ -75,25 +75,13 @@ Trying it out -- DIY
   $ git clone git://github.com/akiellor/gemjar.git
   ```
 
-2) Bundle:
+2) RUN IT:
   
   ```
-  $ bundle 
+  $ gradle run 
   ```
 
-3) Build the war:
-  
-  ```
-  $ rake war
-  ```
-
-4) RUN IT!
-  
-  ```
-  $ java -jar test_deps/winstone-0.9.10-hudson-24.jar --warfile out/app.war
-  ```
-
-5) Hit some urls:
+3) Hit some urls:
   
   ```
   $ curl -i http://localhost:8080/jars/org.rubygems/cucumber-1.0.0.jar
@@ -103,7 +91,7 @@ Trying it out -- DIY
   $ curl -i http://localhost:8080/ivys/org.rubygems/ivy-cucumber-1.0.0.xml.md5
   $ curl -i http://localhost:8080/ivys/org.rubygems/ivy-cucumber-1.0.0.xml.sha1
   ```
-6) Add the [Gradle configuration](#gradle) or [Ivy configuration](#ivy) as above.
+4) Add the [Gradle configuration](#gradle) or [Ivy configuration](#ivy) as above.
 
 Where's it at?
 -------------
