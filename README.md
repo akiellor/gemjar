@@ -75,13 +75,22 @@ Trying it out -- DIY
   $ git clone git://github.com/akiellor/gemjar.git
   ```
 
-2) RUN IT:
+2) Get Gradle
+  ```
+  brew install gradle
+  ```
+  
+  OR
+  
+  Get it from gradle.org.
+  
+3) RUN IT:
   
   ```
   $ gradle run 
   ```
 
-3) Hit some urls:
+4) Hit some urls:
   
   ```
   $ curl -i http://localhost:8080/jars/org.rubygems/cucumber-1.0.0.jar
