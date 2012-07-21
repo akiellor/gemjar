@@ -11,8 +11,6 @@ Feature: GemJar
     doc/
     gems/
     gems/rspec-2.6.0/
-    gems/rspec-2.6.0/.document
-    gems/rspec-2.6.0/.gitignore
     gems/rspec-2.6.0/Gemfile
     gems/rspec-2.6.0/lib/
     gems/rspec-2.6.0/lib/rspec/

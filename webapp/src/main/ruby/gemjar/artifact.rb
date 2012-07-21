@@ -6,6 +6,14 @@ module Gemjar
   class Artifact < Struct.new(:jar, :ivy)
     include Gemjar::Logger
 
+    def self.executor
+      @executor ||= Java::java.util.concurrent.Executors.newFixedThreadPool(10)
+    end
+
+    def self.tasks
+      @tasks ||= Java::java.util.concurrent.ConcurrentHashMap.new
+    end
+
     def self.ensure name, version
       log.info("Ensuring artifact #{name}-#{version} is installed.")
       Artifact.find(name, version) || Artifact.install(name, version)
@@ -20,8 +28,29 @@ module Gemjar
     end
 
     def self.install name, version
-      gem = Gem.install(name, version)
-      gem and ArtifactBuilder.build(gem).tap {|a| log.info("Installed artifact: #{a.inspect}") }
+      task = java.util.concurrent.FutureTask.new proc {
+        begin
+          log.info("Installing artifact: '#{name}-#{version}'")
+          gem = Gem.install(name, version)
+          gem and ArtifactBuilder.build(gem)
+        rescue => e
+          nil
+        end
+      }
+
+      future = get_or_submit_task "#{name}-#{version}", task
+
+      future.get.tap {|a| log.info("Retrieved artifact: #{a.inspect}") }
+    end
+
+    def self.get_or_submit_task name, task
+      self.tasks.synchronized do
+        unless self.tasks.get(name)
+          self.tasks.put name, task
+          executor.execute(self.tasks.get(name))
+        end
+        self.tasks.get(name)
+      end
     end
   end
 end

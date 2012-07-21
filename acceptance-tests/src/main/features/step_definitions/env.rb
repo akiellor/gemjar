@@ -2,6 +2,7 @@ require 'java'
 require 'tmpdir'
 require 'rspec/expectations'
 require 'net/http'
+require 'childprocess'
 
 module Acceptance
   class Configuration
@@ -15,7 +16,8 @@ module Acceptance
   end
 end
 
-io = IO.popen("java -jar #{Java::JavaLang::System.get_property("target.application")}")
+process = ChildProcess.build("java", "-jar", Java::JavaLang::System.get_property("target.application"))
+process.start
 
 Timeout::timeout(360) do
   up = false
@@ -30,5 +32,5 @@ Timeout::timeout(360) do
 end
 
 at_exit do
-  io.close
+  process.stop
 end

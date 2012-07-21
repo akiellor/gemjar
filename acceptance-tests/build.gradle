@@ -9,6 +9,7 @@ dependencies {
 
     compile 'org.rubygems:cucumber:1.2.1'
     compile 'org.rubygems:rspec-expectations:2.10.0'
+    compile 'org.rubygems:childprocess:0.3.3'
 }
 
 task(features, type: JavaExec, dependsOn: ':webapp:war') {
