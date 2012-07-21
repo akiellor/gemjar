@@ -17,6 +17,7 @@ module Acceptance
 end
 
 process = ChildProcess.build("java", "-jar", Java::JavaLang::System.get_property("target.application"))
+process.io.inherit!
 process.start
 
 Timeout::timeout(360) do

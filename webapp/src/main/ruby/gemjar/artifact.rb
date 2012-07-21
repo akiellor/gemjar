@@ -1,6 +1,7 @@
 require 'gemjar/gem'
 require 'gemjar/logger'
 require 'gemjar/artifact_builder'
+require 'gemjar/repository'
 
 module Gemjar
   class Artifact < Struct.new(:jar, :ivy)
@@ -20,11 +21,7 @@ module Gemjar
     end
 
     def self.find name, version
-      jar = "#{Gemjar::WORK_DIRECTORY}/#{name}-#{version}.jar"
-      ivy = "#{Gemjar::WORK_DIRECTORY}/ivy-#{name}-#{version}.xml"
-      if File.exists?(jar) && File.exists?(ivy)
-        Artifact.new(jar, ivy).tap {|a| log.info("Found artifact #{name}-#{version}: #{a.inspect}")}
-      end
+      Repository.new(Gemjar::WORK_DIRECTORY).find name, version
     end
 
     def self.install name, version
@@ -32,7 +29,7 @@ module Gemjar
         begin
           log.info("Installing artifact: '#{name}-#{version}'")
           gem = Gem.install(name, version)
-          gem and ArtifactBuilder.build(gem)
+          gem and ArtifactBuilder.new(Gemjar::WORK_DIRECTORY).build(gem)
         rescue => e
           nil
         end

@@ -1,13 +1,18 @@
 require 'gemjar/artifact'
 require 'zip/zip'
 require 'zip/zipfilesystem'
+require 'fileutils'
 
 module Gemjar
   class ArtifactBuilder
-    def self.build gem
-      ivy_path = "#{Gemjar::WORK_DIRECTORY}/ivy-#{gem.name}-#{gem.version}.xml"
+    def initialize directory
+      @directory = directory
+    end
+
+    def build gem
+      ivy_path = "#@directory/ivy-#{gem.name}-#{gem.version}.xml"
       File.open(ivy_path, 'w+') { |f| f.write(gem.ivy_module_xml) }
-      jar_path = "#{Gemjar::WORK_DIRECTORY}/#{gem.name}-#{gem.version}.jar"
+      jar_path = "#@directory/#{gem.name}-#{gem.version}.jar"
       FileUtils.rm_rf [File.expand_path("cache", gem.installed_dir)]
 
       FileUtils.rm jar_path, :force => true
