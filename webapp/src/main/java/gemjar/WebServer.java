@@ -1,12 +1,10 @@
 package gemjar;
 
-import ch.qos.logback.access.jetty.RequestLogImpl;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.server.handler.RequestLogHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import javax.servlet.ServletException;
@@ -27,18 +25,13 @@ public class WebServer {
 
         HandlerCollection handlers = new HandlerCollection();
 
-        RequestLogHandler requestLogHandler = new RequestLogHandler();
-        RequestLogImpl requestLog = new RequestLogImpl();
-        requestLog.setResource("/logback-access.xml");
-        requestLogHandler.setRequestLog(requestLog);
-
         WebAppContext webapp = new WebAppContext();
         webapp.setContextPath("/");
         webapp.setDescriptor(location.toExternalForm() + "/WEB-INF/web.xml");
         webapp.setServer(server);
         webapp.setWar(location.toExternalForm());
 
-        handlers.setHandlers(new Handler[]{new ThreadNamingHandler(), requestLogHandler, webapp});
+        handlers.setHandlers(new Handler[]{new ThreadNamingHandler(), webapp});
         server.setHandler(handlers);
 
         try {
@@ -52,7 +45,7 @@ public class WebServer {
     private static class ThreadNamingHandler extends AbstractHandler implements Handler{
         @Override
         public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-            Thread.currentThread().setName(String.format("%s:%s", new TransactionId(), baseRequest.getPathInfo()));
+            Thread.currentThread().setName(String.format("%s: %s %s", new TransactionId(), baseRequest.getMethod(), baseRequest.getPathInfo()));
         }
     }
 
