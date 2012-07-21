@@ -1,6 +1,10 @@
 apply plugin: 'java'
 apply plugin: 'idea'
 
+repositories {
+    flatDir { dirs "$projectDir/libs" }
+}
+
 evaluationDependsOn(':webapp')
 
 configurations {
@@ -11,7 +15,11 @@ dependencies {
     compile 'org.jruby:jruby-complete:1.7.0.preview1'
     compile 'org.rubygems:jruby-openssl:0.7.7'
 
-    compile 'org.rubygems:fpm:0.4.10'
+    compile name: 'arr-pm', version: '0.0.7-requirefix'
+
+    compile('org.rubygems:fpm:0.4.10') {
+        exclude module: 'arr-pm'
+    }
 }
 
 processResources.dependsOn << ':webapp:war'
