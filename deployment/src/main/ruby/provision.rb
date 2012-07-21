@@ -47,7 +47,6 @@ user_data = <<EOS
 sudo apt-get update
 sudo apt-get -f install
 sudo apt-get install -y openjdk-6-jdk
-sudo apt-get install -y zip
 wget \"#{gemjars_deb.public_url}\"
 ls gemjar*.deb | xargs sudo dpkg -i
 sudo service gemjars start

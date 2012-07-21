@@ -53,7 +53,7 @@ task('fpm', type: JavaExec, dependsOn: ['resources', 'processResources']) {
     main 'org.jruby.Main'
     classpath runtimeClasspath
     args "-r", "$projectDir/src/main/ruby/patches/fpm.rb"
-    args "-S fpm -p $buildDir/libs/gemjars_1.0_all.deb -s dir -t deb -n gemjar -v 1.0 -a all -d openjdk-6-jdk -d zip -C $buildDir/tmp .".split(' ')
+    args "-S fpm -p $buildDir/libs/gemjars_1.0_all.deb -s dir -t deb -n gemjar -v 1.0 -a all -d openjdk-6-jdk -C $buildDir/tmp .".split(' ')
 }
 
 build.dependsOn << 'fpm'
