@@ -1,13 +1,28 @@
 <configuration>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.directory:-.}/gemjar.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.directory:-.}/gemjar-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>14</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%yellow([%d{yyyy-MM-dd HH:mm:ss.SSS,UTC}]) %highlight([%thread]) %cyan(%logger{30}) - %msg %n</pattern>
+        </encoder>
+    </appender>
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <withJansi>true</withJansi>
         <encoder>
-            <pattern>%highlight([%thread]) %cyan(%logger{30}) - %msg %n</pattern>
+            <pattern>%yellow([%d{yyyy-MM-dd HH:mm:ss.SSS,UTC}]) %highlight([%thread]) %cyan(%logger{30}) - %msg %n</pattern>
         </encoder>
     </appender>
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
     </root>
 
     <logger name="org.eclipse.jetty" level="INFO" />
