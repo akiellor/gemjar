@@ -32,7 +32,7 @@ processResources << {
 
     copy {
         from project(':webapp').war.archivePath
-        into 'build/tmp/var/lib/gemjars'
+        into 'build/tmp/var/lib/gemjar'
     }
 }
 
@@ -42,18 +42,18 @@ task(resources) << {
 }
 
 artifacts {
-    deb file("$buildDir/libs/gemjars_1.0_all.deb")
+    deb file("$buildDir/libs/gemjar.deb")
 }
 
 task('fpm', type: JavaExec, dependsOn: ['resources', 'processResources']) {
     inputs.dir sourceSets.main.resources
     inputs.file project(':webapp').war.archivePath
-    outputs.file "$buildDir/libs/gemjars_1.0_all.deb"
+    outputs.file "$buildDir/libs/gemjar.deb"
 
     main 'org.jruby.Main'
     classpath runtimeClasspath
     args "-r", "$projectDir/src/main/ruby/patches/fpm.rb"
-    args "-S fpm -p $buildDir/libs/gemjars_1.0_all.deb -s dir -t deb -n gemjar -v 1.0 -a all -d openjdk-6-jdk -C $buildDir/tmp .".split(' ')
+    args "-S fpm -p $buildDir/libs/gemjar.deb -s dir -t deb -n gemjar -v 1.0 -a all -d openjdk-6-jdk -C $buildDir/tmp .".split(' ')
 }
 
 build.dependsOn << 'fpm'

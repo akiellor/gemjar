@@ -49,7 +49,7 @@ sudo apt-get -f install
 sudo apt-get install -y openjdk-6-jdk
 wget \"#{gemjars_deb.public_url}\"
 ls gemjar*.deb | xargs sudo dpkg -i
-sudo service gemjars start
+sudo service gemjar start
 EOS
 
 instance = ec2.instances.create(
