@@ -2,13 +2,16 @@ apply plugin: 'java'
 apply plugin: 'idea'
 
 evaluationDependsOn(':deb')
+evaluationDependsOn(':static')
 
 configurations {
     debianArchive
+    staticContent
 }
 
 dependencies {
     debianArchive project(path: ":deb", configuration: "deb")
+    staticContent project(path: ":static", configuration: "staticContent")
 
     compile 'org.jruby:jruby-complete:1.6.7.2'
     compile 'org.rubygems:jruby-openssl:0.7.7'
@@ -16,10 +19,12 @@ dependencies {
     compile 'org.rubygems:net-ssh:2.5.2'
     compile 'org.rubygems:net-scp:1.0.4'
 
-    compile 'org.rubygems:aws-sdk:1.5.6'
+    compile 'org.rubygems:aws-sdk:1.5.7'
     compile 'org.rubygems:nokogiri:1.5.5'
     compile 'org.rubygems:httparty:0.8.3'
     compile 'org.rubygems:json:1.7.3'
+    compile 'org.rubygems:clamp:0.4.0'
+    compile 'org.rubygems:builder:3.0.0'
 }
 
 sourceSets {
@@ -36,4 +41,9 @@ task(provision, type: JavaExec, dependsOn: ':deb:build') {
     args = ['classpath:provision.rb'] + configurations.debianArchive.files.collect { it.canonicalPath }
 }
 
+task('static', type: JavaExec, dependsOn: ':static:build') {
+    main = 'org.jruby.Main'
+    classpath = runtimeClasspath
+    args = ['-d', 'classpath:installer.rb', '--bucket', 'www.gemjars.org', '--auth-file', '~/.aws_auth'] + configurations.staticContent.files.collect { it.canonicalPath }
+}
 

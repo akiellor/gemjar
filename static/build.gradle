@@ -1,0 +1,27 @@
+apply plugin: 'java'
+
+dependencies {
+    compile 'org.jruby:jruby-complete:1.6.7.2'
+    compile 'org.rubygems:jruby-openssl:0.7.7'
+    compile 'org.rubygems:haml:3.1.6'
+}
+
+configurations {
+    staticContent
+}
+
+artifacts {
+    staticContent file("$buildDir/static/index.html")
+}
+
+task(haml, type: JavaExec) {
+    main 'org.jruby.Main'
+    classpath runtimeClasspath
+    args 'classpath:bin/haml', '--trace', 'src/main/resources/index.haml', "$buildDir/static/index.html"
+}
+
+processResources << {
+    file("$buildDir/static").mkdirs()
+}
+
+tasks.build.dependsOn << 'haml'
