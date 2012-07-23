@@ -30,10 +30,10 @@ sourceSets {
     }
 }
 
-task(provision, type: JavaExec, dependsOn: ':deb:fpm') {
-    main 'org.jruby.Main'
-    classpath runtimeClasspath
-    args 'classpath:provision.rb', configurations.debianArchive.files.collect { it.canonicalPath }[0]
+task(provision, type: JavaExec, dependsOn: ':deb:build') {
+    main = 'org.jruby.Main'
+    classpath = runtimeClasspath
+    args = ['classpath:provision.rb'] + configurations.debianArchive.files.collect { it.canonicalPath }
 }
 
 

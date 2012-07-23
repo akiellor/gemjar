@@ -27,13 +27,26 @@ processResources.dependsOn << ':webapp:war'
 processResources << {
     copy {
         from sourceSets.main.resources
-        into 'build/tmp'
+        into 'build/tmp/main'
     }
 
     copy {
         from project(':webapp').war.archivePath
-        into 'build/tmp/var/lib/gemjar'
+        into 'build/tmp/main/var/lib/gemjar'
     }
+}
+
+processResources << {
+    copy {
+        from sourceSets.nginxConfiguration.resources
+        into 'build/tmp/nginxConfiguration'
+    }
+
+    file('build/tmp/nginxConfiguration/var/www/cache').mkdirs()
+}
+
+sourceSets {
+    nginxConfiguration
 }
 
 task(resources) << {
@@ -43,9 +56,10 @@ task(resources) << {
 
 artifacts {
     deb file("$buildDir/libs/gemjar.deb")
+    deb file("$buildDir/libs/nginx-configuration.deb")
 }
 
-task('fpm', type: JavaExec, dependsOn: ['resources', 'processResources']) {
+task('application', type: JavaExec, dependsOn: ['resources', 'processResources']) {
     inputs.dir sourceSets.main.resources
     inputs.file project(':webapp').war.archivePath
     outputs.file "$buildDir/libs/gemjar.deb"
@@ -53,7 +67,18 @@ task('fpm', type: JavaExec, dependsOn: ['resources', 'processResources']) {
     main 'org.jruby.Main'
     classpath runtimeClasspath
     args "-r", "$projectDir/src/main/ruby/patches/fpm.rb"
-    args "-S fpm -p $buildDir/libs/gemjar.deb -s dir -t deb -n gemjar -v 1.0 -a all -d openjdk-6-jdk -C $buildDir/tmp .".split(' ')
+    args "-S fpm -p $buildDir/libs/gemjar.deb -s dir -t deb -n gemjar -a all -d openjdk-6-jdk -C $buildDir/tmp/main .".split(' ')
 }
 
-build.dependsOn << 'fpm'
+task('nginxConfiguration', type: JavaExec, dependsOn: ['resources', 'processResources']) {
+    inputs.dir sourceSets.main.resources
+    outputs.file "$buildDir/libs/nginx-configuration.deb"
+
+    main 'org.jruby.Main'
+    classpath runtimeClasspath
+    args "-r", "$projectDir/src/main/ruby/patches/fpm.rb"
+    args "-S fpm -p $buildDir/libs/nginx-configuration.deb -s dir -t deb -n nginx-configuration -a all -d nginx -C $buildDir/tmp/nginxConfiguration .".split(' ')
+}
+
+build.dependsOn << 'application'
+build.dependsOn << 'nginxConfiguration'

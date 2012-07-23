@@ -5,7 +5,10 @@ require 'net/scp'
 require 'yaml'
 require 'timeout'
 
-webapp = ARGV.pop
+puts ARGV
+
+webapp = ARGV[0]
+nginx_configuration = ARGV[1]
 
 config = YAML.load File.read(File.expand_path("~/.gemjars"))
 
@@ -19,7 +22,12 @@ bucket.acl = :public_read
 gemjars_deb = bucket.objects[File.basename(webapp)]
 gemjars_deb.write(:file => File.expand_path(webapp), :acl => :public_read)
 
-puts "Debian Package uploaded to: #{gemjars_deb.public_url}"
+puts "Debian Webapp Package uploaded to: #{gemjars_deb.public_url}"
+
+nginx_configuration_deb = bucket.objects[File.basename(nginx_configuration)]
+nginx_configuration_deb.write(:file => File.expand_path(nginx_configuration), :acl => :public_read)
+
+puts "Debian Nginx Package uploaded to: #{nginx_configuration_deb.public_url}"
 
 ec2 = AWS::EC2.new(
     :region => 'us-east-1',
@@ -46,10 +54,13 @@ user_data = <<EOS
 #!/bin/sh -e
 sudo apt-get update
 sudo apt-get -f install
-sudo apt-get install -y openjdk-6-jdk
+sudo apt-get install -y openjdk-6-jdk nginx
 wget \"#{gemjars_deb.public_url}\"
+wget \"#{nginx_configuration_deb.public_url}\"
 ls gemjar*.deb | xargs sudo dpkg -i
+ls nginx-configuration*.deb | xargs sudo dpkg -i --force-overwrite
 sudo service gemjar start
+sudo service nginx restart
 EOS
 
 instance = ec2.instances.create(
