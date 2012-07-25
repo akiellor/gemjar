@@ -4,6 +4,8 @@ dependencies {
     compile 'org.jruby:jruby-complete:1.6.7.2'
     compile 'org.rubygems:jruby-openssl:0.7.7'
     compile 'org.rubygems:haml:3.1.6'
+    compile 'org.rubygems:less:2.2.1'
+    compile 'org.rubygems:therubyrhino:1.73.4'
 }
 
 configurations {
@@ -11,7 +13,7 @@ configurations {
 }
 
 artifacts {
-    fileTree(dir: "$buildDir/static/", include: "*.html").each { file ->
+    fileTree(dir: "$buildDir/static/", include: "*").each { file ->
         staticContent file
     }
 }
@@ -24,11 +26,21 @@ fileTree(dir: 'src/main/resources', include: '*.haml').each { file ->
     task("haml-${filename(file)}", type: JavaExec) {
         main 'org.jruby.Main'
         classpath runtimeClasspath
-        args 'classpath:bin/haml', '--trace', file.canonicalPath, "$buildDir/static/${filename(file)}.html"
+        args 'classpath:bin/haml', file.canonicalPath, "$buildDir/static/${filename(file)}.html"
     }
 
     tasks.build.dependsOn << "haml-${filename(file)}"
 }
+
+task("less", type: JavaExec) {
+    def f = new File("$buildDir/static/styles.css")
+    main 'org.jruby.Main'
+    classpath runtimeClasspath
+    args = ['classpath:bin/lessc'] + fileTree(dir: 'src/main/resources', include: '*.less').files
+    standardOutput new FileOutputStream(f)
+}
+
+tasks.build.dependsOn << "less"
 
 processResources << {
     file("$buildDir/static").mkdirs()
