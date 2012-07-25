@@ -44,6 +44,6 @@ task(provision, type: JavaExec, dependsOn: ':deb:build') {
 task('static', type: JavaExec, dependsOn: ':static:build') {
     main = 'org.jruby.Main'
     classpath = runtimeClasspath
-    args = ['-d', 'classpath:installer.rb', '--bucket', 'www.gemjars.org', '--auth-file', '~/.aws_auth'] + configurations.staticContent.files.collect { it.canonicalPath }
+    args = ['classpath:installer.rb', '--bucket', 'www.gemjars.org', '--auth-file', '~/.aws_auth'] + configurations.staticContent.files.collect { it.canonicalPath }
 }
 

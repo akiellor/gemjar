@@ -11,17 +11,25 @@ configurations {
 }
 
 artifacts {
-    staticContent file("$buildDir/static/index.html")
+    fileTree(dir: "$buildDir/static/", include: "*.html").each { file ->
+        staticContent file
+    }
 }
 
-task(haml, type: JavaExec) {
-    main 'org.jruby.Main'
-    classpath runtimeClasspath
-    args 'classpath:bin/haml', '--trace', 'src/main/resources/index.haml', "$buildDir/static/index.html"
+def filename(file) {
+    file.name.substring(0, file.name.lastIndexOf("."))
+}
+
+fileTree(dir: 'src/main/resources', include: '*.haml').each { file ->
+    task("haml-${filename(file)}", type: JavaExec) {
+        main 'org.jruby.Main'
+        classpath runtimeClasspath
+        args 'classpath:bin/haml', '--trace', file.canonicalPath, "$buildDir/static/${filename(file)}.html"
+    }
+
+    tasks.build.dependsOn << "haml-${filename(file)}"
 }
 
 processResources << {
     file("$buildDir/static").mkdirs()
 }
-
-tasks.build.dependsOn << 'haml'
