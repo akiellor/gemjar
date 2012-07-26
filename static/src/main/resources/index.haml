@@ -1,30 +1,53 @@
 !!!html5
 %html
-  %link{:rel => 'stylesheet', :href => 'bootstrap/css/bootstrap.min.css'}
-  %link{:rel => 'stylesheet', :href => 'styles.css'}
-  %link{:rel => 'stylesheet', :href => 'gist.css'}
+  %head
+    %link{:rel => 'stylesheet', :href => 'bootstrap/css/bootstrap.min.css'}
+    %link{:rel => 'stylesheet', :href => 'styles.css'}
+    %link{:rel => 'stylesheet', :href => 'gist.css'}
+    %title GemJars - An Un-Holy Union
+
+    :plain
+      <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-33668420-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function() {
+          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+
+      </script>
+
 
   %body
-    %div{:class => 'container'}
+    %div{:class => 'container main'}
+      %h1{:class => 'logo'}
+        GemJars
+        %small Bringing RubyGems to Java
+
       %div{:class => 'row'}
-        %h1{:class => 'logo'} GemJars
-        %h2{:class => 'sublogo'} An Un-Holy Union
+        %div{:class => 'span8 offset2'}
+          %p GemJars is a tool which allows you to include any gem hosted on RubyGems in your Java project.
 
-        %p GemJars is a tool which allows you to include any gem hosted on RubyGems in your Java project.
+          %p
+            It currently supports build configurations using
+            <a href="http://gradle.org/">Gradle</a> and <a href="http://ant.apache.org/ivy/">Ivy</a>.
+            Support for <a href="http://maven.apache.org/">Maven</a> and <a href="http://buildr.apache.org/">Buildr</a>
+            is on the road map.
 
-        %p
-          GemJars currently supports build configurations using
-          <a href="http://gradle.org/">Gradle</a> and <a href="http://ant.apache.org/ivy/">Ivy</a>.
+          %p
+            The project itself uses GemJars heavily to build this site, the application and deploy to AWS.
 
-        %p
-          <a href="http://maven.apache.org/">Maven</a> and <a href="http://buildr.apache.org/">Buildr</a>
-          <em>will</em> be supported in the near future.
+          %p
+            All the code can be found <a href="https://github.com/akiellor/gemjar">here</a> and a sample
+            Gradle project can be found <a href="https://github.com/akiellor/gemjars-rspec-example">here</a>.
 
-        %ul
-          %li
-            %a{:href => 'https://gist.github.com/3174948'}Getting Started with Gradle
-          %li
-            %a{:href => 'https://gist.github.com/3174948'}Getting Started with Ivy
+          %p
+            Contact me via <a href="https://twitter.com/akiellor">twitter</a> or <a href="mailto:feedback@gemjars.org">email</a>
+
 
     %a{:href => "https://github.com/akiellor/gemjar"}
       %img{:style => "position: absolute; top: 0; right: 0; border: 0;",
