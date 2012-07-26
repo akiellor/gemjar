@@ -1,0 +1,2 @@
+watch(/.*\.haml/)  {|match| system("gradle --daemon :static:build") }
+watch(/.*\.sass/)  {|match| system("gradle --daemon :static:build") }

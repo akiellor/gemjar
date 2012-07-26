@@ -1,3 +1,32 @@
+!!!html5
 %html
+  %link{:rel => 'stylesheet', :href => 'bootstrap/css/bootstrap.min.css'}
+  %link{:rel => 'stylesheet', :href => 'styles.css'}
+  %link{:rel => 'stylesheet', :href => 'gist.css'}
+
   %body
-    %h1 yo dawg, I heard you like packages. So I packaged your package
+    %div{:class => 'container'}
+      %div{:class => 'row'}
+        %h1{:class => 'logo'} GemJars
+        %h2{:class => 'sublogo'} An Un-Holy Union
+
+        %p GemJars is a tool which allows you to include any gem hosted on RubyGems in your Java project.
+
+        %p
+          GemJars currently supports build configurations using
+          <a href="http://gradle.org/">Gradle</a> and <a href="http://ant.apache.org/ivy/">Ivy</a>.
+
+        %p
+          <a href="http://maven.apache.org/">Maven</a> and <a href="http://buildr.apache.org/">Buildr</a>
+          <em>will</em> be supported in the near future.
+
+        %ul
+          %li
+            %a{:href => 'https://gist.github.com/3174948'}Getting Started with Gradle
+          %li
+            %a{:href => 'https://gist.github.com/3174948'}Getting Started with Ivy
+
+    %a{:href => "https://github.com/akiellor/gemjar"}
+      %img{:style => "position: absolute; top: 0; right: 0; border: 0;",
+           :src   => "https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png",
+           :alt   => "Fork me on GitHub"}

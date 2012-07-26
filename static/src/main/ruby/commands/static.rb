@@ -1,6 +1,7 @@
 require 'clamp'
 require 'aws'
 require 'yaml'
+require 'pathname'
 
 module Commands
   class Static < Clamp::Command
@@ -9,12 +10,12 @@ module Commands
 
     option ["-a", "--auth-file"], "the amazon auth file to use", :attribute_name => :auth_file
 
-    parameter "FILES ...", "the files to deploy", :attribute_name => :files
+    parameter "DIRECTORY", "the directory to deploy", :attribute_name => :directory
 
     def execute
       auth = Authentication.load(auth_file)
 
-      Website.new(auth, bucket).install files
+      Website.new(auth, bucket).install directory
     end
   end
 
@@ -38,7 +39,7 @@ module Commands
       @bucket_name = bucket_name
     end
 
-    def install files
+    def install directory
       s3 = AWS::S3.new(:access_key_id => @auth.access_key_id, :secret_access_key => @auth.secret_access_key)
       if s3.buckets.collect(&:name).include? @bucket_name
         s3.buckets[@bucket_name].clear!
@@ -59,8 +60,10 @@ module Commands
           ]
       }.to_json
 
-      files.each do |file|
-        bucket.objects.create File.basename(file), :file => file
+      Dir[File.expand_path("**/*", directory)].select {|f| File.file?(f) }.each do |file|
+        object_key = Pathname.new(file).relative_path_from(Pathname.new(directory)).to_s
+
+        bucket.objects.create object_key, :file => file
       end
     end
   end
