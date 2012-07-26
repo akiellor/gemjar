@@ -24,7 +24,7 @@ Trying it out -- GemJars.org Hosted
 ```
 repositories {
     ivy {
-        url 'http://gemjars.org:8080'
+        url 'http://repository.gemjars.org'
         layout 'pattern', {
             artifact 'jars/[organization]/[module]-[revision].jar'
             ivy 'ivys/[organization]/ivy-[module]-[revision].xml'
@@ -46,8 +46,8 @@ dependencies {
 <ivysettings>
   ...
   <url name="gems">
-    <ivy pattern="http://gemjars.org:8080/ivys/[organization]/ivy-[module]-[revision].xml" />
-    <artifact pattern="http://gemjars.org:8080/jars/[organization]/[module]-[revision].jar" />
+    <ivy pattern="http://repository.gemjars.org/ivys/[organization]/ivy-[module]-[revision].xml" />
+    <artifact pattern="http://repository.gemjars.org/jars/[organization]/[module]-[revision].jar" />
   </url>
   ...
   <chain name="default">
