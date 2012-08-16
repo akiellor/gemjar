@@ -1,5 +1,6 @@
 require 'digest/sha1'
 require 'digest/md5'
+require 'nokogiri'
 
 module Ivy
   java_import 'org.apache.ivy.plugins.parser.xml.XmlModuleDescriptorParser'
@@ -47,4 +48,17 @@ Then /^the response should contain the md5 of "([^"]*)"$/ do |resource|
   expected_md5 = Digest::MD5.file(File.expand_path("last_response", Acceptance::Configuration.work_directory)).to_s
 
   actual_md5.should == expected_md5
+end
+
+Then /^the response should be a valid maven pom xml$/ do
+  xsd = Nokogiri::XML::Schema(java.lang.Thread.current_thread.get_context_class_loader.getResourceAsStream("maven-v4_0_0.xsd").to_io)
+  doc = Nokogiri::XML(File.read(File.expand_path("last_response", Acceptance::Configuration.work_directory)))
+
+  doc.should be_valid_xml xsd
+end
+
+RSpec::Matchers.define :be_valid_xml do |doc|
+  match do |schema|
+    doc.validate(schema).empty?
+  end
 end

@@ -10,6 +10,7 @@ dependencies {
     compile 'org.rubygems:cucumber:1.2.1'
     compile 'org.rubygems:rspec-expectations:2.10.0'
     compile 'org.rubygems:childprocess:0.3.3'
+    compile 'org.rubygems:nokogiri:1.5.5'
 }
 
 task(features, type: JavaExec, dependsOn: ':webapp:war') {
@@ -17,7 +18,7 @@ task(features, type: JavaExec, dependsOn: ':webapp:war') {
     classpath runtimeClasspath
     systemProperty 'user.dir', "$projectDir/src/main"
     systemProperty 'target.application', project(":webapp").war.archivePath
-    args '-S', 'cucumber', '--color', 'features'
+    args '-S', 'cucumber', '--tags', '~@wip', '--color', 'features'
 }
 
 test.dependsOn << "features"
