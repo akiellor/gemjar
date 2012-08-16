@@ -43,12 +43,5 @@ module Gemjar
       gem_jar = Artifact.ensure(name, version) or raise Sinatra::NotFound
       body gem_jar.ivy.md5
     end
-
-    #support artifactory/gradle ivy default patterns
-    get "/org.rubygems/:name/:version/*" do |name, version, rs|
-      ext = rs.scan(/(\.jar.*|\.xml.*)/).last
-      redirect "/jars/org.rubygems/#{name}-#{version}#{ext}" if rs =~ /jar/
-      redirect "/ivys/org.rubygems/ivy-#{name}-#{version}#{ext}" if rs =~ /ivy/
-    end
   end
 end
