@@ -49,7 +49,7 @@ module Gemjar
       "".tap do |out|
         xml = Builder::XmlMarkup.new :target => out
         xml.instruct!
-        xml.project do |project|
+        xml.project :xmlns => "http://maven.apache.org/POM/4.0.0" do |project|
           project.modelVersion "4.0.0"
           project.groupId 'org.rubygems'
           project.artifactId cached_spec.name
