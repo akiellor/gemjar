@@ -1,7 +1,5 @@
 require 'gemjar/artifact'
 require 'sinatra/base'
-require 'digest/md5'
-require 'digest/sha1'
 
 module Gemjar
   class App < Sinatra::Base
@@ -18,32 +16,32 @@ module Gemjar
 
     get "/jars/org.rubygems/:name-:version.jar" do |name, version|
       gem_jar = Artifact.ensure(name, version) or raise Sinatra::NotFound
-      send_file gem_jar.jar, :filename => gem_jar.jar
+      send_file gem_jar.jar.path, :filename => gem_jar.jar.path
     end
 
     get "/jars/org.rubygems/:name-:version.jar.sha1" do |name, version|
       gem_jar = Artifact.ensure(name, version) or raise Sinatra::NotFound
-      body Digest::SHA1.file(gem_jar.jar).to_s
+      body gem_jar.jar.sha1
     end
 
     get "/jars/org.rubygems/:name-:version.jar.md5" do |name, version|
       gem_jar = Artifact.ensure(name, version) or raise Sinatra::NotFound
-      body Digest::MD5.file(gem_jar.jar).to_s
+      body gem_jar.jar.md5
     end
 
     get "/ivys/org.rubygems/ivy-:name-:version.xml" do |name, version|
       gem_jar = Artifact.ensure(name, version) or raise Sinatra::NotFound
-      body File.read(gem_jar.ivy)
+      body gem_jar.ivy.content
     end
 
     get "/ivys/org.rubygems/ivy-:name-:version.xml.sha1" do |name, version|
       gem_jar = Artifact.ensure(name, version) or raise Sinatra::NotFound
-      body Digest::SHA1.file(gem_jar.ivy).to_s
+      body gem_jar.ivy.sha1
     end
 
     get "/ivys/org.rubygems/ivy-:name-:version.xml.md5" do |name, version|
       gem_jar = Artifact.ensure(name, version) or raise Sinatra::NotFound
-      body Digest::MD5.file(gem_jar.ivy).to_s
+      body gem_jar.ivy.md5
     end
 
     #support artifactory/gradle ivy default patterns

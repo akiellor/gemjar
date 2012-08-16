@@ -1,5 +1,6 @@
 require 'gemjar/artifact_repository'
 require 'gemjar/logger'
+require 'gemjar/file_resource'
 
 module Gemjar
   class Artifact
@@ -11,11 +12,11 @@ module Gemjar
     end
 
     def jar
-      @jar_path
+      FileResource.new(@jar_path)
     end
 
     def ivy
-      @ivy_path
+      FileResource.new(@ivy_path)
     end
 
     def self.ensure name, version
