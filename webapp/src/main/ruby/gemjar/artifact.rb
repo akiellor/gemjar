@@ -6,6 +6,12 @@ module Gemjar
   class Artifact
     include Gemjar::Logger
 
+    def self.ensure name, version
+      log.info("Ensuring artifact #{name}-#{version} is installed.")
+      artifact_repository = ArtifactRepository.new(Gemjar::WORK_DIRECTORY)
+      artifact_repository.find(name, version) || artifact_repository.install(name, version)
+    end
+
     def initialize jar_path, ivy_path
       @jar_path = jar_path
       @ivy_path = ivy_path
@@ -17,19 +23,6 @@ module Gemjar
 
     def ivy
       FileResource.new(@ivy_path)
-    end
-
-    def self.ensure name, version
-      log.info("Ensuring artifact #{name}-#{version} is installed.")
-      Artifact.find(name, version) || Artifact.install(name, version)
-    end
-
-    def self.find name, version
-      ArtifactRepository.new(Gemjar::WORK_DIRECTORY).find name, version
-    end
-
-    def self.install name, version
-      ArtifactRepository.new(Gemjar::WORK_DIRECTORY).install name, version
     end
   end
 end
