@@ -3,11 +3,19 @@ require 'rubygems/specification'
 require 'gemjar/gem_repository'
 
 module Gemjar
-  class Gem < Struct.new(:installed_dir, :name, :version)
+  class Gem
     def self.install name, version
       ::Gem.configuration.verbose = true
 
       GemRepository.new.install name, version
+    end
+
+    attr_reader :installed_dir, :name, :version
+
+    def initialize installed_dir, name, version
+      @installed_dir = installed_dir
+      @name = name
+      @version = version
     end
 
     def ivy_module_xml
