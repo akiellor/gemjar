@@ -2,8 +2,21 @@ require 'gemjar/artifact_repository'
 require 'gemjar/logger'
 
 module Gemjar
-  class Artifact < Struct.new(:jar, :ivy)
+  class Artifact
     include Gemjar::Logger
+
+    def initialize jar_path, ivy_path
+      @jar_path = jar_path
+      @ivy_path = ivy_path
+    end
+
+    def jar
+      @jar_path
+    end
+
+    def ivy
+      @ivy_path
+    end
 
     def self.ensure name, version
       log.info("Ensuring artifact #{name}-#{version} is installed.")
