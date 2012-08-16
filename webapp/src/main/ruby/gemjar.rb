@@ -5,6 +5,5 @@ end
 require 'gemjar/app'
 require 'gemjar/artifact'
 require 'gemjar/artifact_builder'
-require 'gemjar/dependency'
 require 'gemjar/gem'
 require 'gemjar/logger'

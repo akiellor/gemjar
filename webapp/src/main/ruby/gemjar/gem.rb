@@ -1,17 +1,13 @@
 require 'builder'
-require 'fileutils'
-require 'gemjar/dependency'
 require 'rubygems/specification'
-require 'rubygems/dependency_installer'
+require 'gemjar/gem_repository'
 
 module Gemjar
   class Gem < Struct.new(:installed_dir, :name, :version)
     def self.install name, version
       ::Gem.configuration.verbose = true
-      tmpdir = Dir.mktmpdir
-      installer = ::Gem::DependencyInstaller.new :install_dir => "#{tmpdir}/gem_home", :ignore_dependencies => true
-      installer.install name, version
-      Gem.new "#{tmpdir}/gem_home", name, version
+
+      GemRepository.new.install name, version
     end
 
     def ivy_module_xml
@@ -33,7 +29,7 @@ module Gemjar
 
           mod.dependencies do |deps|
             dependencies.each do |dep|
-              deps.dependency :org => 'org.rubygems', :name => dep.name, :rev => dep.version.to_s
+              deps.dependency :org => 'org.rubygems', :name => dep[:name], :rev => dep[:version].to_s
             end
           end
         end
@@ -52,7 +48,7 @@ module Gemjar
       deps = spec.runtime_dependencies
       deps.map do |dep|
         spec = ::Gem::SpecFetcher.new.find_matching(dep, true, false).first
-        Dependency.new spec[0][0], spec[0][1]
+        {:name => spec[0][0], :version => spec[0][1]}
       end
     end
   end
