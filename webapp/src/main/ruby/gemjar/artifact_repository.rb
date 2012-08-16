@@ -32,7 +32,7 @@ module Gemjar
           log.info("Installing artifact: '#{name}-#{version}'")
           gem = Gem.install(name, version)
 
-          ArtifactBuilder.new(Gemjar::WORK_DIRECTORY).build(gem).tap do |a|
+          ArtifactBuilder.new(@directory).build(gem).tap do |a|
             log.info("Retrieved artifact: #{a.inspect}")
           end
         rescue => e
