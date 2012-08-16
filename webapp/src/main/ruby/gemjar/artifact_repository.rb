@@ -13,6 +13,11 @@ module Gemjar
       @directory = directory
     end
 
+    def ensure name, version
+      log.info("Ensuring artifact #{name}-#{version} is installed.")
+      find(name, version) || install(name, version)
+    end
+
     def find name, version
       jar = "#@directory/#{name}-#{version}.jar"
       ivy = "#@directory/ivy-#{name}-#{version}.xml"

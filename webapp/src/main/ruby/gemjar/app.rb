@@ -1,4 +1,4 @@
-require 'gemjar/artifact'
+require 'gemjar/artifact_repository'
 require 'sinatra/base'
 
 module Gemjar
@@ -14,33 +14,37 @@ module Gemjar
     get "/ping" do
     end
 
-    get "/jars/org.rubygems/:name-:version.jar" do |name, version|
-      gem_jar = Artifact.ensure(name, version) or raise Sinatra::NotFound
+    def self.get_artifact url_pattern, &block
+      get url_pattern do |name, version|
+        artifact_repository = ArtifactRepository.new(Gemjar::WORK_DIRECTORY)
+
+        gem_jar = artifact_repository.ensure(name, version) or raise Sinatra::NotFound
+
+        self.instance_exec gem_jar, &block
+      end
+    end
+
+    get_artifact "/jars/org.rubygems/:name-:version.jar" do |gem_jar|
       send_file gem_jar.jar.path, :filename => gem_jar.jar.path
     end
 
-    get "/jars/org.rubygems/:name-:version.jar.sha1" do |name, version|
-      gem_jar = Artifact.ensure(name, version) or raise Sinatra::NotFound
+    get_artifact "/jars/org.rubygems/:name-:version.jar.sha1" do |gem_jar|
       body gem_jar.jar.sha1
     end
 
-    get "/jars/org.rubygems/:name-:version.jar.md5" do |name, version|
-      gem_jar = Artifact.ensure(name, version) or raise Sinatra::NotFound
+    get_artifact "/jars/org.rubygems/:name-:version.jar.md5" do |gem_jar|
       body gem_jar.jar.md5
     end
 
-    get "/ivys/org.rubygems/ivy-:name-:version.xml" do |name, version|
-      gem_jar = Artifact.ensure(name, version) or raise Sinatra::NotFound
+    get_artifact "/ivys/org.rubygems/ivy-:name-:version.xml" do |gem_jar|
       body gem_jar.ivy.content
     end
 
-    get "/ivys/org.rubygems/ivy-:name-:version.xml.sha1" do |name, version|
-      gem_jar = Artifact.ensure(name, version) or raise Sinatra::NotFound
+    get_artifact "/ivys/org.rubygems/ivy-:name-:version.xml.sha1" do |gem_jar|
       body gem_jar.ivy.sha1
     end
 
-    get "/ivys/org.rubygems/ivy-:name-:version.xml.md5" do |name, version|
-      gem_jar = Artifact.ensure(name, version) or raise Sinatra::NotFound
+    get_artifact "/ivys/org.rubygems/ivy-:name-:version.xml.md5" do |gem_jar|
       body gem_jar.ivy.md5
     end
   end
