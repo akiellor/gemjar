@@ -11,6 +11,7 @@ module Gemjar
     before('*.sha1') { content_type 'plain/text' }
     before('*.md5') { content_type 'plain/text' }
     before('*.xml') { content_type 'application/xml' }
+    before('*.pom') { content_type 'application/xml' }
 
     get "/ping" do
     end
