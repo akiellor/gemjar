@@ -1,7 +1,7 @@
 require 'gemjar/gem'
 require 'gemjar/logger'
 require 'gemjar/artifact_builder'
-require 'gemjar/repository'
+require 'gemjar/artifact_repository'
 require 'gemjar/task_executor'
 
 module Gemjar
@@ -16,7 +16,7 @@ module Gemjar
     end
 
     def self.find name, version
-      Repository.new(Gemjar::WORK_DIRECTORY).find name, version
+      ArtifactRepository.new(Gemjar::WORK_DIRECTORY).find name, version
     end
 
     def self.install name, version

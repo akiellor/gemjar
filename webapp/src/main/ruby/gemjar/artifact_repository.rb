@@ -1,7 +1,7 @@
 require 'gemjar/logger'
 
 module Gemjar
-  class Repository
+  class ArtifactRepository
     include Gemjar::Logger
 
     def initialize directory
