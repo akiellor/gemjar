@@ -21,8 +21,9 @@ module Gemjar
     def find name, version
       jar = "#@directory/#{name}-#{version}.jar"
       ivy = "#@directory/ivy-#{name}-#{version}.xml"
-      if File.exists?(jar) && File.exists?(ivy)
-        Artifact.new(jar, ivy).tap {|a| log.info("Found artifact #{name}-#{version}: #{a.inspect}")}
+      pom = "#@directory/pom-#{name}-#{version}.xml"
+      if File.exists?(jar) && File.exists?(ivy) && File.exists?(pom)
+        Artifact.new(jar, ivy, pom).tap {|a| log.info("Found artifact #{name}-#{version}: #{a.inspect}")}
       end
     end
 

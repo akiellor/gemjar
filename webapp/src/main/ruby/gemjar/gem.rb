@@ -44,6 +44,30 @@ module Gemjar
       end
     end
 
+    def pom_xml
+      cached_spec = spec
+      "".tap do |out|
+        xml = Builder::XmlMarkup.new :target => out
+        xml.instruct!
+        xml.project do |project|
+          project.modelVersion "4.0.0"
+          project.groupId 'org.rubygems'
+          project.artifactId cached_spec.name
+          project.version cached_spec.version.to_s
+
+          project.dependencies do |deps|
+            dependencies.each do |dep|
+              deps.dependency do |dep_node|
+                dep_node.groupId 'org.rubygems'
+                dep_node.artifactId dep[:name]
+                dep_node.version dep[:version].to_s
+              end
+            end
+          end
+        end
+      end
+    end
+
     private
 
     def spec
