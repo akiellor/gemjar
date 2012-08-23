@@ -4,10 +4,6 @@ require 'gemjar/maven_path'
 
 module Gemjar
   class App < Sinatra::Base
-    before do
-      expires (365 * 24 * 3600), :public
-    end
-
     before('*.sha1') { content_type 'plain/text' }
     before('*.md5') { content_type 'plain/text' }
     before('*.xml') { content_type 'application/xml' }
