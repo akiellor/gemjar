@@ -1,9 +1,9 @@
 !!!html5
 %html
   %head
-    %link{:rel => 'stylesheet', :href => 'bootstrap/css/bootstrap.min.css'}
-    %link{:rel => 'stylesheet', :href => 'styles.css'}
-    %link{:rel => 'stylesheet', :href => 'gist.css'}
+    %meta(name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1")
+    %link{:rel => 'icon', :href => 'img/favicon.png'}
+    %link{:rel => 'stylesheet', :href => 'style.css'}
     %title GemJars - An Un-Holy Union
 
     :plain
@@ -23,38 +23,37 @@
 
 
   %body
-    %div{:class => 'container main'}
-      %h1{:class => 'logo'}
+    %section
+      %img{:src => '/img/gemjarlogo-v1.png', :alt => 'GemJars Logo', :class => 'logo'}
+      %h1
         GemJars
-        %small Bringing RubyGems to Java
+      %small Bringing RubyGems to Java
 
-      %div{:class => 'row'}
-        %div{:class => 'span8 offset2'}
-          %p GemJars is a tool which allows you to include any gem hosted on RubyGems in your Java project.
+      %article
+        %p GemJars is a tool which allows you to include any gem hosted on RubyGems in your Java project.
 
-          %p
-            It currently supports build configurations using
-            <a href="http://gradle.org/">Gradle</a> and <a href="http://ant.apache.org/ivy/">Ivy</a>.
-            Experimental support for <a href="http://maven.apache.org/">Maven</a> and <a href="http://buildr.apache.org/">Buildr</a>
-            is now available.
+        %p
+          It currently supports build configurations using
+          <a href="http://gradle.org/">Gradle</a> and <a href="http://ant.apache.org/ivy/">Ivy</a>.
+          Experimental support for <a href="http://maven.apache.org/">Maven</a> and <a href="http://buildr.apache.org/">Buildr</a>
+          is now available.
 
-          %p
-            The project itself uses GemJars heavily to build this site, the application and deploy to AWS.
+        %p
+          The project itself uses GemJars heavily to build this site, the application and deploy to AWS.
 
-          %p
-            Examples to get you started:
+        %p
+          Examples to get you started:
 
-          %ul
-            %li
-              %a{:href => "https://github.com/akiellor/gemjars-rspec-gradle"} Gradle RSpec Example
-            %li
-              %a{:href => "https://github.com/akiellor/gemjars-rspec-maven"} Maven RSpec Example
+        %ul
+          %li
+            %a{:href => "https://github.com/akiellor/gemjars-rspec-gradle"} Gradle RSpec Example
+          %li
+            %a{:href => "https://github.com/akiellor/gemjars-rspec-maven"} Maven RSpec Example
 
-          %p
-            Contact me via <a href="https://twitter.com/akiellor">twitter</a> or <a href="mailto:feedback@gemjars.org">email</a>
+        %p
+          Contact me via <a href="https://twitter.com/akiellor">twitter</a> or <a href="mailto:feedback@gemjars.org">email</a>
 
 
-    %a{:href => "https://github.com/akiellor/gemjar"}
-      %img{:style => "position: absolute; top: 0; right: 0; border: 0;",
-           :src   => "https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png",
+    %a{:href => "https://github.com/akiellor/gemjar", :id => "github-ribbon"}
+      %img{:src   => "https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png",
            :alt   => "Fork me on GitHub"}
