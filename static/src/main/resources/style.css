@@ -1,0 +1,19 @@
+/*
+* sassy-seeds light monochrome theme.
+* https://github.com/matthewcopeland/sassy-seeds
+*/
+@import url("sassy_seeds_light_theme.css");
+
+body {
+  text-align: center;
+  padding: 40px 20px 20px 20px;
+  font-size: 16px;
+}
+
+p { margin-bottom: 10px; }
+
+#github-ribbon {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
