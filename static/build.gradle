@@ -67,5 +67,6 @@ processResources << {
         from 'src/main/resources'
         into "$buildDir/static"
         include '**/*.css'
+        include '**/*.png'
     }
 }
