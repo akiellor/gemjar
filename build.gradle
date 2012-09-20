@@ -4,9 +4,8 @@ subprojects {
   apply plugin: 'idea'
 
   repositories {
-    ivy {
-      ivyPattern "http://repository.gemjars.org/ivys/[organisation]/ivy-[module]-[revision].xml"
-      artifactPattern "http://repository.gemjars.org/jars/[organisation]/[module]-[revision].jar"
+    maven {
+        url "http://repository.gemjars.org/maven"
     }
     mavenCentral()
   }
