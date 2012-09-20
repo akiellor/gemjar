@@ -2,8 +2,15 @@
 %html
   %head
     %meta(name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1")
-    %link{:rel => 'icon', :href => './img/favicon.png'}
-    %link{:rel => 'stylesheet', :href => 'style.css'}
+    %link{:rel => 'icon', :href => asset_url('img/favicon.png')}
+
+    /
+      sassy-seeds light monochrome theme.
+      https://github.com/matthewcopeland/sassy-seeds
+    %link{:rel => 'stylesheet', :href => asset_url('sassy_seeds_light_theme.css')}
+
+    %link{:rel => 'stylesheet', :href => asset_url('style.css')}
+
     %title GemJars - An Un-Holy Union
 
     :plain
@@ -24,7 +31,7 @@
 
   %body
     %section
-      %img{:src => './img/gemjarlogo-v1.png', :alt => 'GemJars Logo', :class => 'logo'}
+      %img{:src => asset_url('img/gemjarlogo-v1.png'), :alt => 'GemJars Logo', :class => 'logo'}
       %h1
         GemJars
       %small Bringing RubyGems to Java

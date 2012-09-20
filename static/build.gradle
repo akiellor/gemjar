@@ -11,7 +11,7 @@ dependencies {
     compile 'org.rubygems:httparty:0.8.3'
     compile 'org.rubygems:json:1.7.3'
 
-    compile 'org.rubygems:gearup:0.0.4'
+    compile 'org.rubygems:gearup:0.0.5'
     compile 'org.rubygems:sprockets:2.4.5'
     compile 'org.rubygems:tilt:1.3.3'
     compile 'org.rubygems:coffee-script:2.2.0'
@@ -22,42 +22,12 @@ dependencies {
     compile 'org.rubygems:less:2.2.1'
 }
 
-def filename(file) {
-    file.name.substring(0, file.name.lastIndexOf("."))
-}
-
 sourceSets {
     main {
         resources {
             srcDir 'src/main/ruby'
         }
     }
-}
-
-fileTree(dir: 'src/main/resources', include: '*.haml').each { file ->
-    task("haml-${filename(file)}", type: JavaExec) {
-        main 'org.jruby.Main'
-        classpath runtimeClasspath
-        args 'classpath:bin/haml', file.canonicalPath, "$buildDir/static/${filename(file)}.html"
-    }
-
-    tasks.build.dependsOn << "haml-${filename(file)}"
-}
-
-fileTree(dir: 'src/main/resources', include: '*.sass').each { file ->
-    task("sass-${filename(file)}", type: JavaExec) {
-        main 'org.jruby.Main'
-        classpath runtimeClasspath
-        args 'classpath:bin/sass', file.canonicalPath, "$buildDir/static/${filename(file)}.css"
-    }
-
-    tasks.build.dependsOn << "sass-${filename(file)}"
-}
-
-task("watchr", type: JavaExec) {
-    main 'org.jruby.Main'
-    classpath runtimeClasspath
-    args 'classpath:bin/watchr', "$projectDir/Watchfile"
 }
 
 task('deploy', type: JavaExec, dependsOn: ':static:build') {
@@ -72,15 +42,29 @@ task('gearup', type: JavaExec) {
     args = ['classpath:bin/gearup', "$projectDir/src/main/resources"]
 }
 
-processResources << {
-    file("$buildDir/static").mkdirs()
+task('gearupPackage', type: JavaExec) {
+    main = 'org.jruby.Main'
+    classpath = runtimeClasspath
+    args = [
+        'classpath:bin/gearup-package',
+        "$projectDir/src/main/resources",
+        "$buildDir/static",
+        "index.html",
+        "style.css",
+        "sassy_seeds_light_theme.css",
+        "img/favicon.png",
+        "img/gemjarlogo-v1.png"
+    ]
 }
 
-processResources << {
+tasks.gearupPackage.doLast {
     copy {
-        from 'src/main/resources'
-        into "$buildDir/static"
-        include '**/*.css'
-        include '**/*.png'
+        from "$buildDir/static/"
+        into "$buildDir/static/"
+
+        include 'index-*.html'
+        rename 'index-(.+).html', 'index.html'
     }
 }
+
+tasks.build.dependsOn << "gearupPackage"
