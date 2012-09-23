@@ -1,10 +1,24 @@
 body {
-  text-align: center;
   padding: 40px 20px 20px 20px;
   font-size: 16px;
 }
 
+section {
+    text-align: center;
+    margin: 0 auto;
+    max-width: 500px;
+}
+
+article {
+    text-align: left;
+}
+
 p { margin-bottom: 10px; }
+
+ul {
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
 
 #github-ribbon {
   position: absolute;

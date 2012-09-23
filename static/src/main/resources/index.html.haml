@@ -32,30 +32,37 @@
   %body
     %section
       %img{:src => asset_url('img/gemjarlogo-v2.png'), :alt => 'GemJars Logo', :class => 'logo'}
-      %h1
-        GemJars
+      %h1 GemJars
       %small Bringing RubyGems to Java
 
       %article
-        %p GemJars is a tool which allows you to include any gem hosted on RubyGems in your Java project.
+        %p GemJars is a tool which allows you to include any gem hosted on RubyGems in your Java/JVM project.
 
-        %p
-          It currently supports build configurations using
-          <a href="http://gradle.org/">Gradle</a> and <a href="http://ant.apache.org/ivy/">Ivy</a>.
-          Experimental support for <a href="http://maven.apache.org/">Maven</a> and <a href="http://buildr.apache.org/">Buildr</a>
-          is now available.
+        %h3 Supported Build/Dependency Tools
 
-        %p
-          The project itself uses GemJars heavily to build this site, the application and deploy to AWS.
+        %ul
+          %li
+            %a{:href => 'http://gradle.org/'} Gradle
+          %li
+            %a{:href => 'http://ant.apache.org/ivy/'} Ivy
+          %li
+            %a{:href => 'http://maven.apache.org/'} Maven (Experimental)
+          %li
+            %a{:href => 'http://buildr.apache.org/'} Buildr (Experimental)
 
-        %p
-          Examples to get you started:
+        %h3 Examples
 
         %ul
           %li
             %a{:href => "https://github.com/akiellor/gemjars-rspec-gradle"} Gradle RSpec Example
           %li
             %a{:href => "https://github.com/akiellor/gemjars-rspec-maven"} Maven RSpec Example
+
+        %h3 Links
+
+        %ul
+          %li
+            %a{:href => "http://slides.gemjars.org"} Slides
 
         %p
           Contact me via <a href="https://twitter.com/akiellor">twitter</a> or <a href="mailto:feedback@gemjars.org">email</a>
