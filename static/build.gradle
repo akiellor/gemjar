@@ -53,7 +53,7 @@ task('gearupPackage', type: JavaExec) {
         "style.css",
         "sassy_seeds_light_theme.css",
         "img/favicon.png",
-        "img/gemjarlogo-v1.png"
+        "img/gemjarlogo-v2.png"
     ]
 }
 
