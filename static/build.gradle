@@ -42,7 +42,7 @@ task('gearup', type: JavaExec) {
     args = ['classpath:bin/gearup', "$projectDir/src/main/resources"]
 }
 
-task('gearupPackage', type: JavaExec) {
+task('gearupPackage', type: JavaExec, dependsOn: "cleanStatic") {
     main = 'org.jruby.Main'
     classpath = runtimeClasspath
     args = [
@@ -55,6 +55,10 @@ task('gearupPackage', type: JavaExec) {
         "img/favicon.png",
         "img/gemjarlogo-v2.png"
     ]
+}
+
+task cleanStatic(type: Delete) {
+    delete "$buildDir/static/"
 }
 
 tasks.gearupPackage.doLast {
