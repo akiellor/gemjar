@@ -70,6 +70,12 @@ module Gemjar
       body gem_jar.pom.md5
     end
 
+    get(%r{^/maven/.*?\-sources\.jar$}) { 404 }
+
+    get(%r{^/maven/.*?\-sources\.jar\.md5$}) { 404 }
+
+    get(%r{^/maven/.*?\-sources\.jar\.sha1$}) { 404 }
+
     get_maven_artifact %r{^/maven(/.*\.jar)$} do |gem_jar|
       send_file gem_jar.jar.path, :filename => gem_jar.jar.path
     end

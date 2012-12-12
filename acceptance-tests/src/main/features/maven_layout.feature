@@ -39,3 +39,15 @@ Feature: GemJar - MavenLayout
   Scenario: Gets a jar dependencies' md5
     When I hit the URL "/maven/org/rubygems/rspec/2.6.0/rspec-2.6.0.jar.md5"
     Then the response should contain the md5 of "/maven/org/rubygems/rspec/2.6.0/rspec-2.6.0.jar"
+
+  Scenario: Gets a jars sources
+    When I hit the URL "/maven/org/rubygems/rspec/2.6.0/rspec-2.6.0-sources.jar"
+    Then the response should be not found
+
+  Scenario: Gets a jars sources md5
+    When I hit the URL "/maven/org/rubygems/rspec/2.6.0/rspec-2.6.0-sources.jar.md5"
+    Then the response should be not found
+
+  Scenario: Gets a jars sources sha1
+    When I hit the URL "/maven/org/rubygems/rspec/2.6.0/rspec-2.6.0-sources.jar.sha1"
+    Then the response should be not found

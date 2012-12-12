@@ -6,6 +6,8 @@ When /^I hit the URL "([^"]*)"$/ do |url|
       response.read_body do |segment|
         out << segment
       end
+
+      @last_status = response.code
     end
   end
 end
