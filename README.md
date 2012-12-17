@@ -97,7 +97,6 @@ Trying it out -- DIY
   $ curl -i http://localhost:8080/ivys/org.rubygems/ivy-cucumber-1.0.0.xml.md5
   $ curl -i http://localhost:8080/ivys/org.rubygems/ivy-cucumber-1.0.0.xml.sha1
   ```
-4) Add the [Gradle configuration](#gradle) or [Ivy configuration](#ivy) as above.
 
 Where's it at?
 -------------
