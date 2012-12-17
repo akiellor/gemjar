@@ -23,12 +23,8 @@ Trying it out -- GemJars.org Hosted
 1) Add to your `repositories`:
 ```
 repositories {
-    ivy {
-        url 'http://repository.gemjars.org'
-        layout 'pattern', {
-            artifact 'jars/[organization]/[module]-[revision].jar'
-            ivy 'ivys/[organization]/ivy-[module]-[revision].xml'
-        }
+    maven {
+        url 'http://repository.gemjars.org/maven'
     }
 }
 ```
@@ -39,6 +35,7 @@ dependencies {
 }
 ```
 3) Perform a `gradle dependencies` and watch it resolve rspec and all its transitive dependencies
+
 ### Ivy
 1) In your `ivysettings.xml`, set up the following resolver:
 
@@ -111,8 +108,6 @@ Where's it at?
 * Construction of ivy modules based on the gemspec. 
 * MD5 and SHA1 of all constructed artifacts. 
 * Can be built as a war.
-
-### SOON-ISH ###
 * Maven `pom.xml` generation.
 
 ### HOW CAN YOU HELP ###
