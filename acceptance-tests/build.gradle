@@ -21,4 +21,4 @@ task(features, type: JavaExec, dependsOn: ':webapp:war') {
   args '-S', 'cucumber', '--tags', '~@wip', '--color', 'features'
 }
 
-test.dependsOn << "features"
+check.dependsOn << "features"
