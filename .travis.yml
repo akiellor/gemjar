@@ -2,4 +2,4 @@ language: java
 install: gradle -q assemble
 script: gradle -q check
 jdk:
-  - oraclejdk6
+  - openjdk6
