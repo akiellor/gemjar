@@ -3,8 +3,8 @@ apply plugin: 'java'
 evaluationDependsOn(':webapp')
 
 dependencies {
-  compile 'org.jruby:jruby:1.7.0.preview1'
-  compile 'org.jruby:jruby-stdlib:1.7.0.preview1'
+  compile 'org.jruby:jruby:1.7.2'
+  compile 'org.jruby:jruby-stdlib:1.7.2'
   compile 'org.apache.ivy:ivy:2.2.0'
 
   compile 'org.rubygems:cucumber:1.2.1'
