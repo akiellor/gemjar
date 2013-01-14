@@ -1,6 +1,7 @@
 require 'digest/sha1'
 require 'digest/md5'
 require 'nokogiri'
+require 'zip/zip'
 
 module Ivy
   java_import 'org.apache.ivy.plugins.parser.xml.XmlModuleDescriptorParser'
@@ -19,7 +20,11 @@ end
 Then /^the response should be a jar with directories:$/ do |expected_directories_string|
   last_response_path = File.expand_path("last_response", Acceptance::Configuration.work_directory)
 
-  actual_directories = `jar -tf #{last_response_path}`.split("\n").sort
+  actual_directories = []
+  Zip::ZipFile.open(last_response_path) do |zipfile|
+    actual_directories = zipfile.map(&:to_s).sort
+  end
+
   expected_directories = expected_directories_string.split("\n").sort
 
   actual_directories.should == expected_directories
@@ -58,7 +63,7 @@ Then /^the response should be a valid maven pom xml$/ do
 end
 
 Then /^the response should be not found$/ do
-  @last_status.should == "404"
+  @last_status.should == 404
 end
 
 RSpec::Matchers.define :be_valid_xml do |doc|

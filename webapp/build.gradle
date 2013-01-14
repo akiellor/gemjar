@@ -1,66 +1,70 @@
 apply plugin: 'war'
 
 configurations {
-    bootstrap
-    bootstrap.exclude group: 'org.eclipse.jetty.orbit', module: 'javax.servlet'
+  bootstrap
+  bootstrap.exclude group: 'org.eclipse.jetty.orbit', module: 'javax.servlet'
 
-    compile.extendsFrom bootstrap
+  compile.extendsFrom bootstrap
 }
 
 dependencies {
-    bootstrap 'org.eclipse.jetty:jetty-server:8.1.4.v20120524'
-    bootstrap 'org.eclipse.jetty:jetty-servlet:8.1.4.v20120524'
-    bootstrap 'org.eclipse.jetty:jetty-io:8.1.4.v20120524'
-    bootstrap 'org.eclipse.jetty:jetty-util:8.1.4.v20120524'
-    bootstrap 'org.eclipse.jetty:jetty-webapp:8.1.4.v20120524'
-    bootstrap 'javax.servlet:javax.servlet-api:3.0.1'
+  providedCompile 'org.eclipse.jetty:test-jetty-servlet:8.1.4.v20120524'
 
-    bootstrap 'org.slf4j:slf4j-api:1.6.6'
-    bootstrap 'ch.qos.logback:logback-classic:1.0.6'
+  bootstrap 'org.eclipse.jetty:jetty-server:8.1.4.v20120524'
+  bootstrap 'org.eclipse.jetty:jetty-servlet:8.1.4.v20120524'
+  bootstrap 'org.eclipse.jetty:jetty-io:8.1.4.v20120524'
+  bootstrap 'org.eclipse.jetty:jetty-util:8.1.4.v20120524'
+  bootstrap 'org.eclipse.jetty:jetty-webapp:8.1.4.v20120524'
+  bootstrap 'javax.servlet:javax.servlet-api:3.0.1'
 
-    compile module('org.jruby.rack:jruby-rack:1.1.7') {
-        dependency 'org.jruby:jruby-core:1.6.7.2'
-        dependency 'org.jruby:jruby-stdlib:1.6.7.2'
-        dependency 'com.jcraft:jzlib:1.1.1'
-    }
+  bootstrap 'org.slf4j:slf4j-api:1.6.6'
+  bootstrap 'ch.qos.logback:logback-classic:1.0.6'
 
-    compile 'org.rubygems:sinatra:1.3.2'
-    compile 'org.rubygems:builder:3.0.0'
-    compile 'org.rubygems:rubyzip:0.9.9'
+  bootstrap 'com.google.guava:guava:13.0.1'
 
-    testRuntime 'org.rubygems:rspec:2.11.0'
+  compile module('org.jruby.rack:jruby-rack:1.1.7') {
+    dependency 'org.jruby:jruby-core:1.6.7.2'
+    dependency 'org.jruby:jruby-stdlib:1.6.7.2'
+    dependency 'com.jcraft:jzlib:1.1.1'
+  }
+
+  compile 'org.rubygems:sinatra:1.3.2'
+  compile 'org.rubygems:builder:3.0.0'
+  compile 'org.rubygems:rubyzip:0.9.9'
+
+  testRuntime 'org.rubygems:rspec:2.11.0'
 }
 
 sourceSets {
-    main {
-        resources {
-            srcDir 'src/main/ruby'
-        }
+  main {
+    resources {
+      srcDir 'src/main/ruby'
     }
+  }
 }
 
 war {
-    from configurations.bootstrap.collect { it.isDirectory() ? it : zipTree(it) } + files(sourceSets.main.output)
-    classpath = runtimeClasspath - configurations.bootstrap
-    manifest {
-        attributes 'Main-Class': 'gemjar.WebServer'
-    }
+  from configurations.bootstrap.collect { it.isDirectory() ? it : zipTree(it) } + files(sourceSets.main.output)
+  classpath = runtimeClasspath - configurations.bootstrap
+  manifest {
+    attributes 'Main-Class': 'gemjar.WebServer'
+  }
 }
 
 artifacts {
-    war
+  war
 }
 
 task(rspec, type: JavaExec, dependsOn: 'war') {
-    main 'org.jruby.Main'
-    classpath test.classpath
-    args 'classpath:bin/rspec', 'src/test/ruby'
+  main 'org.jruby.Main'
+  classpath test.classpath
+  args 'classpath:bin/rspec', 'src/test/ruby'
 }
 
 test.dependsOn << 'rspec'
 
 task(run, type: JavaExec, dependsOn: 'war') {
-    main 'gemjar.WebServer'
-    environment RACK_ENV: 'development'
-    classpath war.archivePath
+  main 'gemjar.WebServer'
+  environment RACK_ENV: 'development'
+  classpath war.archivePath
 }
