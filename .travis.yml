@@ -1,5 +1,5 @@
 language: java
-install: gradle -q assemble
-script: gradle -q check
+install: gradle assemble
+script: gradle check
 jdk:
   - openjdk6
