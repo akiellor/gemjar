@@ -7,7 +7,7 @@ require 'childprocess'
 module Acceptance
   class Configuration
     def self.server
-      "http://localhost:8080"
+      @server ||= Java::Gemjar::WebServer.new.stop_at_shutdown.local_connector
     end
 
     def self.work_directory
@@ -16,22 +16,20 @@ module Acceptance
   end
 end
 
-process = ChildProcess.build("java", "-jar", Java::JavaLang::System.get_property("target.application"))
-process.io.inherit!
-process.start
+Acceptance::Configuration.server.start
+
+at_exit do
+  Acceptance::Configuration.server.stop
+end
 
 Timeout::timeout(360) do
   up = false
   until up
     begin
-      res = Net::HTTP.get_response(URI.parse("#{Acceptance::Configuration.server}/ping"))
-      up = res.code == "200"
+      response = Acceptance::Configuration.server.client.get("/ping")
+      up = response.status == 200
     rescue Errno::ECONNREFUSED => e
     end
     sleep 10
   end
-end
-
-at_exit do
-  process.stop
 end
