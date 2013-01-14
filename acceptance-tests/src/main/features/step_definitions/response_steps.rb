@@ -58,7 +58,7 @@ Then /^the response should be a valid maven pom xml$/ do
 end
 
 Then /^the response should be not found$/ do
-  @last_status.should == "404"
+  @last_status.should == 404
 end
 
 RSpec::Matchers.define :be_valid_xml do |doc|
