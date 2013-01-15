@@ -22,5 +22,9 @@ module Gemjar
     def open_pom &block
       File.open(@pom, 'w+', &block)
     end
+
+    def exist?
+      File.exists?(@jar) && File.exists?(@ivy) && File.exists?(@pom)
+    end
   end
 end

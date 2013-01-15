@@ -21,7 +21,7 @@ module Gemjar
 
     def find name, version
       paths = ArtifactPaths.new @directory, name, version
-      if File.exists?(paths.jar) && File.exists?(paths.ivy) && File.exists?(paths.pom)
+      if paths.exist?
         Artifact.new(paths).tap {|a| log.info("Found artifact #{name}-#{version}: #{a.inspect}")}
       end
     end
