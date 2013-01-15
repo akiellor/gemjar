@@ -3,7 +3,7 @@ require 'gemjar/artifact_paths'
 require 'fileutils'
 
 require 'method_decorators'
-require 'gemjar/logger'
+require 'gemjar/logged'
 
 module Gemjar
   class ArtifactBuilder

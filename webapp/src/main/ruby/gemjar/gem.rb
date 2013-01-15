@@ -3,7 +3,7 @@ require 'rubygems/specification'
 require 'gemjar/gem_repository'
 
 require 'method_decorators'
-require 'gemjar/logger'
+require 'gemjar/logged'
 
 module Gemjar
   class Gem

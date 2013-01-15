@@ -1,16 +1,14 @@
 require 'gemjar/artifact'
 require 'gemjar/artifact_builder'
-require 'gemjar/logger'
 require 'gemjar/task_executor'
 require 'gemjar/artifact_paths'
 
 require 'method_decorators'
+require 'gemjar/logged'
 
 module Gemjar
   class ArtifactRepository
     extend MethodDecorators
-
-    include Gemjar::Logger
 
     TASK_EXECUTOR = Gemjar::TaskExecutor.new(10).tap {|e| at_exit { e.destroy! } }
 
