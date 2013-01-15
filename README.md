@@ -1,6 +1,4 @@
-[[https://api.travis-ci.org/akiellor/gemjar.png]]
-
-README
+README [![Build Status](https://api.travis-ci.org/akiellor/gemjar.png)](http://travis-ci.org/akiellor/gemjar)
 ======
 
 So what does it do?
