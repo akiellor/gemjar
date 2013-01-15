@@ -51,3 +51,28 @@ Feature: GemJar - MavenLayout
   Scenario: Gets a jars sources sha1
     When I hit the URL "/maven/org/rubygems/rspec/2.6.0/rspec-2.6.0-sources.jar.sha1"
     Then the response should be not found
+
+  Scenario: Gets a non-rubygems jar
+    When I hit the URL "/maven/org/jruby/rack/jruby-rack/1.1.7/jruby-rack-1.1.7.jar"
+    Then the response should be not found
+
+  Scenario: Gets a non-rubygems jars sha1
+    When I hit the URL "/maven/org/jruby/rack/jruby-rack/1.1.7/jruby-rack-1.1.7.jar.sha1"
+    Then the response should be not found
+
+  Scenario: Gets a non-rubygems jars md5
+    When I hit the URL "/maven/org/jruby/rack/jruby-rack/1.1.7/jruby-rack-1.1.7.jar.md5"
+    Then the response should be not found
+
+  Scenario: Gets a non-rubygems pom
+    When I hit the URL "/maven/org/jruby/rack/jruby-rack/1.1.7/jruby-rack-1.1.7.pom"
+    Then the response should be not found
+
+  Scenario: Gets a non-rubygems pom sha1
+    When I hit the URL "/maven/org/jruby/rack/jruby-rack/1.1.7/jruby-rack-1.1.7.pom.sha1"
+    Then the response should be not found
+
+  Scenario: Gets a non-rubygems pom md5
+    When I hit the URL "/maven/org/jruby/rack/jruby-rack/1.1.7/jruby-rack-1.1.7.pom.md5"
+    Then the response should be not found
+
