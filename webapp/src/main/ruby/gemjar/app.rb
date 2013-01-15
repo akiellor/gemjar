@@ -58,15 +58,15 @@ module Gemjar
       body gem_jar.ivy.md5
     end
 
-    get_maven_artifact %r{^/maven(/.*\.pom)$} do |gem_jar|
+    get_maven_artifact %r{^/maven(/org/rubygems/.*\.pom)$} do |gem_jar|
       body gem_jar.pom.content
     end
 
-    get_maven_artifact %r{^/maven(/.*\.pom)\.sha1$} do |gem_jar|
+    get_maven_artifact %r{^/maven(/org/rubygems/.*\.pom)\.sha1$} do |gem_jar|
       body gem_jar.pom.sha1
     end
 
-    get_maven_artifact %r{^/maven(/.*\.pom)\.md5$} do |gem_jar|
+    get_maven_artifact %r{^/maven(/org/rubygems/.*\.pom)\.md5$} do |gem_jar|
       body gem_jar.pom.md5
     end
 
@@ -76,15 +76,15 @@ module Gemjar
 
     get(%r{^/maven/.*?\-sources\.jar\.sha1$}) { 404 }
 
-    get_maven_artifact %r{^/maven(/.*\.jar)$} do |gem_jar|
+    get_maven_artifact %r{^/maven(/org/rubygems/.*\.jar)$} do |gem_jar|
       send_file gem_jar.jar.path, :filename => gem_jar.jar.path
     end
 
-    get_maven_artifact %r{^/maven(/.*\.jar)\.sha1$} do |gem_jar|
+    get_maven_artifact %r{^/maven(/org/rubygems/.*\.jar)\.sha1$} do |gem_jar|
       body gem_jar.jar.sha1
     end
 
-    get_maven_artifact %r{^/maven(/.*\.jar)\.md5$} do |gem_jar|
+    get_maven_artifact %r{^/maven(/org/rubygems/.*\.jar)\.md5$} do |gem_jar|
       body gem_jar.jar.md5
     end
   end
