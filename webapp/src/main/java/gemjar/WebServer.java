@@ -78,7 +78,7 @@ public class WebServer {
     private static class ThreadNamingHandler extends AbstractHandler implements Handler {
         @Override
         public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-            Thread.currentThread().setName(String.format("%s: %s %s", new TransactionId(), baseRequest.getMethod(), baseRequest.getPathInfo()));
+            Thread.currentThread().setName(new TransactionId().toString());
         }
     }
 

@@ -2,12 +2,18 @@ require 'gemjar/artifact'
 require 'gemjar/artifact_paths'
 require 'fileutils'
 
+require 'method_decorators'
+require 'gemjar/logged'
+
 module Gemjar
   class ArtifactBuilder
+    extend MethodDecorators
+
     def initialize directory
       @directory = directory
     end
 
+    +Logged.new
     def build gem
       paths = ArtifactPaths.new @directory, gem.name, gem.version
       FileUtils.rm_rf [File.expand_path("cache", gem.installed_dir)]
