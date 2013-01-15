@@ -1,3 +1,5 @@
+[[https://api.travis-ci.org/akiellor/gemjar.png]]
+
 README
 ======
 
