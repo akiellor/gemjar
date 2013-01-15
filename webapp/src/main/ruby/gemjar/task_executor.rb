@@ -15,5 +15,9 @@ module Gemjar
         @tasks.get(name)
       end
     end
+
+    def destroy!
+      @executor.shutdown_now
+    end
   end
 end

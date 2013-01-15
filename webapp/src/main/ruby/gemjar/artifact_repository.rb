@@ -7,7 +7,7 @@ module Gemjar
   class ArtifactRepository
     include Gemjar::Logger
 
-    TASK_EXECUTOR = Gemjar::TaskExecutor.new 10
+    TASK_EXECUTOR = Gemjar::TaskExecutor.new(10).tap {|e| at_exit { e.destroy! } }
 
     def initialize directory
       @directory = directory
