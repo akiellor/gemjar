@@ -2,8 +2,14 @@ require 'builder'
 require 'rubygems/specification'
 require 'gemjar/gem_repository'
 
+require 'method_decorators'
+require 'gemjar/logged'
+
 module Gemjar
   class Gem
+    extend MethodDecorators
+
+    +Logged.new
     def self.install name, version
       ::Gem.configuration.verbose = true
 
