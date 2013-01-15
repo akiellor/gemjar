@@ -2,6 +2,7 @@ require 'gemjar/artifact'
 require 'gemjar/artifact_builder'
 require 'gemjar/logger'
 require 'gemjar/task_executor'
+require 'gemjar/artifact_paths'
 
 module Gemjar
   class ArtifactRepository
@@ -19,11 +20,9 @@ module Gemjar
     end
 
     def find name, version
-      jar = "#@directory/#{name}-#{version}.jar"
-      ivy = "#@directory/ivy-#{name}-#{version}.xml"
-      pom = "#@directory/pom-#{name}-#{version}.xml"
-      if File.exists?(jar) && File.exists?(ivy) && File.exists?(pom)
-        Artifact.new(jar, ivy, pom).tap {|a| log.info("Found artifact #{name}-#{version}: #{a.inspect}")}
+      paths = ArtifactPaths.new @directory, name, version
+      if paths.exist?
+        Artifact.new(paths).tap {|a| log.info("Found artifact #{name}-#{version}: #{a.inspect}")}
       end
     end
 

@@ -2,22 +2,20 @@ require 'gemjar/file_resource'
 
 module Gemjar
   class Artifact
-    def initialize jar_path, ivy_path, pom_path
-      @jar_path = jar_path
-      @ivy_path = ivy_path
-      @pom_path = pom_path
+    def initialize paths
+      @paths = paths
     end
 
     def jar
-      FileResource.new(@jar_path)
+      FileResource.new(@paths.jar)
     end
 
     def ivy
-      FileResource.new(@ivy_path)
+      FileResource.new(@paths.ivy)
     end
 
     def pom
-      FileResource.new(@pom_path)
+      FileResource.new(@paths.pom)
     end
   end
 end
