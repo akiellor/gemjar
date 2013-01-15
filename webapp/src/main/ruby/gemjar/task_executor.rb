@@ -23,7 +23,6 @@ module Gemjar
     end
 
     +Logged.new
-
     def destroy!
       @executor.shutdown_now
     end

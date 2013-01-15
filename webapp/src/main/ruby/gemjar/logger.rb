@@ -17,14 +17,14 @@ module Gemjar
   class Logged < MethodDecorator
     def call(wrapped, this, *args, &blk)
       logger = Java::OrgSlf4j::LoggerFactory.get_logger this.class.name
-      logger.info("{} => {}", wrapped, args.inspect)
+      logger.info("{} => {}", wrapped.name, args.inspect)
       begin
         result = wrapped.call(*args, &blk)
       rescue => e
-        logger.warn(wrapped.to_s, e)
+        logger.warn(e)
         raise e
       end
-      logger.info("{} => {}", wrapped, result.inspect)
+      logger.info("{} <= {}", wrapped.name, result.inspect)
       result
     end
   end
