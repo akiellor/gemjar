@@ -85,6 +85,7 @@ module Gemjar
     def dependencies
       deps = spec.runtime_dependencies
       deps.map do |dep|
+        ::Gem.sources = nil # Force RubyGems to only use default_sources
         spec = ::Gem::SpecFetcher.new.find_matching(dep, true, false).first
         {:name => spec[0][0], :version => spec[0][1]}
       end
