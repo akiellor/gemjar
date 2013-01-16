@@ -8,7 +8,7 @@ module Gemjar
       begin
         result = wrapped.call(*args, &blk)
       rescue => e
-        logger.warn(e)
+        logger.warn(e.message, e)
         raise e
       end
       logger.info("{} <= {}", wrapped.name, result.inspect)
