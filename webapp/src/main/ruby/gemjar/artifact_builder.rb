@@ -19,7 +19,7 @@ module Gemjar
       FileUtils.rm_rf [File.expand_path("cache", gem.installed_dir)]
       FileUtils.rm paths.jar, :force => true
 
-      paths.open_ivy {|i| i.write gem.ivy_module_xml }
+      paths.open_ivy { |i| i.write(gem.ivy_module_xml) }
       paths.open_pom { |p| p.write(gem.pom_xml) }
       paths.open_jar do |zipfile|
         Dir["#{gem.installed_dir}/**/**"].each do |file|
