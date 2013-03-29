@@ -7,7 +7,7 @@ require 'childprocess'
 module Acceptance
   class Configuration
     def self.server
-      @server ||= Java::Gemjar::WebServer.new.stop_at_shutdown.local_connector
+      @@server ||= Java::Gemjar::WebServer.new.stop_at_shutdown.local_connector
     end
 
     def self.work_directory
