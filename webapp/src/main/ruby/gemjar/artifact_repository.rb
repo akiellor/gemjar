@@ -36,8 +36,6 @@ module Gemjar
       end
 
       future.get
-    rescue ExecutionException => e
-      raise e.cause
     end
   end
 end
