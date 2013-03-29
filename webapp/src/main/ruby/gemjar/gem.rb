@@ -11,8 +11,6 @@ module Gemjar
 
     +Logged.new
     def self.install name, version
-      ::Gem.configuration.verbose = true
-
       GemRepository.new.install name, version
     end
 
