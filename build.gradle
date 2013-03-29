@@ -5,7 +5,7 @@ subprojects {
 
   repositories {
     maven {
-        url "http://gemjars.org/maven"
+        url "http://repository.gemjars.org/maven"
     }
     mavenCentral()
   }
