@@ -21,19 +21,21 @@ Trying it out -- GemJars.org Hosted
 -----------------------------------
 ### Gradle
 1) Add to your `repositories`:
-```
+```groovy
 repositories {
-    maven {
-        url 'http://repository.gemjars.org/maven'
-    }
+  maven {
+    url 'http://repository.gemjars.org/maven'
+  }
 }
 ```
+
 2) Add to your `dependencies`:
-```
+```groovy
 dependencies {
-    compile 'org.rubygems:rspec:2.11.0'
+  compile 'org.rubygems:rspec:2.11.0'
 }
 ```
+
 3) Perform a `gradle dependencies` and watch it resolve rspec and all its transitive dependencies
 
 ### Ivy
@@ -67,14 +69,13 @@ dependencies {
 Trying it out -- DIY
 --------------------
 1) Clone the repo:
-  
-  ```
+  ```sh
   $ git clone git://github.com/akiellor/gemjar.git
   ```
 
 2) Get Gradle
-  ```
-  brew install gradle
+  ```sh
+  $ brew install gradle
   ```
   
   OR
@@ -82,14 +83,12 @@ Trying it out -- DIY
   Get it from gradle.org.
   
 3) RUN IT:
-  
-  ```
+  ```sh
   $ gradle run 
   ```
 
 4) Hit some urls:
-  
-  ```
+  ```sh
   $ curl -i http://localhost:8080/jars/org.rubygems/cucumber-1.0.0.jar
   $ curl -i http://localhost:8080/jars/org.rubygems/cucumber-1.0.0.jar.md5
   $ curl -i http://localhost:8080/jars/org.rubygems/cucumber-1.0.0.jar.sha1
