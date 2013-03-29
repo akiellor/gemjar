@@ -9,11 +9,13 @@ module Gemjar
     before('*.xml') { content_type 'application/xml' }
     before('*.pom') { content_type 'application/xml' }
 
-    get "/ping" do
+    def self.get_or_head url_pattern, &block
+      head url_pattern, &block
+      get url_pattern, &block
     end
 
     def self.get_artifact url_pattern, &block
-      get url_pattern do |name, version|
+      get_or_head url_pattern do |name, version|
         artifact_repository = ArtifactRepository.new(Gemjar::WORK_DIRECTORY)
 
         gem_jar = artifact_repository.ensure(name, version) or raise Sinatra::NotFound
@@ -23,7 +25,7 @@ module Gemjar
     end
 
     def self.get_maven_artifact url_pattern, &block
-      get url_pattern do |maven_path_string|
+      get_or_head url_pattern do |maven_path_string|
         maven_path = Gemjar::MavenPath.parse(maven_path_string)
 
         artifact_repository = ArtifactRepository.new(Gemjar::WORK_DIRECTORY)
@@ -70,11 +72,17 @@ module Gemjar
       body gem_jar.pom.md5
     end
 
-    get(%r{^/maven/.*?\-sources\.jar$}) { 404 }
+    get_or_head %r{^/ping[/]?$} do
+    end
 
-    get(%r{^/maven/.*?\-sources\.jar\.md5$}) { 404 }
+    get_or_head %r{^/maven[/]?$} do
+    end
 
-    get(%r{^/maven/.*?\-sources\.jar\.sha1$}) { 404 }
+    get_or_head(%r{^/maven/.*?\-sources\.jar$}) { 404 }
+
+    get_or_head(%r{^/maven/.*?\-sources\.jar\.md5$}) { 404 }
+
+    get_or_head(%r{^/maven/.*?\-sources\.jar\.sha1$}) { 404 }
 
     get_maven_artifact %r{^/maven(/org/rubygems/.*\.jar)$} do |gem_jar|
       send_file gem_jar.jar.path, :filename => gem_jar.jar.path

@@ -1,5 +1,9 @@
 Feature: GemJar - MavenLayout
 
+  Scenario: Root
+    When I hit the URL "/maven"
+    Then the response should be ok
+
   Scenario: Resolves an pom dependency
     When I hit the URL "/maven/org/rubygems/rspec/2.6.0/rspec-2.6.0.pom"
     Then the response should be a valid maven pom xml
