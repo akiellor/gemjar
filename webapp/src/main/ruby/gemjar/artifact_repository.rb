@@ -30,16 +30,14 @@ module Gemjar
     +Logged.new
     def install name, version
       future = TASK_EXECUTOR.get_or_submit_task "#{name}-#{version}" do
-        begin
-          gem = Gem.install(name, version)
+        gem = Gem.install(name, version)
 
-          ArtifactBuilder.new(@directory).build(gem)
-        rescue => e
-          nil
-        end
+        ArtifactBuilder.new(@directory).build(gem)
       end
 
       future.get
+    rescue ExecutionException => e
+      raise e.cause
     end
   end
 end
