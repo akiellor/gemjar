@@ -21,8 +21,16 @@ public class InternalClient {
     }
 
     public Response get(String url) throws Exception {
+        return service(url, "GET");
+    }
+
+    public Response head(String url) throws Exception {
+        return service(url, "HEAD");
+    }
+
+    private Response service(String url, String method) throws Exception {
         HttpTester httpTester = new HttpTester();
-        httpTester.setMethod("GET");
+        httpTester.setMethod(method);
         httpTester.setURI(url);
         httpTester.setHeader("Host", "localhost");
 

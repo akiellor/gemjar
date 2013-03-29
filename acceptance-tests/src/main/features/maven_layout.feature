@@ -28,21 +28,37 @@ Feature: GemJar - MavenLayout
     specifications/rspec-2.6.0.gemspec
     """
 
-  Scenario: Gets a poms sha1
+  Scenario: GET a poms sha1
     When I hit the URL "/maven/org/rubygems/rspec/2.6.0/rspec-2.6.0.pom.sha1"
     Then the response should contain the sha1 of "/maven/org/rubygems/rspec/2.6.0/rspec-2.6.0.pom"
 
-  Scenario: Gets a poms md5
+  Scenario: GET a poms md5
     When I hit the URL "/maven/org/rubygems/rspec/2.6.0/rspec-2.6.0.pom.md5"
     Then the response should contain the md5 of "/maven/org/rubygems/rspec/2.6.0/rspec-2.6.0.pom"
 
-  Scenario: Gets a jar dependencies' sha1
+  Scenario: GET a jar dependencies' sha1
     When I hit the URL "/maven/org/rubygems/rspec/2.6.0/rspec-2.6.0.jar.sha1"
     Then the response should contain the sha1 of "/maven/org/rubygems/rspec/2.6.0/rspec-2.6.0.jar"
 
-  Scenario: Gets a jar dependencies' md5
+  Scenario: GET a jar dependencies' md5
     When I hit the URL "/maven/org/rubygems/rspec/2.6.0/rspec-2.6.0.jar.md5"
     Then the response should contain the md5 of "/maven/org/rubygems/rspec/2.6.0/rspec-2.6.0.jar"
+
+  Scenario: HEAD a poms sha1
+    When HEAD "/maven/org/rubygems/rspec/2.6.0/rspec-2.6.0.pom.sha1"
+    Then the response should be ok
+
+  Scenario: HEAD a poms md5
+    When HEAD "/maven/org/rubygems/rspec/2.6.0/rspec-2.6.0.pom.md5"
+    Then the response should be ok
+
+  Scenario: HEAD a jar dependencies' sha1
+    When HEAD "/maven/org/rubygems/rspec/2.6.0/rspec-2.6.0.jar.sha1"
+    Then the response should be ok
+
+  Scenario: HEAD a jar dependencies' md5
+    When HEAD "/maven/org/rubygems/rspec/2.6.0/rspec-2.6.0.jar.md5"
+    Then the response should be ok
 
   Scenario: Gets a jars sources
     When I hit the URL "/maven/org/rubygems/rspec/2.6.0/rspec-2.6.0-sources.jar"

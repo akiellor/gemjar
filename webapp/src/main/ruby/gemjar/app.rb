@@ -15,7 +15,15 @@ module Gemjar
     end
 
     def self.get_artifact url_pattern, &block
-      get_or_head url_pattern do |name, version|
+      head url_pattern do |name, version|
+        artifact_repository = ArtifactRepository.new(Gemjar::WORK_DIRECTORY)
+
+        artifact_repository.ensure(name, version) or raise Sinatra::NotFound
+
+        status 200
+      end
+
+      get url_pattern do |name, version|
         artifact_repository = ArtifactRepository.new(Gemjar::WORK_DIRECTORY)
 
         gem_jar = artifact_repository.ensure(name, version) or raise Sinatra::NotFound
@@ -25,7 +33,17 @@ module Gemjar
     end
 
     def self.get_maven_artifact url_pattern, &block
-      get_or_head url_pattern do |maven_path_string|
+      head url_pattern do |maven_path_string|
+        maven_path = Gemjar::MavenPath.parse(maven_path_string)
+
+        artifact_repository = ArtifactRepository.new(Gemjar::WORK_DIRECTORY)
+
+        artifact_repository.ensure(maven_path.artifact, maven_path.version) or raise Sinatra::NotFound
+
+        status 200
+      end
+
+      get url_pattern do |maven_path_string|
         maven_path = Gemjar::MavenPath.parse(maven_path_string)
 
         artifact_repository = ArtifactRepository.new(Gemjar::WORK_DIRECTORY)
