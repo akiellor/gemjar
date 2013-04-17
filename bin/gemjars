@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH << File.expand_path(File.join(File.dirname(__FILE__), "..", "lib"))
+$CLASSPATH << Dir[File.join(File.expand_path(File.join(File.dirname(__FILE__), "..", "vendor")), "*")]
+
+require 'gemjars/deux/transform'
+
+include Gemjars::Deux
+
+Transform.apply ARGV[0], ARGV[1], $stdin, File.open(ARGV[2], "w")
