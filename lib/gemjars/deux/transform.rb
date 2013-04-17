@@ -21,7 +21,7 @@ module Gemjars
         TarReader.new(gem_io).each do |gem_entry|
           if gem_entry.name == "data.tar.gz"
             TarReader.new(gem_entry.io, :gzip).each do |data_entry|
-              jar.add_entry "gems/#@name-#@version/" + data_entry.name
+              jar.add_entry "gems/#@name-#@version/" + data_entry.name, data_entry.io
             end
           end
         end
