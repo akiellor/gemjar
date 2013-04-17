@@ -1,0 +1,10 @@
+language: ruby
+rvm:
+  - jruby-1.7.3
+env:
+  - JAVA_OPTS="-cp $(pwd)/vendor/*"
+before_script:
+  - bundle
+script:
+  - rspec
+
