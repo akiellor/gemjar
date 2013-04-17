@@ -35,6 +35,22 @@ module Gemjars
         end
       end
 
+      class SHA1Stream
+        def initialize io
+          @io = io
+          @digest = Digest::SHA1.new
+        end
+
+        def << chunk
+          @digest << chunk
+        end
+
+        def close
+          @io << @digest.hexdigest
+          @io.close
+        end
+      end
+
       def initialize store
         @store = store
       end
@@ -42,8 +58,9 @@ module Gemjars
       def pipe_to name, version
         jar_w = @store.put("org/rubygems/#{name}/#{version}/#{name}-#{version}.jar")
         md5_w = @store.put("org/rubygems/#{name}/#{version}/#{name}-#{version}.jar.md5")
+        sha1_w = @store.put("org/rubygems/#{name}/#{version}/#{name}-#{version}.jar.sha1")
 
-        MultiStream.new([jar_w, MD5Stream.new(md5_w)])
+        MultiStream.new([jar_w, MD5Stream.new(md5_w), SHA1Stream.new(sha1_w)])
       end
     end
   end
