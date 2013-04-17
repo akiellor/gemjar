@@ -1,6 +1,6 @@
 module Gemjars
   module Deux
-    class Tar
+    class TarReader
       include Enumerable
       
       def initialize io, compression = :none
