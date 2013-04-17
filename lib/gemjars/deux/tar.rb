@@ -1,5 +1,13 @@
 module Gemjars
   module Deux
+    class TarEntry
+      attr_reader :name
+      
+      def initialize name
+        @name = name
+      end
+    end
+
     class TarReader
       include Enumerable
       
@@ -9,7 +17,7 @@ module Gemjars
 
       def each
         while entry = @stream.next_entry
-          yield entry
+          yield TarEntry.new(entry.name)
         end
       end
 
