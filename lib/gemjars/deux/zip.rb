@@ -1,6 +1,6 @@
 module Gemjars
   module Deux
-    class Zip
+    class ZipReader
       include Enumerable
 
       def initialize io
