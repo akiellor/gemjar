@@ -3,8 +3,23 @@
 $LOAD_PATH << File.expand_path(File.join(File.dirname(__FILE__), "..", "lib"))
 $CLASSPATH << Dir[File.join(File.expand_path(File.join(File.dirname(__FILE__), "..", "vendor")), "*")]
 
+require 'aws-sdk'
 require 'gemjars/deux/transform'
+require 'gemjars/deux/maven_repository'
+require 'gemjars/deux/aws_store'
 
 include Gemjars::Deux
 
-Transform.apply ARGV[0], ARGV[1], $stdin, File.open(ARGV[2], "w")
+keys = YAML.load(File.open(File.expand_path("~/.gemjars")))
+
+s3 = AWS::S3.new(:access_key_id => keys['access_key_id'], :secret_access_key => keys['secret_access_key'])
+
+bucket = s3.buckets["deux.gemjars.org"]
+store = AWSStore.new(bucket)
+repo = MavenRepository.new(store)
+
+pipe = repo.pipe_to(ARGV[0], ARGV[1])
+
+Transform.apply ARGV[0], ARGV[1], $stdin, pipe
+
+store.join
