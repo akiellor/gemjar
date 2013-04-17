@@ -39,7 +39,11 @@ describe MavenRepository do
     io.close
 
     jar_r.should be_an_io_with("foo\n")
+    jar_w.should be_closed
     md5_r.should be_an_io_with("d3b07384d113edec49eaa6238ad5ff00")
+    md5_w.should be_closed
     sha1_r.should be_an_io_with("f1d2d2f924e986ac86fdf7b36c94bcdf32beec15")
+    sha1_w.should be_closed
+    io.should be_closed
   end
 end

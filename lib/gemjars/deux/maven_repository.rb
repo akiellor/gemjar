@@ -7,6 +7,7 @@ module Gemjars
       class MultiStream
         def initialize ios
           @ios = ios
+          @closed = false
         end
 
         def << chunk
@@ -19,6 +20,11 @@ module Gemjars
           @ios.each do |io|
             io.close
           end
+          @closed = true
+        end
+
+        def closed?
+          @closed
         end
       end
 
