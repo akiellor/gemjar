@@ -1,3 +1,4 @@
+require 'spec_helper'
 require 'gemjars/deux/tar'
 
 include Gemjars::Deux
