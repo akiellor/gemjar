@@ -9,7 +9,7 @@ describe TarReader do
  
   it "should yield entries for tar" do
     tar = TarReader.new(File.open(tar_path))
-    tar.map(&:name).should == %w{file}
+    tar.map {|e| [e.name, e.read]}.should == [["foo", "bar\n"]]
   end
 
   it "should yield entries for a tgz" do
