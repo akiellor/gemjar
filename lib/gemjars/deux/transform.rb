@@ -30,8 +30,7 @@ module Gemjars
           end
         end
       ensure
-        jar_io.close
-        gem_io.close
+        jar.close
       end
 
       private
