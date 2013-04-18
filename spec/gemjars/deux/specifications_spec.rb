@@ -12,7 +12,7 @@ describe Specifications do
   end
 
   it "should be enumerable" do
-    specifications.map {|s| s[0] }.should == ["zzzzzz"]
+    specifications.to_enum(:each).to_a.should == [["zzzzzz", "0.0.3"]]
   end
 
   context "many versions for gem" do
@@ -24,6 +24,14 @@ describe Specifications do
     
     it "should return the minimum version for gem" do
       specifications.minimum_version("zzzzzz", "~> 0.1").should == "0.2"
+    end
+
+    it "should be enumerable" do
+      specifications.to_enum(:each).to_a.should == [
+        ["zzzzzz", "0.3"],
+        ["zzzzzz", "1.0"],
+        ["zzzzzz", "0.2"]
+      ]
     end
   end
 end

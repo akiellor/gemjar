@@ -16,7 +16,11 @@ module Gemjars
       end
 
       def each
-        @specs.each {|e| yield e }
+        @specs.each do |e|
+          e[1].zip([e[0]].cycle).map(&:reverse).each do |j|
+            yield j
+          end
+        end
       end
 
       def minimum_version name, specifier
