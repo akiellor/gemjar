@@ -1,15 +1,22 @@
 module Gemjars
   module Deux
     class Specifications
+      include Enumerable
+
       def initialize io
-        @specs = Hash.new([])
+        @specs = {}
         Marshal.load(io).each do |spec|
+          @specs[spec[0]] ||= []
           @specs[spec[0]] << spec[1].to_s
         end
       end
 
       def [] name
         @specs[name]
+      end
+
+      def each
+        @specs.each {|e| yield e }
       end
 
       def minimum_version name, specifier

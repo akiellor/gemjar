@@ -8,7 +8,11 @@ describe Specifications do
   let(:io) { Marshal.dump([["zzzzzz", Gem::Version.new("0.0.3"), "ruby"]]) }
 
   it "should have a single spec" do
-    specifications["zzzzz"].should == ["0.0.3"]
+    specifications["zzzzzz"].should == ["0.0.3"]
+  end
+
+  it "should be enumerable" do
+    specifications.map {|s| s[0] }.should == ["zzzzzz"]
   end
 
   context "many versions for gem" do
@@ -19,7 +23,7 @@ describe Specifications do
     ])}
     
     it "should return the minimum version for gem" do
-      specifications.minimum_version("zzzzz", "~> 0.1").should == "0.2"
+      specifications.minimum_version("zzzzzz", "~> 0.1").should == "0.2"
     end
   end
 end
