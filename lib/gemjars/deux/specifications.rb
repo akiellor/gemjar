@@ -17,7 +17,7 @@ module Gemjars
 
       def each
         @specs.each do |e|
-          e[1].zip([e[0]].cycle).map(&:reverse).each do |j|
+          e[1].zip([e[0]] * e[1].size).map(&:reverse).each do |j|
             yield j
           end
         end
