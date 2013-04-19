@@ -65,9 +65,9 @@ module Gemjars
       end
 
       def pipe_to name, version
-        jar_w = @store.put("org/rubygems/#{name}/#{version}/#{name}-#{version}.jar")
-        md5_w = @store.put("org/rubygems/#{name}/#{version}/#{name}-#{version}.jar.md5")
-        sha1_w = @store.put("org/rubygems/#{name}/#{version}/#{name}-#{version}.jar.sha1")
+        jar_w = @store.put("org/rubygems/#{name}/#{version}/#{name}-#{version}.jar", :content_type => "application/java-archive")
+        md5_w = @store.put("org/rubygems/#{name}/#{version}/#{name}-#{version}.jar.md5", :content_type => "text/plain")
+        sha1_w = @store.put("org/rubygems/#{name}/#{version}/#{name}-#{version}.jar.sha1", :content_type => "text/plain")
 
         MultiStream.new([jar_w, MD5Stream.new(md5_w), SHA1Stream.new(sha1_w)])
       end

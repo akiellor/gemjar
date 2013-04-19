@@ -29,9 +29,9 @@ describe MavenRepository do
     md5_r, md5_w = IO.pipe 
     sha1_r, sha1_w = IO.pipe 
 
-    store.stub(:put).with("org/rubygems/foo/1/foo-1.jar") { jar_w }
-    store.stub(:put).with("org/rubygems/foo/1/foo-1.jar.md5") { md5_w }
-    store.stub(:put).with("org/rubygems/foo/1/foo-1.jar.sha1") { sha1_w }
+    store.stub(:put).with("org/rubygems/foo/1/foo-1.jar", :content_type => "application/java-archive") { jar_w }
+    store.stub(:put).with("org/rubygems/foo/1/foo-1.jar.md5", :content_type => "text/plain") { md5_w }
+    store.stub(:put).with("org/rubygems/foo/1/foo-1.jar.sha1", :content_type => "text/plain") { sha1_w }
 
     io = repository.pipe_to("foo", "1")
 
