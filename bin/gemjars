@@ -43,12 +43,18 @@ specs.each { |s| queue << s }
         out_jar, out_pom = repo.pipe_to(spec_name, spec_version)
 
         gem_io = http.get("http://rubygems.org/gems/#{spec_name}-#{spec_version}.gem")
-        jar, pom = Transform.new(spec_name, spec_version, gem_io).to_mvn(specs)
-
-        while jar_chunk = jar.read(1024) || pom_chunk = pom.read(1024)
-          out_jar << jar_chunk if jar_chunk
-          out_pom << pom_chunk if pom_chunk
+        
+        transform = Transform.new(spec_name, spec_version, gem_io)
+        
+        transform.to_mvn(specs) do |h|
+          h.success do |jar, pom|
+            while jar_chunk = jar.read(1024) || pom_chunk = pom.read(1024)
+              out_jar << jar_chunk if jar_chunk
+              out_pom << pom_chunk if pom_chunk
+            end
+          end
         end
+      
       rescue => e
         puts e
         puts e.backtrace

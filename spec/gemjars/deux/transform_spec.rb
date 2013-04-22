@@ -21,28 +21,42 @@ describe Transform do
 
     gem_io = File.open(gem_file_path)
 
-    jar, pom = Transform.new("rspec", "2.11.0", gem_io).to_mvn(specs)
+    transform = Transform.new("rspec", "2.11.0", gem_io)
+    
+    transform.to_mvn(specs) do |h|
+      h.success do |jar, pom|
+        @success_called = true
 
-    entries = ZipReader.new(jar).map {|e| [e.name, e.read]}
+        entries = ZipReader.new(jar).map {|e| [e.name, e.read]}
 
-    Set.new(entries.map {|e| e[0] }).should == Set.new(%w{
-      gems/rspec-2.11.0/lib/rspec/version.rb
-      gems/rspec-2.11.0/lib/rspec.rb
-      gems/rspec-2.11.0/License.txt
-      gems/rspec-2.11.0/README.md
-      specifications/rspec-2.11.0.gemspec
-    })
+        Set.new(entries.map {|e| e[0] }).should == Set.new(%w{
+          gems/rspec-2.11.0/lib/rspec/version.rb
+          gems/rspec-2.11.0/lib/rspec.rb
+          gems/rspec-2.11.0/License.txt
+          gems/rspec-2.11.0/README.md
+          specifications/rspec-2.11.0.gemspec
+        })
 
-    version = entries.detect {|e| e[0] == "gems/rspec-2.11.0/lib/rspec/version.rb" }
-    version.should == ["gems/rspec-2.11.0/lib/rspec/version.rb", "module RSpec # :nodoc:\n  module Version # :nodoc:\n    STRING = '2.11.0'\n  end\nend\n"]
+        version = entries.detect {|e| e[0] == "gems/rspec-2.11.0/lib/rspec/version.rb" }
+        version.should == ["gems/rspec-2.11.0/lib/rspec/version.rb", "module RSpec # :nodoc:\n  module Version # :nodoc:\n    STRING = '2.11.0'\n  end\nend\n"]
+      end
+    end
+
+    raise unless @success_called
   end
 
   it "should transform a gem into a pom file" do
     gem_io = File.open(gem_file_path)
 
-    jar, pom = Transform.new("rspec", "2.11.0", gem_io).to_mvn(specs)
+    transform = Transform.new("rspec", "2.11.0", gem_io)
+    transform.to_mvn(specs) do |h|
+      h.success do |jar, pom|
+        @success_called = true
+        Streams.read(pom).should be_valid_xml(File.read(maven_schema_path))
+      end
+    end
 
-    Streams.read(pom).should be_valid_xml(File.read(maven_schema_path))
+    raise unless @success_called
   end  
 end
 

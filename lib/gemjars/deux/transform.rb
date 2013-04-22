@@ -12,7 +12,9 @@ module Gemjars
         @io = io
       end
 
-      def to_mvn specifications
+      def to_mvn specifications, &block
+        handler = Handler.new(&block)
+
         jar_out = Java::JavaIo::ByteArrayOutputStream.new
         jar = ZipWriter.new(jar_out.to_io)
         pom_out = Java::JavaIo::ByteArrayOutputStream.new
@@ -28,13 +30,13 @@ module Gemjars
             jar.close
             pom.flush
             pom.close_write
+
+            jar_in = Java::JavaIo::ByteArrayInputStream.new(jar_out.to_byte_array)
+            pom_in = Java::JavaIo::ByteArrayInputStream.new(pom_out.to_byte_array)
+      
+            handler.success jar_in.to_io, pom_in.to_io
           }
         }
-
-        jar_in = Java::JavaIo::ByteArrayInputStream.new(jar_out.to_byte_array)
-        pom_in = Java::JavaIo::ByteArrayInputStream.new(pom_out.to_byte_array)
- 
-        [jar_in.to_io, pom_in.to_io]
       end
 
       private
