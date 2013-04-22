@@ -3,6 +3,10 @@ require 'net/http'
 module Gemjars
   module Deux
     class Http
+      def self.single_threaded
+        new Java::JavaUtilConcurrent::Executors.new_single_thread_executor
+      end
+
       def initialize executor
         @executor = executor
       end
