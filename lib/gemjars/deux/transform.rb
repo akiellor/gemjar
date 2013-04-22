@@ -5,15 +5,17 @@ require 'gemjars/deux/tar'
 module Gemjars
   module Deux
     class Transform
-      def self.apply name, version, gem_io, jar_io
-        new(name, version, gem_io, jar_io).apply
+      def self.apply name, version, gem_io, jar_io, pom_io, specs
+        new(name, version, gem_io, jar_io, pom_io, specs).apply
      end
 
-      def initialize name, version, gem_io, jar_io
+      def initialize name, version, gem_io, jar_io, pom_io, specs
         @name = name
         @version = version
         @gem_io = gem_io
         @jar_io = jar_io
+        @pom_io = pom_io
+        @specs = specs
       end
 
       def apply
@@ -26,6 +28,7 @@ module Gemjars
           end
           if gem_entry.name == "metadata.gz"
             spec = Gem::Specification.from_yaml(Java::JavaUtilZip::GZIPInputStream.new(Java::OrgJrubyUtil::IOInputStream.new(gem_entry.io)).to_io)
+            Pom.new(spec).write_to(@pom_io, @specs)
             jar.add_entry "specifications/#@name-#@version.gemspec", StringIO.new(spec.to_ruby_for_cache)
           end
         end

@@ -5,7 +5,7 @@ include Gemjars::Deux
 
 describe Pom do
   let(:spec) { mock(:spec, :name => name, :version => Gem::Version.new(version), :runtime_dependencies => runtime_dependencies) }
-  let(:runtime_dependencies) { [mock(:dep, :name => "bar", :version => "2.0.0")] }
+  let(:runtime_dependencies) { [mock(:dep, :name => "bar", :requirement => Gem::Requirement.new("= 2.0.0"))] }
   let(:pom) { Pom.new(spec) }
   let(:samples) { File.expand_path("samples", File.dirname(__FILE__)) }
   let(:maven_schema_path) { File.join(samples, "maven-v4_0_0.xsd") }
@@ -14,7 +14,7 @@ describe Pom do
  
   it "should generate pom from spec" do
     specs = mock(:specs)
-    specs.should_receive(:minimum_version).with("bar", "2.0.0").and_return("1.0.0")
+    specs.should_receive(:minimum_version).with("bar", "= 2.0.0").and_return("1.0.0")
 
     io = StringIO.new
     
