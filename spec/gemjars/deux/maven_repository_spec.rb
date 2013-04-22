@@ -26,24 +26,42 @@ describe MavenRepository do
 
   it "should put jar, md5 and sha1 into store" do
     jar_r, jar_w = IO.pipe 
-    md5_r, md5_w = IO.pipe 
-    sha1_r, sha1_w = IO.pipe 
+    jar_md5_r, jar_md5_w = IO.pipe 
+    jar_sha1_r, jar_sha1_w = IO.pipe 
 
     store.stub(:put).with("org/rubygems/foo/1/foo-1.jar", :content_type => "application/java-archive") { jar_w }
-    store.stub(:put).with("org/rubygems/foo/1/foo-1.jar.md5", :content_type => "text/plain") { md5_w }
-    store.stub(:put).with("org/rubygems/foo/1/foo-1.jar.sha1", :content_type => "text/plain") { sha1_w }
+    store.stub(:put).with("org/rubygems/foo/1/foo-1.jar.md5", :content_type => "text/plain") { jar_md5_w }
+    store.stub(:put).with("org/rubygems/foo/1/foo-1.jar.sha1", :content_type => "text/plain") { jar_sha1_w }
 
-    io = repository.pipe_to("foo", "1")
+    pom_r, pom_w = IO.pipe 
+    pom_md5_r, pom_md5_w = IO.pipe 
+    pom_sha1_r, pom_sha1_w = IO.pipe 
 
-    io << "foo\n"
-    io.close
+    store.stub(:put).with("org/rubygems/foo/1/foo-1.pom", :content_type => "application/xml") { pom_w }
+    store.stub(:put).with("org/rubygems/foo/1/foo-1.pom.md5", :content_type => "text/plain") { pom_md5_w }
+    store.stub(:put).with("org/rubygems/foo/1/foo-1.pom.sha1", :content_type => "text/plain") { pom_sha1_w }
+
+    jar, pom = repository.pipe_to("foo", "1")
+    jar << "foo\n"
+    jar.close
 
     jar_r.should be_an_io_with("foo\n")
     jar_w.should be_closed
-    md5_r.should be_an_io_with("d3b07384d113edec49eaa6238ad5ff00")
-    md5_w.should be_closed
-    sha1_r.should be_an_io_with("f1d2d2f924e986ac86fdf7b36c94bcdf32beec15")
-    sha1_w.should be_closed
-    io.should be_closed
+    jar_md5_r.should be_an_io_with("d3b07384d113edec49eaa6238ad5ff00")
+    jar_md5_w.should be_closed
+    jar_sha1_r.should be_an_io_with("f1d2d2f924e986ac86fdf7b36c94bcdf32beec15")
+    jar_sha1_w.should be_closed
+    jar.should be_closed
+
+    pom << "foo\n"
+    pom.close
+
+    pom_r.should be_an_io_with("foo\n")
+    pom_w.should be_closed
+    pom_md5_r.should be_an_io_with("d3b07384d113edec49eaa6238ad5ff00")
+    pom_md5_w.should be_closed
+    pom_sha1_r.should be_an_io_with("f1d2d2f924e986ac86fdf7b36c94bcdf32beec15")
+    pom_sha1_w.should be_closed
+    pom.should be_closed
   end
 end

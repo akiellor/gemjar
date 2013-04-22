@@ -66,10 +66,14 @@ module Gemjars
 
       def pipe_to name, version
         jar_w = @store.put("org/rubygems/#{name}/#{version}/#{name}-#{version}.jar", :content_type => "application/java-archive")
-        md5_w = @store.put("org/rubygems/#{name}/#{version}/#{name}-#{version}.jar.md5", :content_type => "text/plain")
-        sha1_w = @store.put("org/rubygems/#{name}/#{version}/#{name}-#{version}.jar.sha1", :content_type => "text/plain")
+        jar_md5_w = @store.put("org/rubygems/#{name}/#{version}/#{name}-#{version}.jar.md5", :content_type => "text/plain")
+        jar_sha1_w = @store.put("org/rubygems/#{name}/#{version}/#{name}-#{version}.jar.sha1", :content_type => "text/plain")
+        pom_w = @store.put("org/rubygems/#{name}/#{version}/#{name}-#{version}.pom", :content_type => "application/xml")
+        pom_md5_w = @store.put("org/rubygems/#{name}/#{version}/#{name}-#{version}.pom.md5", :content_type => "text/plain")
+        pom_sha1_w = @store.put("org/rubygems/#{name}/#{version}/#{name}-#{version}.pom.sha1", :content_type => "text/plain")
 
-        MultiStream.new([jar_w, MD5Stream.new(md5_w), SHA1Stream.new(sha1_w)])
+        [MultiStream.new([jar_w, MD5Stream.new(jar_md5_w), SHA1Stream.new(jar_sha1_w)]),
+         MultiStream.new([pom_w, MD5Stream.new(pom_md5_w), SHA1Stream.new(pom_sha1_w)])]
       end
     end
   end
