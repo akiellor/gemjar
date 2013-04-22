@@ -4,10 +4,34 @@ require 'gemjars/deux/tar'
 
 module Gemjars
   module Deux
-    class Gem
-      def initialize io
+    class Transform
+      def initialize name, version, io
+        @name = name
+        @version = version
         @io = io
       end
+
+      def to_mvn specifications
+        jar_r, jar_w = IO.pipe
+        jar = ZipWriter.new(jar_w)
+        pom_r, pom_w = IO.pipe
+
+        visit Handler.new {|h|
+          h.on_file {|name, content| jar.add_entry "gems/#@name-#@version/#{name}", content } 
+          h.on_spec {|spec|
+            jar.add_entry "specifications/#@name-#@version.gemspec", StringIO.new(spec.to_ruby_for_cache)
+            Pom.new(spec).write_to(pom_w, specifications)
+          }
+          h.finish {
+            jar_w.close
+            pom_w.close
+          }
+        }
+
+        [jar_r, pom_r]
+      end
+
+      private
 
       def visit handler
         TarReader.new(@io).each do |gem_entry|
@@ -20,6 +44,8 @@ module Gemjars
             handler.on_spec ::Gem::Specification.from_yaml(Java::JavaUtilZip::GZIPInputStream.new(Java::OrgJrubyUtil::IOInputStream.new(gem_entry.io)).to_io)
           end
         end
+      ensure
+        handler.finish
       end
     end
 
@@ -43,40 +69,6 @@ module Gemjars
 
         handler_class.new
       end
-    end
-
-    class Transform
-      def self.apply name, version, gem_io, jar_io, pom_io, specs
-        new(name, version, gem_io, jar_io, pom_io, specs).apply
-     end
-
-      def initialize name, version, gem_io, jar_io, pom_io, specs
-        @name = name
-        @version = version
-        @gem_io = gem_io
-        @jar_io = jar_io
-        @pom_io = pom_io
-        @specs = specs
-      end
-
-      def apply
-        jar = ZipWriter.new(jar_io)
-        
-        gem = Gem.new(@gem_io)
-        gem.visit Handler.new {|h|
-          h.on_file {|name, content| jar.add_entry "gems/#@name-#@version/#{name}", content } 
-          h.on_spec {|spec|
-            jar.add_entry "specifications/#@name-#@version.gemspec", StringIO.new(spec.to_ruby_for_cache)
-            Pom.new(spec).write_to(@pom_io, @specs)
-          }
-        }
-      ensure
-        jar.close
-      end
-
-      private
-
-      attr_reader :gem_io, :jar_io
     end
   end
 end

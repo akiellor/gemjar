@@ -20,11 +20,10 @@ describe Transform do
   it "should transform a gem into a jar" do
 
     gem_io = File.open(gem_file_path)
-    jar_r, jar_w = IO.pipe
 
-    Transform.apply "rspec", "2.11.0", gem_io, jar_w, StringIO.new, specs
+    jar, pom = Transform.new("rspec", "2.11.0", gem_io).to_mvn(specs)
 
-    entries = ZipReader.new(jar_r).map {|e| [e.name, e.read]}
+    entries = ZipReader.new(jar).map {|e| [e.name, e.read]}
 
     Set.new(entries.map {|e| e[0] }).should == Set.new(%w{
       gems/rspec-2.11.0/lib/rspec/version.rb
@@ -40,11 +39,10 @@ describe Transform do
 
   it "should transform a gem into a pom file" do
     gem_io = File.open(gem_file_path)
-    pom = StringIO.new
 
-    Transform.apply "rspec", "2.11.0", gem_io, StringIO.new, pom, specs
+    jar, pom = Transform.new("rspec", "2.11.0", gem_io).to_mvn(specs)
 
-    pom.string.should be_valid_xml(File.read(maven_schema_path))
+    Streams.read(pom).should be_valid_xml(File.read(maven_schema_path))
   end  
 end
 
