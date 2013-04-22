@@ -7,6 +7,10 @@ module Gemjars
         new Java::JavaUtilConcurrent::Executors.new_single_thread_executor
       end
 
+      def self.default
+        new Java::JavaUtilConcurrent::Executors.new_fixed_thread_pool(10)
+      end
+
       def initialize executor
         @executor = executor
       end
