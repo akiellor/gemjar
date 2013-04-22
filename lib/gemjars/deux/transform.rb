@@ -21,8 +21,14 @@ module Gemjars
         pom = pom_out.to_io
 
         visit Handler.new {|h|
-          h.on_file {|name, content| jar.add_entry "gems/#@name-#@version/#{name}", content } 
+          h.on_file {|name, content|
+            jar.add_entry "gems/#@name-#@version/#{name}", content
+          } 
           h.on_spec {|spec|
+            if !spec.extensions.empty?
+              handler.native spec.extensions
+              return
+            end
             jar.add_entry "specifications/#@name-#@version.gemspec", StringIO.new(spec.to_ruby_for_cache)
             Pom.new(spec).write_to(pom, specifications)
           }
@@ -31,10 +37,12 @@ module Gemjars
             pom.flush
             pom.close_write
 
-            jar_in = Java::JavaIo::ByteArrayInputStream.new(jar_out.to_byte_array)
-            pom_in = Java::JavaIo::ByteArrayInputStream.new(pom_out.to_byte_array)
-      
-            handler.success jar_in.to_io, pom_in.to_io
+            if handler.unhandled?
+              jar_in = Java::JavaIo::ByteArrayInputStream.new(jar_out.to_byte_array)
+              pom_in = Java::JavaIo::ByteArrayInputStream.new(pom_out.to_byte_array)
+
+              handler.success jar_in.to_io, pom_in.to_io
+            end
           }
         }
       end
@@ -63,9 +71,17 @@ module Gemjars
           class << self
             def method_missing name, *args, &block
               define_method(name) do |*args|
-                block.call *args
+                block.call(*args).tap { @handled = true }
               end
             end
+          end
+          
+          def handled?
+            @handled || false
+          end
+
+          def unhandled?
+            !handled?
           end
         end
 

@@ -53,6 +53,10 @@ specs.each { |s| queue << s }
               out_pom << pom_chunk if pom_chunk
             end
           end
+
+          h.native do |exts|
+            $stderr.puts "Native Extensions -> #{{:spec => spec, :exts => exts}.inspect}"
+          end
         end
       
       rescue => e

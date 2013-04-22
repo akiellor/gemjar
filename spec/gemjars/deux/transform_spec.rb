@@ -8,13 +8,14 @@ include Gemjars::Deux
 describe Transform do
   let(:samples) { File.expand_path("samples", File.dirname(__FILE__)) }
   let(:gem_file_path) { File.join(samples, "rspec-2.11.0.gem") }
+  let(:native_gem_file_path) { File.join(samples, "activefacts-0.6.0.gem") }
   let(:maven_schema_path) { File.join(samples, "maven-v4_0_0.xsd") }
   let(:specs) { mock(:specs) }
 
   before(:each) do
-    specs.should_receive(:minimum_version).with("rspec-core", "~> 2.11.0").and_return("1.0.0")
-    specs.should_receive(:minimum_version).with("rspec-expectations", "~> 2.11.0").and_return("1.0.0")
-    specs.should_receive(:minimum_version).with("rspec-mocks", "~> 2.11.0").and_return("1.0.0")
+    specs.stub(:minimum_version).with("rspec-core", "~> 2.11.0").and_return("1.0.0")
+    specs.stub(:minimum_version).with("rspec-expectations", "~> 2.11.0").and_return("1.0.0")
+    specs.stub(:minimum_version).with("rspec-mocks", "~> 2.11.0").and_return("1.0.0")
   end
   
   it "should transform a gem into a jar" do
@@ -58,6 +59,20 @@ describe Transform do
 
     raise unless @success_called
   end  
+
+  it "should report native extensions" do
+    gem_io = File.open(native_gem_file_path)
+
+    transform = Transform.new("activefacts", "0.6.0", gem_io)
+    transform.to_mvn(specs) do |h|
+      h.native do |extensions|
+        @native_called = true
+        extensions.should == ["lib/activefacts/cql/Rakefile"]
+      end
+    end
+
+    raise unless @native_called
+  end
 end
 
 
