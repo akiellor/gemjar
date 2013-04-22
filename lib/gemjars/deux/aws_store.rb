@@ -6,10 +6,10 @@ module Gemjars
         @threads = []
       end
 
-      def put name
+      def put name, opts = {}
         r, w = IO.pipe
         @threads << Thread.new {
-          @bucket.objects.create name, r, :estimated_content_length => 2048 * 1024
+          @bucket.objects.create name, r, {:estimated_content_length => 2048 * 1024}.merge(opts)
         }
         w
       end
