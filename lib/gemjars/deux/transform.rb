@@ -1,6 +1,7 @@
 require 'pathname'
 require 'gemjars/deux/zip'
 require 'gemjars/deux/tar'
+require 'gemjars/deux/pom'
 
 module Gemjars
   module Deux
