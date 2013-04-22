@@ -13,23 +13,28 @@ module Gemjars
       end
 
       def to_mvn specifications
-        jar_r, jar_w = IO.pipe
-        jar = ZipWriter.new(jar_w)
-        pom_r, pom_w = IO.pipe
+        jar_out = Java::JavaIo::ByteArrayOutputStream.new
+        jar = ZipWriter.new(jar_out.to_io)
+        pom_out = Java::JavaIo::ByteArrayOutputStream.new
+        pom = pom_out.to_io
 
         visit Handler.new {|h|
           h.on_file {|name, content| jar.add_entry "gems/#@name-#@version/#{name}", content } 
           h.on_spec {|spec|
             jar.add_entry "specifications/#@name-#@version.gemspec", StringIO.new(spec.to_ruby_for_cache)
-            Pom.new(spec).write_to(pom_w, specifications)
+            Pom.new(spec).write_to(pom, specifications)
           }
           h.finish {
-            jar_w.close
-            pom_w.close
+            jar.close
+            pom.flush
+            pom.close_write
           }
         }
 
-        [jar_r, pom_r]
+        jar_in = Java::JavaIo::ByteArrayInputStream.new(jar_out.to_byte_array)
+        pom_in = Java::JavaIo::ByteArrayInputStream.new(pom_out.to_byte_array)
+ 
+        [jar_in.to_io, pom_in.to_io]
       end
 
       private
