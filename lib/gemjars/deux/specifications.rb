@@ -24,9 +24,9 @@ module Gemjars
       end
 
       def minimum_version name, specifier
-        requirement = Gem::Requirement.new(specifier)
+        requirement = ::Gem::Requirement.new(specifier)
         self[name].
-          select {|s| requirement.satisfied_by?(Gem::Version.new(s)) }.
+          select {|s| requirement.satisfied_by?(::Gem::Version.new(s)) }.
           sort.
           first
       end
