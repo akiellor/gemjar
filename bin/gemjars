@@ -23,9 +23,6 @@ end
 
 http = Http.default
 specs = Specifications.new(to_gzip_compression_stream(http.get("http://rubygems.org/specs.4.8.gz")))
-keys = YAML.load(File.open(File.expand_path("~/.gemjars")))
-s3 = AWS::S3.new(:access_key_id => keys['access_key_id'], :secret_access_key => keys['secret_access_key'])
-bucket = s3.buckets["deux.gemjars.org"]
 store = FileStore.new("./out")
 repo = MavenRepository.new(store)
 
@@ -36,20 +33,25 @@ specs.each { |s| queue << s }
 until queue.empty?
   spec = queue.pop
   begin
-    spec_name, spec_version = *spec
-    out_jar, out_pom = repo.pipe_to(spec_name, spec_version)
+    gem_io = http.get("http://rubygems.org/gems/#{spec.name}-#{spec.version}.gem")
 
-    gem_io = http.get("http://rubygems.org/gems/#{spec_name}-#{spec_version}.gem")
-
-    transform = Transform.new(spec_name, spec_version, gem_io)
+    transform = Transform.new(spec.name, spec.version, gem_io)
 
     transform.to_mvn(specs) do |h|
       h.success do |jar, pom|
-        while jar_chunk = jar.read(1024) || pom_chunk = pom.read(1024)
-          out_jar << jar_chunk if jar_chunk
-          out_pom << pom_chunk if pom_chunk
+        begin
+          out_jar, out_pom = repo.pipe_to(spec.name, spec.version)
+
+          while jar_chunk = jar.read(1024) || pom_chunk = pom.read(1024)
+            out_jar << jar_chunk if jar_chunk
+            out_pom << pom_chunk if pom_chunk
+          end
+
+          $stdout.puts "Success -> #{{:spec => spec}.inspect}"
+        ensure
+          out_jar.close
+          out_pom.close
         end
-        $stdout.puts "Success -> #{{:spec => spec}.inspect}"
       end
 
       h.native do |exts|
@@ -58,9 +60,6 @@ until queue.empty?
     end
   rescue => e
     $stderr.puts "Exception -> #{{:spec => spec, :exception => e, :backtrace => e.backtrace}.inspect}"
-  ensure
-    out_jar.close
-    out_pom.close
   end
 end
 

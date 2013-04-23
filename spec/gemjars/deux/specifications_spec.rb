@@ -8,11 +8,11 @@ describe Specifications do
   let(:io) { Marshal.dump([["zzzzzz", Gem::Version.new("0.0.3"), "ruby"]]) }
 
   it "should have a single spec" do
-    specifications["zzzzzz"].should == ["0.0.3"]
+    specifications["zzzzzz"].should == [Specification.new("zzzzzz", "0.0.3", "ruby")]
   end
 
   it "should be enumerable" do
-    specifications.to_enum(:each).to_a.should == [["zzzzzz", "0.0.3"]]
+    specifications.to_enum(:each).to_a.should == [Specification.new("zzzzzz", "0.0.3", "ruby")]
   end
 
   context "many versions for gem" do
@@ -28,9 +28,9 @@ describe Specifications do
 
     it "should be enumerable" do
       specifications.to_enum(:each).to_a.should == [
-        ["zzzzzz", "0.3"],
-        ["zzzzzz", "1.0"],
-        ["zzzzzz", "0.2"]
+        Specification.new("zzzzzz", "0.3", "ruby"),
+        Specification.new("zzzzzz", "1.0", "ruby"),
+        Specification.new("zzzzzz", "0.2", "ruby")
       ]
     end
   end
