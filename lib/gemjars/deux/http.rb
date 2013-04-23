@@ -16,7 +16,9 @@ module Gemjars
       end
 
       def get uri
-        r, w = IO.pipe
+        pipe = Java::JavaNioChannels::Pipe.open
+        r = Java::JavaNioChannels::Channels.new_input_stream(pipe.source).to_io
+        w = Java::JavaNioChannels::Channels.new_output_stream(pipe.sink)
 
         @executor.submit {
           internal_get(URI.parse(uri), w)
@@ -32,7 +34,7 @@ module Gemjars
               return internal_get(URI.parse(res.header['location']), io)
             else
               res.read_body do |chunk|
-                io << chunk
+                io.write chunk.to_java_bytes
               end
             end
           end
