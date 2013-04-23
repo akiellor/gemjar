@@ -14,7 +14,7 @@ describe Pom do
  
   it "should generate pom from spec" do
     specs = mock(:specs)
-    specs.should_receive(:minimum_version).with("bar", "= 2.0.0").and_return("1.0.0")
+    specs.should_receive(:minimum_version).with("bar", ["= 2.0.0"]).and_return("1.0.0")
 
     io = StringIO.new
     
@@ -32,6 +32,7 @@ describe Pom do
 
   context "version translation" do
     let(:specs) { mock(:specs) }
+
     it "should translate '=' version to maven style'" do
       specs.should_receive(:minimum_version).with("rspec", "2.0.0").and_return("1.0.0")
       

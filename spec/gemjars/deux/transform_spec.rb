@@ -13,9 +13,9 @@ describe Transform do
   let(:specs) { mock(:specs) }
 
   before(:each) do
-    specs.stub(:minimum_version).with("rspec-core", "~> 2.11.0").and_return("1.0.0")
-    specs.stub(:minimum_version).with("rspec-expectations", "~> 2.11.0").and_return("1.0.0")
-    specs.stub(:minimum_version).with("rspec-mocks", "~> 2.11.0").and_return("1.0.0")
+    specs.stub(:minimum_version).with("rspec-core", ["~> 2.11.0"]).and_return("1.0.0")
+    specs.stub(:minimum_version).with("rspec-expectations", ["~> 2.11.0"]).and_return("1.0.0")
+    specs.stub(:minimum_version).with("rspec-mocks", ["~> 2.11.0"]).and_return("1.0.0")
   end
   
   it "should transform a gem into a jar" do

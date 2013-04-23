@@ -25,7 +25,7 @@ module Gemjars
               deps_node.dependency do |dependency_node|
                 dependency_node.groupId "org.rubygems"
                 dependency_node.artifactId dep.name
-                dependency_node.version Pom.to_maven_version(dep.name, dep.requirement.to_s, specs)
+                dependency_node.version Pom.to_maven_version(dep.name, dep.requirement.as_list, specs)
               end
             end
           end
