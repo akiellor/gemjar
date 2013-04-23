@@ -8,6 +8,13 @@ module Gemjars
         end
         out.string
       end
+
+      def self.pipe
+        pipe = Java::JavaNioChannels::Pipe.open
+        r = Java::JavaNioChannels::Channels.new_input_stream(pipe.source).to_io
+        w = Java::JavaNioChannels::Channels.new_output_stream(pipe.sink).to_io
+        [r, w]
+      end
     end
   end
 end
