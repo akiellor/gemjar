@@ -33,38 +33,34 @@ queue = Queue.new
 
 specs.each { |s| queue << s }
 
-3.times {
-  Thread.new {
-    until queue.empty?
-      spec = queue.pop
-      begin
-        spec_name, spec_version = *spec
-        out_jar, out_pom = repo.pipe_to(spec_name, spec_version)
+until queue.empty?
+  spec = queue.pop
+  begin
+    spec_name, spec_version = *spec
+    out_jar, out_pom = repo.pipe_to(spec_name, spec_version)
 
-        gem_io = http.get("http://rubygems.org/gems/#{spec_name}-#{spec_version}.gem")
-        
-        transform = Transform.new(spec_name, spec_version, gem_io)
-        
-        transform.to_mvn(specs) do |h|
-          h.success do |jar, pom|
-            while jar_chunk = jar.read(1024) || pom_chunk = pom.read(1024)
-              out_jar << jar_chunk if jar_chunk
-              out_pom << pom_chunk if pom_chunk
-            end
-            $stdout.puts "Success -> #{{:spec => spec}.inspect}"
-          end
+    gem_io = http.get("http://rubygems.org/gems/#{spec_name}-#{spec_version}.gem")
 
-          h.native do |exts|
-            $stderr.puts "Native Extensions -> #{{:spec => spec, :exts => exts}.inspect}"
-          end
+    transform = Transform.new(spec_name, spec_version, gem_io)
+
+    transform.to_mvn(specs) do |h|
+      h.success do |jar, pom|
+        while jar_chunk = jar.read(1024) || pom_chunk = pom.read(1024)
+          out_jar << jar_chunk if jar_chunk
+          out_pom << pom_chunk if pom_chunk
         end
-      rescue => e
-        $stderr.puts "Exception -> #{{:spec => spec, :exception => e, :backtrace => e.backtrace}.inspect}"
-      ensure
-        out_jar.close
-        out_pom.close
+        $stdout.puts "Success -> #{{:spec => spec}.inspect}"
+      end
+
+      h.native do |exts|
+        $stderr.puts "Native Extensions -> #{{:spec => spec, :exts => exts}.inspect}"
       end
     end
-  }
-}
+  rescue => e
+    $stderr.puts "Exception -> #{{:spec => spec, :exception => e, :backtrace => e.backtrace}.inspect}"
+  ensure
+    out_jar.close
+    out_pom.close
+  end
+end
 
