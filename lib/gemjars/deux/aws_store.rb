@@ -1,3 +1,5 @@
+require 'aws-sdk'
+
 module Gemjars
   module Deux
     class AWSStore
