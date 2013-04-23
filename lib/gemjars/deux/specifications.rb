@@ -5,6 +5,11 @@ module Gemjars
     class Specifications
       include Enumerable
 
+      def self.rubygems http = Http.default
+        input_stream = Java::OrgJrubyUtil::IOInputStream.new(http.get("http://rubygems.org/specs.4.8.gz"))
+        new Java::JavaUtilZip::GZIPInputStream.new(to_none_compression_stream(input_stream)).to_io
+      end
+
       def initialize io
         @specs = {}
         Marshal.load(io).each do |spec|
