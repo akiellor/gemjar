@@ -37,7 +37,6 @@ specs.each { |s| queue << s }
   Thread.new {
     until queue.empty?
       spec = queue.pop
-      p spec
       begin
         spec_name, spec_version = *spec
         out_jar, out_pom = repo.pipe_to(spec_name, spec_version)
@@ -52,16 +51,15 @@ specs.each { |s| queue << s }
               out_jar << jar_chunk if jar_chunk
               out_pom << pom_chunk if pom_chunk
             end
+            $stdout.puts "Success -> #{{:spec => spec}.inspect}"
           end
 
           h.native do |exts|
             $stderr.puts "Native Extensions -> #{{:spec => spec, :exts => exts}.inspect}"
           end
         end
-      
       rescue => e
-        puts e
-        puts e.backtrace
+        $stderr.puts "Exception -> #{{:spec => spec, :exception => e, :backtrace => e.backtrace}.inspect}"
       ensure
         out_jar.close
         out_pom.close
