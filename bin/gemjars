@@ -30,36 +30,39 @@ queue = Queue.new
 
 specs.each { |s| queue << s }
 
-until queue.empty?
-  spec = queue.pop
-  begin
-    gem_io = http.get(spec.gem_uri)
+10.times do
+  Thread.new {
+    until queue.empty?
+      spec = queue.pop
+      begin
+        gem_io = http.get(spec.gem_uri)
 
-    transform = Transform.new(spec.name, spec.version, gem_io)
+        transform = Transform.new(spec.name, spec.version, gem_io)
 
-    transform.to_mvn(specs) do |h|
-      h.success do |jar, pom|
-        begin
-          out_jar, out_pom = repo.pipe_to(spec.name, spec.version)
+        transform.to_mvn(specs) do |h|
+          h.success do |jar, pom|
+            begin
+              out_jar, out_pom = repo.pipe_to(spec.name, spec.version)
 
-          while jar_chunk = jar.read(1024) || pom_chunk = pom.read(1024)
-            out_jar << jar_chunk if jar_chunk
-            out_pom << pom_chunk if pom_chunk
+              while jar_chunk = jar.read(1024) || pom_chunk = pom.read(1024)
+                out_jar << jar_chunk if jar_chunk
+                out_pom << pom_chunk if pom_chunk
+              end
+            ensure
+              out_jar.close
+              out_pom.close
+            end
+
+            $stdout.puts "Success -> #{{:spec => spec}.inspect}"
           end
 
-          $stdout.puts "Success -> #{{:spec => spec}.inspect}"
-        ensure
-          out_jar.close
-          out_pom.close
+          h.native do |exts|
+            $stderr.puts "Native Extensions -> #{{:spec => spec, :exts => exts}.inspect}"
+          end
         end
-      end
-
-      h.native do |exts|
-        $stderr.puts "Native Extensions -> #{{:spec => spec, :exts => exts}.inspect}"
+      rescue => e
+        $stderr.puts "Exception -> #{{:spec => spec, :exception => e, :backtrace => e.backtrace}.inspect}"
       end
     end
-  rescue => e
-    $stderr.puts "Exception -> #{{:spec => spec, :exception => e, :backtrace => e.backtrace}.inspect}"
-  end
+  }
 end
-
