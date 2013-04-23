@@ -7,7 +7,7 @@ require 'thread'
 require 'aws-sdk'
 require 'gemjars/deux/transform'
 require 'gemjars/deux/maven_repository'
-require 'gemjars/deux/aws_store'
+require 'gemjars/deux/file_store'
 require 'gemjars/deux/specifications'
 require 'gemjars/deux/http'
 
@@ -26,7 +26,7 @@ specs = Specifications.new(to_gzip_compression_stream(http.get("http://rubygems.
 keys = YAML.load(File.open(File.expand_path("~/.gemjars")))
 s3 = AWS::S3.new(:access_key_id => keys['access_key_id'], :secret_access_key => keys['secret_access_key'])
 bucket = s3.buckets["deux.gemjars.org"]
-store = AWSStore.new(bucket)
+store = FileStore.new("./out")
 repo = MavenRepository.new(store)
 
 queue = Queue.new
