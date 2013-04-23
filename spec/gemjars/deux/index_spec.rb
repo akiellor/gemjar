@@ -11,7 +11,7 @@ describe Index do
 
   context "no indexed gems" do
     before(:each) do
-      store.stub(:get).with("index.yml").and_return(StringIO.new(YAML.dump([])))
+      store.stub(:get).with("index.yml").and_return(nil)
     end
 
     it { should_not be_handled(Specification.new("zzzzzz", "0.1.0", "ruby")) }

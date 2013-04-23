@@ -22,7 +22,8 @@ module Gemjars
       private
       
       def index
-        YAML.load(@store.get("index.yml"))
+        io = @store.get("index.yml")
+        io ? YAML.load(io) : []
       end
     end
   end
