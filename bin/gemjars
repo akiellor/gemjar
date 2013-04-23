@@ -33,7 +33,7 @@ specs.each { |s| queue << s }
 until queue.empty?
   spec = queue.pop
   begin
-    gem_io = http.get("http://rubygems.org/gems/#{spec.name}-#{spec.version}.gem")
+    gem_io = http.get(spec.gem_uri)
 
     transform = Transform.new(spec.name, spec.version, gem_io)
 
