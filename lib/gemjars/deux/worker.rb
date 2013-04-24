@@ -4,15 +4,18 @@ module Gemjars
   module Deux
     class Worker
       include Celluloid
+      include Celluloid::Logger
 
       attr_reader :queue, :index, :http, :repo, :specs
 
-      def initialize queue, index, http, repo, specs
+      def initialize name, queue, index, http, repo, specs
+        @name = name
         @queue = queue
         @index = index
         @http = http
         @repo = repo
         @specs = specs
+        @done = false
       end
 
       def run
@@ -42,17 +45,22 @@ module Gemjars
 
                 index.add spec
 
-                $stdout.puts "Success -> #{{:spec => spec}.inspect}"
+                info "[#@name] Success -> #{{:spec => spec}.inspect}"
               end
 
               h.native do |exts|
-                $stderr.puts "Native Extensions -> #{{:spec => spec, :exts => exts}.inspect}"
+                warn "[#@name] Native Extensions -> #{{:spec => spec, :exts => exts}.inspect}"
               end
             end
           rescue => e
-            $stderr.puts "Exception -> #{{:spec => spec, :exception => e, :backtrace => e.backtrace}.inspect}"
+            error "[#@name] Exception -> #{{:spec => spec, :exception => e, :backtrace => e.backtrace}.inspect}"
           end
         end
+        @done = true
+      end
+
+      def done?
+        @done
       end
     end
   end

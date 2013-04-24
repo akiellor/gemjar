@@ -5,6 +5,7 @@ $CLASSPATH << Dir[File.join(File.expand_path(File.join(File.dirname(__FILE__), "
 
 require 'thread'
 require 'celluloid/autostart'
+
 require 'gemjars/deux/transform'
 require 'gemjars/deux/maven_repository'
 require 'gemjars/deux/file_store'
@@ -25,14 +26,17 @@ queue = Queue.new
 
 specs.each { |s| queue << s }
 
-pool = Gemjars::Deux::Worker.pool(size: 10, :args => [queue, index, http, repo, specs])
+pool = (0..30).to_a.map do |i|
+  Gemjars::Deux::Worker.spawn("Worker #{i}", queue, index, http, repo, specs)
+end
 
 Signal.trap("INT") do
-  Timeout::timeout(20) do
-    until queue.empty?
-      queue.pop
-    end
-    until pool.busy_size == 0
+  until queue.empty?
+    queue.pop
+  end
+  
+  Timeout::timeout(3 * pool.size) do
+    until pool.all?(&:done?)
       sleep 1
     end
   end
@@ -40,4 +44,7 @@ Signal.trap("INT") do
   exit
 end
 
-pool.run
+pool.each {|w| w.async.run }
+
+pool.each {|w| w.thread.join }
+
