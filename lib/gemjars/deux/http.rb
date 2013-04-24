@@ -13,6 +13,9 @@ module Gemjars
 
       def initialize executor
         @executor = executor
+        at_exit {
+          @executor.shutdown
+        }
       end
 
       def get uri
