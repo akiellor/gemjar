@@ -41,9 +41,10 @@ describe MavenRepository do
     store.stub(:put).with("org/rubygems/foo/1/foo-1.pom.md5", :content_type => "text/plain") { pom_md5_w }
     store.stub(:put).with("org/rubygems/foo/1/foo-1.pom.sha1", :content_type => "text/plain") { pom_sha1_w }
 
-    jar, pom = repository.pipe_to("foo", "1")
-    jar << "foo\n"
-    jar.close
+    repository.pipe_to("foo", "1") do |jar, pom|
+      jar << "foo\n"
+      pom << "foo\n"
+    end
 
     jar_r.should be_an_io_with("foo\n")
     jar_w.should be_closed
@@ -51,10 +52,6 @@ describe MavenRepository do
     jar_md5_w.should be_closed
     jar_sha1_r.should be_an_io_with("f1d2d2f924e986ac86fdf7b36c94bcdf32beec15")
     jar_sha1_w.should be_closed
-    jar.should be_closed
-
-    pom << "foo\n"
-    pom.close
 
     pom_r.should be_an_io_with("foo\n")
     pom_w.should be_closed
@@ -62,6 +59,5 @@ describe MavenRepository do
     pom_md5_w.should be_closed
     pom_sha1_r.should be_an_io_with("f1d2d2f924e986ac86fdf7b36c94bcdf32beec15")
     pom_sha1_w.should be_closed
-    pom.should be_closed
   end
 end

@@ -72,8 +72,13 @@ module Gemjars
         pom_md5_w = @store.put("org/rubygems/#{name}/#{version}/#{name}-#{version}.pom.md5", :content_type => "text/plain")
         pom_sha1_w = @store.put("org/rubygems/#{name}/#{version}/#{name}-#{version}.pom.sha1", :content_type => "text/plain")
 
-        [MultiStream.new([jar_w, MD5Stream.new(jar_md5_w), SHA1Stream.new(jar_sha1_w)]),
-         MultiStream.new([pom_w, MD5Stream.new(pom_md5_w), SHA1Stream.new(pom_sha1_w)])]
+        jar = MultiStream.new([jar_w, MD5Stream.new(jar_md5_w), SHA1Stream.new(jar_sha1_w)])
+        pom = MultiStream.new([pom_w, MD5Stream.new(pom_md5_w), SHA1Stream.new(pom_sha1_w)])
+
+        yield jar, pom
+      ensure
+        jar.close
+        pom.close
       end
     end
   end

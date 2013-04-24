@@ -31,16 +31,11 @@ module Gemjars
 
             transform.to_mvn(specs) do |h|
               h.success do |jar, pom|
-                begin
-                  out_jar, out_pom = repo.pipe_to(spec.name, spec.version)
-
+                repo.pipe_to(spec.name, spec.version) do |out_jar, out_pom|
                   while jar_chunk = jar.read(1024) || pom_chunk = pom.read(1024)
                     out_jar << jar_chunk if jar_chunk
                     out_pom << pom_chunk if pom_chunk
                   end
-                ensure
-                  out_jar.close
-                  out_pom.close
                 end
 
                 index.add spec
