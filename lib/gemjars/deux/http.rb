@@ -19,15 +19,19 @@ module Gemjars
       end
 
       def get uri
+        raise "No block given" unless block_given?
+
         pipe = Java::JavaNioChannels::Pipe.open
         r = Java::JavaNioChannels::Channels.new_input_stream(pipe.source).to_io
         w = Java::JavaNioChannels::Channels.new_output_stream(pipe.sink)
 
-        @executor.submit {
+        @executor.submit proc {
           internal_get(URI.parse(uri), w)
-        }
+        }.to_java(java.lang.Runnable)
 
-        r
+        yield r
+      ensure
+        r.close if r
       end
 
       def internal_get uri, io

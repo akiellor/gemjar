@@ -10,6 +10,10 @@ describe Http do
 
   after(:each) { executor.shutdown_now }
 
+  it "should raise if no block given" do
+    expect { http.get("www.example.come") }.to raise_error("No block given")
+  end
+
   it "should get the resource" do
     response = mock(:response, :code => "200")
     response.should_receive(:read_body).
@@ -19,9 +23,9 @@ describe Http do
       with(URI.parse("www.example.com")).
       and_yield(response)
 
-    r = Streams.read(http.get("www.example.com"))
-
-    r.should == "bar"
+    http.get("www.example.com") do |io|
+      Streams.read(io).should == "bar"
+    end
   end
 
   ["301", "302"].each do |status|
@@ -39,9 +43,9 @@ describe Http do
         with(URI.parse("www.example.com/foo")).
         and_yield(content_response)
 
-      r = Streams.read(http.get("www.example.com"))
-
-      r.should == "bar"
+      http.get("www.example.com") do |io|
+        Streams.read(io).should == "bar"
+      end
     end
   end
 end

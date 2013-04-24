@@ -6,9 +6,11 @@ module Gemjars
       include Enumerable
 
       def self.rubygems http = Http.default
-        input_stream = Java::OrgJrubyUtil::IOInputStream.new(http.get("http://rubygems.org/specs.4.8.gz"))
-        new Java::JavaUtilZip::GZIPInputStream.new(input_stream).to_io
-      end
+        http.get("http://rubygems.org/specs.4.8.gz") do |io|
+          input_stream = Java::OrgJrubyUtil::IOInputStream.new(io)
+          new Java::JavaUtilZip::GZIPInputStream.new(input_stream).to_io
+        end
+     end
 
       def initialize io
         @specs = {}
