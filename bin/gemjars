@@ -4,65 +4,40 @@ $LOAD_PATH << File.expand_path(File.join(File.dirname(__FILE__), "..", "lib"))
 $CLASSPATH << Dir[File.join(File.expand_path(File.join(File.dirname(__FILE__), "..", "vendor")), "*")]
 
 require 'thread'
-require 'aws-sdk'
+require 'celluloid/autostart'
 require 'gemjars/deux/transform'
 require 'gemjars/deux/maven_repository'
 require 'gemjars/deux/file_store'
 require 'gemjars/deux/specifications'
 require 'gemjars/deux/http'
+require 'gemjars/deux/index'
+require 'gemjars/deux/worker'
 
 include Gemjars::Deux
 
-def to_none_compression_stream io
-  Java::OrgJrubyUtil::IOInputStream.new(io)
-end
-
-def to_gzip_compression_stream io
-  Java::JavaUtilZip::GZIPInputStream.new(to_none_compression_stream(io)).to_io
-end
-
 http = Http.default
-specs = Specifications.new(to_gzip_compression_stream(http.get("http://rubygems.org/specs.4.8.gz")))
+specs = Specifications.rubygems
 store = FileStore.new("./out")
 repo = MavenRepository.new(store)
+index = Index.spawn(store)
 
 queue = Queue.new
 
 specs.each { |s| queue << s }
 
-10.times do
-  Thread.new {
+pool = Gemjars::Deux::Worker.pool(size: 10, :args => [queue, index, http, repo, specs])
+
+Signal.trap("INT") do
+  Timeout::timeout(20) do
     until queue.empty?
-      spec = queue.pop
-      begin
-        gem_io = http.get(spec.gem_uri)
-
-        transform = Transform.new(spec.name, spec.version, gem_io)
-
-        transform.to_mvn(specs) do |h|
-          h.success do |jar, pom|
-            begin
-              out_jar, out_pom = repo.pipe_to(spec.name, spec.version)
-
-              while jar_chunk = jar.read(1024) || pom_chunk = pom.read(1024)
-                out_jar << jar_chunk if jar_chunk
-                out_pom << pom_chunk if pom_chunk
-              end
-            ensure
-              out_jar.close
-              out_pom.close
-            end
-
-            $stdout.puts "Success -> #{{:spec => spec}.inspect}"
-          end
-
-          h.native do |exts|
-            $stderr.puts "Native Extensions -> #{{:spec => spec, :exts => exts}.inspect}"
-          end
-        end
-      rescue => e
-        $stderr.puts "Exception -> #{{:spec => spec, :exception => e, :backtrace => e.backtrace}.inspect}"
-      end
+      queue.pop
     end
-  }
+    until pool.busy_size == 0
+      sleep 1
+    end
+  end
+
+  exit
 end
+
+pool.run

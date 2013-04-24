@@ -1,8 +1,11 @@
 require 'yaml'
+require 'celluloid'
 
 module Gemjars
   module Deux
     class Index
+      include Celluloid
+
       def initialize store
         @store = store
       end

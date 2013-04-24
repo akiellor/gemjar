@@ -20,6 +20,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency "aws-sdk", "~> 1.8.5"
   spec.add_runtime_dependency "builder", "~> 3.0.0"
+  spec.add_runtime_dependency "celluloid", "~> 0.13.0"
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rspec", "~> 2.11.0"
