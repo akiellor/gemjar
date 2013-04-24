@@ -12,6 +12,15 @@ module Gemjars
         path.parent.mkpath
         path.open("w+")
       end
+
+      def get name
+        path = Pathname.new(File.expand_path(name, @dir))
+        if path.file?
+          path.open
+        else
+          nil
+        end
+      end
     end
   end
 end
