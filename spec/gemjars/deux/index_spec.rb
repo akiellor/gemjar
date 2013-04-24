@@ -23,6 +23,7 @@ describe Index do
       store.stub(:put).with("index.yml").and_return(w)
 
       subject.add spec
+      subject.flush
 
       YAML.load(r).should include spec 
     end
