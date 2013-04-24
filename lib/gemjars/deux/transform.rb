@@ -34,15 +34,12 @@ module Gemjars
           }
           h.finish {
             jar.close
-            pom.flush
-            pom.close_write
+            pom.close
 
-            if handler.unhandled?
-              jar_in = Java::JavaIo::ByteArrayInputStream.new(jar_out.to_byte_array)
-              pom_in = Java::JavaIo::ByteArrayInputStream.new(pom_out.to_byte_array)
+            jar_in = Java::JavaIo::ByteArrayInputStream.new(jar_out.to_byte_array)
+            pom_in = Java::JavaIo::ByteArrayInputStream.new(pom_out.to_byte_array)
 
-              handler.success jar_in.to_io, pom_in.to_io
-            end
+            handler.success jar_in.to_io, pom_in.to_io
           }
         }
       end
@@ -60,7 +57,6 @@ module Gemjars
             handler.on_spec ::Gem::Specification.from_yaml(Java::JavaUtilZip::GZIPInputStream.new(Java::OrgJrubyUtil::IOInputStream.new(gem_entry.io)).to_io)
           end
         end
-      ensure
         handler.finish
       end
     end
