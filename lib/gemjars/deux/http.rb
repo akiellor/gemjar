@@ -1,3 +1,5 @@
+require 'gemjars/deux/streams'
+
 module Gemjars
   module Deux
     class Http
@@ -16,8 +18,8 @@ module Gemjars
         raise "No block given" unless block_given?
 
         response = @client.execute(request)
-        io = response.entity.content.to_io
-        yield io
+        io = response.entity.content
+        yield Streams.to_channel(io)
       ensure
         io.close if io
       end

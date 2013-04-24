@@ -1,3 +1,4 @@
+require 'gemjars/deux/streams'
 require 'gemjars/deux/specification'
 
 module Gemjars
@@ -6,8 +7,8 @@ module Gemjars
       include Enumerable
 
       def self.rubygems http = Http.default
-        http.get("http://rubygems.org/specs.4.8.gz") do |io|
-          input_stream = Java::OrgJrubyUtil::IOInputStream.new(io)
+        http.get("http://rubygems.org/specs.4.8.gz") do |channel|
+          input_stream = Streams.to_input_stream(channel)
           new Java::JavaUtilZip::GZIPInputStream.new(input_stream).to_io
         end
      end

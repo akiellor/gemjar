@@ -12,10 +12,9 @@ describe Http do
   end
 
   it "should get the resource" do
-    http.get("http://google.com") do |io|
-      Streams.read(io).should include "google"
+    http.get("http://google.com") do |channel|
+      Streams.read_channel(channel).should include "google"
     end
   end
 end
-
 
