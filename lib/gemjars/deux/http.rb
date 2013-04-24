@@ -1,56 +1,25 @@
-require 'net/http'
-
 module Gemjars
   module Deux
     class Http
-      def self.single_threaded
-        new Java::JavaUtilConcurrent::Executors.new_single_thread_executor
-      end
-
       def self.default
-        new Java::JavaUtilConcurrent::Executors.new_fixed_thread_pool(10)
+        new
       end
 
-      def initialize executor
-        @executor = executor
-        at_exit {
-          @executor.shutdown
-        }
+      def initialize
+        connection_manager = Java::OrgApacheHttpImplConn::PoolingClientConnectionManager.new
+        @client = Java::org.apache.http.impl.client.DefaultHttpClient.new(connection_manager)
       end
 
       def get uri
+        request = Java::org.apache.http.client.methods.HttpGet.new uri
+
         raise "No block given" unless block_given?
 
-        pipe = Java::JavaNioChannels::Pipe.open
-        r = Java::JavaNioChannels::Channels.new_input_stream(pipe.source).to_io
-        w = Java::JavaNioChannels::Channels.new_output_stream(pipe.sink)
-
-        @executor.submit proc {
-          internal_get(URI.parse(uri), w)
-        }.to_java(java.lang.Runnable)
-
-        yield r
+        response = @client.execute(request)
+        io = response.entity.content.to_io
+        yield io
       ensure
-        r.close if r
-      end
-
-      def internal_get uri, io
-        begin
-          Net::HTTP.get_response(uri) do |res|
-            if res.code.to_i == 301 || res.code.to_i == 302
-              return internal_get(URI.parse(res.header['location']), io)
-            else
-              res.read_body do |chunk|
-                io.write chunk.to_java_bytes
-              end
-            end
-          end
-        rescue => e
-          puts e
-          puts e.backtrace
-        ensure
-          io.close
-        end
+        io.close if io
       end
     end
   end
