@@ -17,6 +17,10 @@ describe Transform do
     specs.stub(:minimum_version).with("rspec-expectations", ["~> 2.11.0"]).and_return("1.0.0")
     specs.stub(:minimum_version).with("rspec-mocks", ["~> 2.11.0"]).and_return("1.0.0")
   end
+
+  def to_channel io
+    Streams.to_channel(Java::OrgJrubyUtil::IOInputStream.new(io))
+  end
   
   it "should transform a gem into a jar" do
 
@@ -28,7 +32,7 @@ describe Transform do
       h.success do |jar, pom|
         @success_called = true
 
-        entries = ZipReader.new(jar).map {|e| [e.name, e.read]}
+        entries = ZipReader.new(to_channel(jar)).map {|e| [e.name, e.read]}
 
         Set.new(entries.map {|e| e[0] }).should == Set.new(%w{
           gems/rspec-2.11.0/lib/rspec/version.rb

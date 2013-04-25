@@ -16,6 +16,11 @@ module Gemjars
         [r, w]
       end
 
+      def self.pipe_channel
+        pipe = Java::JavaNioChannels::Pipe.open
+        [pipe.source, pipe.sink]
+      end
+
       def self.to_channel stream
         Java::JavaNioChannels::Channels.new_channel(stream)
       end

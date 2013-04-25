@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'gemjars/deux/zip'
+require 'gemjars/deux/streams'
 
 include Gemjars::Deux
 
@@ -8,14 +9,14 @@ describe ZipReader do
   let(:zip_path) { File.join(samples, "single-file.zip") }
   
   it "should yield each entry" do
-    zip = ZipReader.new(File.open(zip_path))
+    zip = ZipReader.new(Java::JavaIo::FileInputStream.new(zip_path).getChannel())
 
     zip.map(&:name).should == ["file"]
   end
 end
 
 describe ZipWriter do
-  let(:pipe) { IO.pipe }
+  let(:pipe) { Streams.pipe_channel }
   let(:reader) { ZipReader.new(pipe[0]) }
   let(:writer) { ZipWriter.new(pipe[1]) }
 

@@ -16,7 +16,7 @@ module Gemjars
         handler = Handler.new(&block)
 
         jar_out = Java::JavaIo::ByteArrayOutputStream.new
-        jar = ZipWriter.new(jar_out.to_io)
+        jar = ZipWriter.new(Streams.to_channel(jar_out))
         pom_out = Java::JavaIo::ByteArrayOutputStream.new
         pom = pom_out.to_io
 

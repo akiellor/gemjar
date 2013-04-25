@@ -1,3 +1,5 @@
+require 'gemjars/deux/streams'
+
 module Gemjars
   module Deux
     class ZipEntry
@@ -24,8 +26,8 @@ module Gemjars
       
       include Enumerable
 
-      def initialize io
-        @stream = Java::JavaUtilZip::ZipInputStream.new(Java::OrgJrubyUtil::IOInputStream.new(io))
+      def initialize channel
+        @stream = Java::JavaUtilZip::ZipInputStream.new(Streams.to_input_stream(channel))
       end
 
       def each &block
@@ -50,8 +52,8 @@ module Gemjars
     class ZipWriter
       CHUNK_SIZE = 2048
       
-      def initialize io
-        @stream = Java::JavaUtilZip::ZipOutputStream.new(Java::OrgJrubyUtil::IOOutputStream.new(io))
+      def initialize channel
+        @stream = Java::JavaUtilZip::ZipOutputStream.new(Streams.to_output_stream(channel))
       end
 
       def add_entry name, io = StringIO.new
