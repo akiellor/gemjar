@@ -18,16 +18,11 @@ describe Transform do
     specs.stub(:minimum_version).with("rspec-mocks", ["~> 2.11.0"]).and_return("1.0.0")
   end
 
-  def to_channel io
-    Streams.to_channel(Java::OrgJrubyUtil::IOInputStream.new(io))
-  end
-  
   it "should transform a gem into a jar" do
+    gem_input_stream = Java::JavaIo::FileInputStream.new(gem_file_path)
 
-    gem_channel = Java::JavaIo::FileInputStream.new(gem_file_path).channel
+    transform = Transform.new("rspec", "2.11.0", gem_input_stream.channel)
 
-    transform = Transform.new("rspec", "2.11.0", gem_channel)
-    
     transform.to_mvn(specs) do |h|
       h.success do |jar, pom|
         @success_called = true
@@ -51,9 +46,9 @@ describe Transform do
   end
 
   it "should transform a gem into a pom file" do
-    gem_channel = Java::JavaIo::FileInputStream.new(gem_file_path).channel
+    gem_input_stream = Java::JavaIo::FileInputStream.new(gem_file_path)
 
-    transform = Transform.new("rspec", "2.11.0", gem_channel)
+    transform = Transform.new("rspec", "2.11.0", gem_input_stream.channel)
     transform.to_mvn(specs) do |h|
       h.success do |jar, pom|
         @success_called = true

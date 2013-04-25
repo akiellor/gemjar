@@ -35,13 +35,7 @@ module Gemjars
       private
 
       def read entry
-        tmp = Java::byte[CHUNK_SIZE].new
-        out = Java::JavaIo::ByteArrayOutputStream.new
-        while (bytes_read = @stream.read(tmp, 0, CHUNK_SIZE)) != -1
-          out.write tmp, 0, bytes_read
-        end
-
-        Streams.to_channel(Java::JavaIo::ByteArrayInputStream.new(out.to_byte_array))
+        Streams.to_channel(@stream)
       end
     end
 

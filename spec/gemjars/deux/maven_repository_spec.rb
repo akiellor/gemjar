@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'gemjars/deux/maven_repository'
+require 'gemjars/deux/streams'
 require 'timeout'
 
 include Gemjars::Deux
