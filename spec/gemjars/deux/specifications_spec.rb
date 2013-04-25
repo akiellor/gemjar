@@ -4,7 +4,7 @@ require 'gemjars/deux/specifications'
 include Gemjars::Deux
 
 describe Specifications do
-  let(:specifications) { Specifications.new(io) }
+  let(:specifications) { Specifications.new(Streams.to_channel(Java::JavaIo::ByteArrayInputStream.new(io.to_java_bytes))) }
   let(:io) { Marshal.dump([["zzzzzz", Gem::Version.new("0.0.3"), "ruby"]]) }
 
   it "should have a single spec" do

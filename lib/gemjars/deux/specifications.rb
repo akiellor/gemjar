@@ -9,13 +9,13 @@ module Gemjars
       def self.rubygems http = Http.default
         http.get("http://rubygems.org/specs.4.8.gz") do |channel|
           input_stream = Streams.to_input_stream(channel)
-          new Java::JavaUtilZip::GZIPInputStream.new(input_stream).to_io
+          new Streams.to_channel(Java::JavaUtilZip::GZIPInputStream.new(input_stream))
         end
      end
 
-      def initialize io
+      def initialize channel
         @specs = {}
-        Marshal.load(io).each do |spec|
+        Marshal.load(Streams.to_input_stream(channel).to_io).each do |spec|
           @specs[spec[0]] ||= []
           @specs[spec[0]] << Specification.new(spec[0], spec[1].to_s, spec[2])
         end
