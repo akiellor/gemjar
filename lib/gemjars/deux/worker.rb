@@ -31,10 +31,8 @@ module Gemjars
               transform.to_mvn(specs) do |h|
                 h.success do |jar, pom|
                   repo.pipe_to(spec.name, spec.version) do |out_jar, out_pom|
-                    while (jar_chunk = jar.read(1024)) || (pom_chunk = pom.read(1024))
-                      out_jar << jar_chunk if jar_chunk
-                      out_pom << pom_chunk if pom_chunk
-                    end
+                    Streams.copy_channel jar, out_jar
+                    Streams.copy_channel pom, out_pom
                   end
 
                   index.add spec

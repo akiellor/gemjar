@@ -10,13 +10,13 @@ module Gemjars
       def put name, opts = {}
         path = Pathname.new(File.expand_path(name, @dir))
         path.parent.mkpath
-        path.open("w+")
+        Java::JavaIo::FileOutputStream.new(path.to_s).channel
       end
 
       def get name
         path = Pathname.new(File.expand_path(name, @dir))
         if path.file?
-          path.open
+          Java::JavaIo::FileInputStream.new(path.to_s).channel
         else
           nil
         end

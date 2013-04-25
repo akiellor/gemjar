@@ -17,7 +17,7 @@ describe Index do
     it { should_not be_handled(Specification.new("zzzzzz", "0.1.0", "ruby")) }
     
     it "should allow for marking specifications as indexed" do
-      r, w = Streams.pipe
+      r, w = Streams.pipe_channel
       spec = Specification.new("foo", "1.2.3", "ruby")
       
       store.stub(:put).with("index.yml").and_return(w)
@@ -25,13 +25,14 @@ describe Index do
       subject.add spec
       subject.flush
 
-      YAML.load(r).should include spec 
+      YAML.load(Streams.read_channel(r)).should include spec 
     end
   end
 
   context "indexed zzzzzz 0.1.0 ruby" do
     before(:each) do
-      store.stub(:get).with("index.yml").and_return(StringIO.new(YAML.dump([Specification.new("zzzzzz", "0.1.0", "ruby")])))
+      channel = Streams.to_channel(Java::JavaIo::ByteArrayInputStream.new(YAML.dump([Specification.new("zzzzzz", "0.1.0", "ruby")]).to_java_bytes))
+      store.stub(:get).with("index.yml").and_return(channel)
     end
 
     it { should be_handled(Specification.new("zzzzzz", "0.1.0", "ruby")) }

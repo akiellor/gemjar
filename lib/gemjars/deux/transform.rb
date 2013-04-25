@@ -39,7 +39,7 @@ module Gemjars
             jar_in = Java::JavaIo::ByteArrayInputStream.new(jar_out.to_byte_array)
             pom_in = Java::JavaIo::ByteArrayInputStream.new(pom_out.to_byte_array)
 
-            handler.success jar_in.to_io, pom_in.to_io
+            handler.success Streams.to_channel(jar_in), Streams.to_channel(pom_in)
           }
         }
       end

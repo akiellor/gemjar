@@ -43,6 +43,14 @@ module Gemjars
         String.from_java_bytes(out.to_byte_array)
       end
 
+      def self.to_buffer s
+        bytes = s.to_java_bytes
+        buffer = Java::JavaNio::ByteBuffer.allocate(bytes.length)
+        buffer.put bytes
+        buffer.flip
+        buffer
+      end
+
       def self.copy_channel channel_in, channel_out
         buffer = Java::JavaNio::ByteBuffer.allocate(1024)
         

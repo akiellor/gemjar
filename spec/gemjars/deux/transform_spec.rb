@@ -32,7 +32,7 @@ describe Transform do
       h.success do |jar, pom|
         @success_called = true
 
-        entries = ZipReader.new(to_channel(jar)).map {|e| [e.name, e.read]}
+        entries = ZipReader.new(jar).map {|e| [e.name, e.read]}
 
         Set.new(entries.map {|e| e[0] }).should == Set.new(%w{
           gems/rspec-2.11.0/lib/rspec/version.rb
@@ -57,7 +57,7 @@ describe Transform do
     transform.to_mvn(specs) do |h|
       h.success do |jar, pom|
         @success_called = true
-        Streams.read(pom).should be_valid_xml(File.read(maven_schema_path))
+        Streams.read_channel(pom).should be_valid_xml(File.read(maven_schema_path))
       end
     end
 
