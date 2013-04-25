@@ -6,10 +6,10 @@ require 'gemjars/deux/pom'
 module Gemjars
   module Deux
     class Transform
-      def initialize name, version, io
+      def initialize name, version, channel
         @name = name
         @version = version
-        @io = io
+        @channel = channel
       end
 
       def to_mvn specifications, &block
@@ -29,7 +29,7 @@ module Gemjars
               handler.native spec.extensions
               return
             end
-            jar.add_entry "specifications/#@name-#@version.gemspec", StringIO.new(spec.to_ruby_for_cache)
+            jar.add_entry "specifications/#@name-#@version.gemspec", Streams.to_channel(Java::JavaIo::ByteArrayInputStream.new(spec.to_ruby_for_cache.to_java_bytes))
             Pom.new(spec).write_to(pom, specifications)
           }
           h.finish {
@@ -47,14 +47,14 @@ module Gemjars
       private
 
       def visit handler
-        TarReader.new(@io).each do |gem_entry|
+        TarReader.new(@channel).each do |gem_entry|
           if gem_entry.name == "data.tar.gz"
-            TarReader.new(gem_entry.io, :gzip).each do |data_entry|
-              handler.on_file data_entry.name, data_entry.io
+            TarReader.new(gem_entry.channel, :gzip).each do |data_entry|
+              handler.on_file data_entry.name, data_entry.channel
             end
           end
           if gem_entry.name == "metadata.gz"
-            handler.on_spec ::Gem::Specification.from_yaml(Java::JavaUtilZip::GZIPInputStream.new(Java::OrgJrubyUtil::IOInputStream.new(gem_entry.io)).to_io)
+            handler.on_spec ::Gem::Specification.from_yaml(Java::JavaUtilZip::GZIPInputStream.new(Streams.to_input_stream(gem_entry.channel)).to_io)
           end
         end
         handler.finish

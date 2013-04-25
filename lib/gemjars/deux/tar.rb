@@ -3,19 +3,15 @@ module Gemjars
     class TarEntry
       CHUNK_SIZE = 2048
       
-      attr_reader :name, :io
+      attr_reader :name, :channel
       
-      def initialize name, io
+      def initialize name, channel
         @name = name
-        @io = io
+        @channel = channel
       end
 
       def read
-        out = StringIO.new
-        while chunk = io.read(CHUNK_SIZE)
-          out << chunk
-        end
-        out.string
+        Streams.read_channel(channel)
       end
     end
 
@@ -24,8 +20,8 @@ module Gemjars
       
       include Enumerable
       
-      def initialize io, compression = :none
-        @stream = Java::OrgKamranzafarJtar::TarInputStream.new(to_input_stream(compression, io))
+      def initialize channel, compression = :none
+        @stream = Java::OrgKamranzafarJtar::TarInputStream.new(to_input_stream(compression, channel))
       end
 
       def each
@@ -43,19 +39,19 @@ module Gemjars
           out.write tmp, 0, bytes_read
         end
 
-        Java::JavaIo::ByteArrayInputStream.new(out.to_byte_array).to_io
+        Streams.to_channel(Java::JavaIo::ByteArrayInputStream.new(out.to_byte_array))
       end
 
-      def to_input_stream compression, io
-        send :"to_#{compression}_compression_stream", io
+      def to_input_stream compression, channel
+        send :"to_#{compression}_compression_stream", channel
       end
 
-      def to_none_compression_stream io
-        Java::OrgJrubyUtil::IOInputStream.new(io)
+      def to_none_compression_stream channel
+        Streams.to_input_stream(channel)
       end
 
-      def to_gzip_compression_stream io
-        Java::JavaUtilZip::GZIPInputStream.new(to_none_compression_stream(io))
+      def to_gzip_compression_stream channel
+        Java::JavaUtilZip::GZIPInputStream.new(to_none_compression_stream(channel))
       end
     end
   end

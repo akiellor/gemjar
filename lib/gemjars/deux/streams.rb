@@ -37,13 +37,20 @@ module Gemjars
         buffer = Java::JavaNio::ByteBuffer.allocate(1024)
         out = Java::JavaIo::ByteArrayOutputStream.new
         out_channel = to_channel(out)
+
+        copy_channel channel, out_channel
         
-        while channel.read(buffer) != -1
+        String.from_java_bytes(out.to_byte_array)
+      end
+
+      def self.copy_channel channel_in, channel_out
+        buffer = Java::JavaNio::ByteBuffer.allocate(1024)
+        
+        while channel_in.read(buffer) != -1
           buffer.flip
-          out_channel.write buffer
+          channel_out.write buffer
           buffer.rewind
         end
-        String.from_java_bytes(out.to_byte_array)
       end
     end
   end

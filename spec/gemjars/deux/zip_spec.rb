@@ -9,7 +9,7 @@ describe ZipReader do
   let(:zip_path) { File.join(samples, "single-file.zip") }
   
   it "should yield each entry" do
-    zip = ZipReader.new(Java::JavaIo::FileInputStream.new(zip_path).getChannel())
+    zip = ZipReader.new(Java::JavaIo::FileInputStream.new(zip_path).channel)
 
     zip.map(&:name).should == ["file"]
   end
@@ -28,7 +28,7 @@ describe ZipWriter do
   end
 
   it "should create zip entry with content" do
-    writer.add_entry "foo", Java::JavaIo::ByteArrayInputStream.new("bar".to_java_bytes).to_io
+    writer.add_entry "foo", Streams.to_channel(Java::JavaIo::ByteArrayInputStream.new("bar".to_java_bytes))
     writer.close
 
     reader.map {|e| [e.name, e.read] }.should == [["foo", "bar"]]

@@ -24,9 +24,9 @@ describe Transform do
   
   it "should transform a gem into a jar" do
 
-    gem_io = File.open(gem_file_path)
+    gem_channel = Java::JavaIo::FileInputStream.new(gem_file_path).channel
 
-    transform = Transform.new("rspec", "2.11.0", gem_io)
+    transform = Transform.new("rspec", "2.11.0", gem_channel)
     
     transform.to_mvn(specs) do |h|
       h.success do |jar, pom|
@@ -51,9 +51,9 @@ describe Transform do
   end
 
   it "should transform a gem into a pom file" do
-    gem_io = File.open(gem_file_path)
+    gem_channel = Java::JavaIo::FileInputStream.new(gem_file_path).channel
 
-    transform = Transform.new("rspec", "2.11.0", gem_io)
+    transform = Transform.new("rspec", "2.11.0", gem_channel)
     transform.to_mvn(specs) do |h|
       h.success do |jar, pom|
         @success_called = true
@@ -65,9 +65,9 @@ describe Transform do
   end  
 
   it "should report native extensions" do
-    gem_io = File.open(native_gem_file_path)
+    gem_channel = Java::JavaIo::FileInputStream.new(native_gem_file_path).channel
 
-    transform = Transform.new("activefacts", "0.6.0", gem_io)
+    transform = Transform.new("activefacts", "0.6.0", gem_channel)
     transform.to_mvn(specs) do |h|
       h.native do |extensions|
         @native_called = true

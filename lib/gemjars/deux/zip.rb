@@ -5,19 +5,15 @@ module Gemjars
     class ZipEntry
       CHUNK_SIZE = 2024
       
-      attr_reader :name, :io
+      attr_reader :name, :channel
       
-      def initialize name, io
+      def initialize name, channel
         @name = name
-        @io = io
+        @channel = channel
       end
 
       def read
-        out = StringIO.new
-        while chunk = io.read(CHUNK_SIZE)
-          out << chunk
-        end
-        out.string
+        Streams.read_channel @channel
       end
     end
 
@@ -45,7 +41,7 @@ module Gemjars
           out.write tmp, 0, bytes_read
         end
 
-        Java::JavaIo::ByteArrayInputStream.new(out.to_byte_array).to_io
+        Streams.to_channel(Java::JavaIo::ByteArrayInputStream.new(out.to_byte_array))
       end
     end
 
@@ -56,10 +52,10 @@ module Gemjars
         @stream = Java::JavaUtilZip::ZipOutputStream.new(Streams.to_output_stream(channel))
       end
 
-      def add_entry name, io = StringIO.new
+      def add_entry name, channel = nil
         @stream.put_next_entry Java::JavaUtilZip::ZipEntry.new(name)
-        while chunk = io.read(CHUNK_SIZE)
-          @stream.write chunk.to_java_bytes, 0, chunk.size
+        if channel
+          Streams.copy_channel channel, Streams.to_channel(@stream)
         end
         @stream.close_entry
       end
