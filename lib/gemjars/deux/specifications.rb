@@ -8,14 +8,29 @@ module Gemjars
 
       def self.rubygems http = Http.default
         http.get("http://rubygems.org/specs.4.8.gz") do |channel|
-          input_stream = Streams.to_input_stream(channel)
-          new Streams.to_channel(Java::JavaUtilZip::GZIPInputStream.new(input_stream))
+          from_gzip channel
         end
-     end
+      end
 
-      def initialize channel
+      def self.prerelease_rubygems http = Http.default
+        http.get("http://rubygems.org/prerelease_specs.4.8.gz") do |channel|
+          from_gzip channel
+        end
+      end
+
+      def self.from_gzip channel
+        input_stream = Streams.to_input_stream(channel)
+        gunzip_channel = Streams.to_channel(Java::JavaUtilZip::GZIPInputStream.new(input_stream))
+        from_channel gunzip_channel 
+      end
+
+      def self.from_channel channel
+        new Marshal.load(Streams.to_input_stream(channel).to_io)
+      end
+
+      def initialize specs
         @specs = {}
-        Marshal.load(Streams.to_input_stream(channel).to_io).each do |spec|
+        specs.each do |spec|
           @specs[spec[0]] ||= []
           @specs[spec[0]] << Specification.new(spec[0], spec[1].to_s, spec[2])
         end
