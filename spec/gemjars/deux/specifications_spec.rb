@@ -8,11 +8,21 @@ describe Specifications do
   let(:specs) { [["zzzzzz", Gem::Version.new("0.0.3"), "ruby"]] }
 
   it "should have a single spec" do
-    specifications["zzzzzz"].should == [Specification.new("zzzzzz", "0.0.3", "ruby")]
+    specifications["zzzzzz"].should == Set.new([Specification.new("zzzzzz", "0.0.3", "ruby")])
   end
 
   it "should be enumerable" do
     specifications.to_enum(:each).to_a.should == [Specification.new("zzzzzz", "0.0.3", "ruby")]
+  end
+
+  it "should be a set addition" do
+    (specifications + specifications).should == specifications
+  end
+
+  it "should allow adding additional specifications" do
+    version1 = ["abc", Gem::Version.new("0.0.1"), "ruby"]
+    version2 = ["abc", Gem::Version.new("0.0.2"), "ruby"]
+    (Specifications.new([version1]) + Specifications.new([version2])).should == Specifications.new([version1, version2])
   end
 
   context "from channel" do
@@ -20,7 +30,7 @@ describe Specifications do
     let(:io) { Marshal.dump([["zzzzzz", Gem::Version.new("0.0.3"), "ruby"]]) }
 
     it "should have specifcations" do
-      specifications["zzzzzz"].should == [Specification.new("zzzzzz", "0.0.3", "ruby")]
+      specifications["zzzzzz"].should == Set.new([Specification.new("zzzzzz", "0.0.3", "ruby")])
     end
   end
 

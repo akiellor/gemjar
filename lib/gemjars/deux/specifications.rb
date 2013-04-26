@@ -1,3 +1,4 @@
+require 'set'
 require 'gemjars/deux/streams'
 require 'gemjars/deux/specification'
 
@@ -31,9 +32,13 @@ module Gemjars
       def initialize specs
         @specs = {}
         specs.each do |spec|
-          @specs[spec[0]] ||= []
+          @specs[spec[0]] ||= Set.new
           @specs[spec[0]] << Specification.new(spec[0], spec[1].to_s, spec[2])
         end
+      end
+
+      def + other
+        Specifications.new(other.to_a + self.to_a)
       end
 
       def [] name
@@ -54,6 +59,10 @@ module Gemjars
           select {|s| requirement.satisfied_by?(::Gem::Version.new(s.version)) }.
           sort_by {|s| ::Gem::Version.new(s.version) }.
           first.version
+      end
+
+      def == other
+        Set.new(self.to_a) == Set.new(other.to_a)
       end
     end
   end
