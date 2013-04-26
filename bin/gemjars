@@ -17,7 +17,7 @@ require 'gemjars/deux/worker'
 include Gemjars::Deux
 
 http = Http.default
-specs = Specifications.rubygems
+specs = Specifications.rubygems + Specifications.prerelease_rubygems
 store = FileStore.new("./out")
 repo = MavenRepository.new(store)
 index = Index.spawn(store)
