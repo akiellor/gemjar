@@ -41,4 +41,14 @@ describe Pom do
       version.should == "1.0.0"
     end
   end
+
+  context "missing version" do
+    let(:specs) { mock(:specs) }
+    
+    it "should not be satisfied" do
+      specs.stub(:minimum_version).with("bar", ["= 2.0.0"]).and_return(nil)
+      
+      pom.should_not be_satisfied(specs)
+    end
+  end
 end

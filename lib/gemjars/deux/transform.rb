@@ -30,7 +30,15 @@ module Gemjars
               return
             end
             jar.add_entry "specifications/#@name-#@version.gemspec", Streams.to_channel(Java::JavaIo::ByteArrayInputStream.new(spec.to_ruby_for_cache.to_java_bytes))
-            Pom.new(spec).write_to(pom, specifications)
+
+            Pom.new(spec).tap do |p|
+              if p.satisfied?(specifications)
+                p.write_to(pom, specifications) 
+              else
+                handler.unsatisfied_dependency
+                return
+              end
+            end
           }
           h.finish {
             jar.close

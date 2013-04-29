@@ -9,10 +9,14 @@ describe Transform do
   let(:samples) { File.expand_path("samples", File.dirname(__FILE__)) }
   let(:gem_file_path) { File.join(samples, "rspec-2.11.0.gem") }
   let(:native_gem_file_path) { File.join(samples, "activefacts-0.6.0.gem") }
+  let(:unsatisfied_gem_file_path) { File.join(samples, "rspec-2.10.0.gem") }
   let(:maven_schema_path) { File.join(samples, "maven-v4_0_0.xsd") }
   let(:specs) { mock(:specs) }
 
   before(:each) do
+    specs.stub(:minimum_version).with("rspec-core", ["~> 2.10.0"]).and_return(nil)
+    specs.stub(:minimum_version).with("rspec-expectations", ["~> 2.10.0"]).and_return(nil)
+    specs.stub(:minimum_version).with("rspec-mocks", ["~> 2.10.0"]).and_return(nil)
     specs.stub(:minimum_version).with("rspec-core", ["~> 2.11.0"]).and_return("1.0.0")
     specs.stub(:minimum_version).with("rspec-expectations", ["~> 2.11.0"]).and_return("1.0.0")
     specs.stub(:minimum_version).with("rspec-mocks", ["~> 2.11.0"]).and_return("1.0.0")
@@ -71,6 +75,19 @@ describe Transform do
     end
 
     raise unless @native_called
+  end
+
+  it "should report unsatisfied dependencies" do
+    gem_channel = Java::JavaIo::FileInputStream.new(unsatisfied_gem_file_path).channel
+
+    transform = Transform.new("rspec", "2.10.0", gem_channel)
+    transform.to_mvn(specs) do |h|
+      h.unsatisfied_dependency do
+        @unsatisfied_called = true
+      end
+    end
+
+    raise unless @unsatisfied_called
   end
 end
 

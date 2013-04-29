@@ -43,6 +43,10 @@ module Gemjars
                 h.native do |exts|
                   warn "[#@name] Native Extensions -> #{{:spec => spec, :exts => exts}.inspect}"
                 end
+
+                h.unsatisfied_dependency do
+                  warn "[#@name] Unsatisfied Dependency -> #{{:spec => spec}.inspect}"
+                end
               end
             end
           rescue => e

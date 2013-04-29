@@ -55,10 +55,12 @@ module Gemjars
 
       def minimum_version name, specifier
         requirement = ::Gem::Requirement.new(specifier)
-        self[name].
+        spec = self[name] && self[name].
           select {|s| requirement.satisfied_by?(::Gem::Version.new(s.version)) }.
           sort_by {|s| ::Gem::Version.new(s.version) }.
-          first.version
+          first
+        
+        spec && spec.version
       end
 
       def == other

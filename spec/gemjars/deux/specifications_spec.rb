@@ -45,6 +45,14 @@ describe Specifications do
       specifications.minimum_version("zzzzzz", "~> 0.1").should == "0.2"
     end
 
+    it "should return nil for unknown gem" do
+      specifications.minimum_version("foobar", "~> 0.1").should be_nil
+    end
+
+    it "should return nil for unknown gem version" do
+      specifications.minimum_version("zzzzzz", "~> 7.0").should be_nil
+    end
+
     it "should be enumerable" do
       specifications.to_enum(:each).to_a.should == [
         Specification.new("zzzzzz", "0.3", "ruby"),
