@@ -21,6 +21,9 @@ module Gemjars
         pom_out = Java::JavaIo::ByteArrayOutputStream.new
         pom = pom_out.to_io
 
+        jar.add_entry "gems"
+        jar.add_entry "specifications"
+
         visit Handler.new {|h|
           h.on_file {|name, content|
             jar.add_entry "gems/#@name-#@version/#{name}", content

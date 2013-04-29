@@ -50,7 +50,8 @@ module Gemjars
               end
             end
           rescue => e
-            error "[#@name] Exception -> #{{:spec => spec, :exception => e, :backtrace => e.backtrace}.inspect}"
+            queue << spec
+            #error "[#@name] Exception -> #{{:spec => spec, :exception => e, :backtrace => e.backtrace}.inspect}"
           end
         end
         @done = true

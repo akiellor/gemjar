@@ -2,6 +2,7 @@ require 'spec_helper'
 require 'nokogiri'
 require 'gemjars/deux/transform'
 require 'set'
+require 'tempfile'
 
 include Gemjars::Deux
 
@@ -41,6 +42,36 @@ describe Transform do
     raise unless @success_called
   end
 
+  it "should be on the gem list" do
+    gem_input_stream = Java::JavaIo::FileInputStream.new(binscript_gem_file_path)
+    jar_out_path = Tempfile.new("rspec-2.11.0").path
+    jar_out_file = Java::JavaIo::File.new(jar_out_path)
+    jar_out_stream = Java::JavaIo::FileOutputStream.new(jar_out_file)
+
+    transform = Transform.new("rspec-core", "2.11.0", gem_input_stream.channel)
+
+    transform.to_mvn(specs) do |h|
+      h.success do |jar, pom|
+        Streams.copy_channel jar, jar_out_stream.channel
+      end
+    end
+
+    Bundler.with_clean_env do
+      old_classpath = ENV["CLASSPATH"]
+      old_gem_home = ENV["GEM_HOME"]
+      old_gem_path = ENV["GEM_PATH"]
+      ENV["CLASSPATH"] = jar_out_path
+      ENV["GEM_HOME"] = nil
+      ENV["GEM_PATH"] = nil
+
+      `jruby -S gem list`.should include "rspec-core"
+
+      ENV["CLASSPATH"] = old_classpath
+      ENV["GEM_HOME"] = old_gem_home
+      ENV["GEM_PATH"] = old_gem_path
+    end
+  end
+
   it "should transform a gem into a jar" do
     gem_input_stream = Java::JavaIo::FileInputStream.new(gem_file_path)
 
@@ -53,10 +84,12 @@ describe Transform do
         entries = ZipReader.new(jar).map {|e| [e.name, e.read]}
 
         Set.new(entries.map {|e| e[0] }).should == Set.new(%w{
+          gems
           gems/rspec-2.11.0/lib/rspec/version.rb
           gems/rspec-2.11.0/lib/rspec.rb
           gems/rspec-2.11.0/License.txt
           gems/rspec-2.11.0/README.md
+          specifications
           specifications/rspec-2.11.0.gemspec
         })
 
