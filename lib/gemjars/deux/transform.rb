@@ -2,6 +2,7 @@ require 'pathname'
 require 'gemjars/deux/zip'
 require 'gemjars/deux/tar'
 require 'gemjars/deux/pom'
+require 'gemjars/deux/binscript'
 
 module Gemjars
   module Deux
@@ -39,6 +40,11 @@ module Gemjars
                 handler.unsatisfied_dependencies unsatisfied_deps
                 return
               end
+            end
+
+            spec.executables && spec.executables.each do |executable|
+              binscript = Binscript.new(spec, executable)
+              jar.add_entry "bin/#{executable}", Streams.to_channel(Java::JavaIo::ByteArrayInputStream.new(binscript.to_s.to_java_bytes))
             end
           }
           h.finish {

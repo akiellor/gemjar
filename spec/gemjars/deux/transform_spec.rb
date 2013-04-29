@@ -8,6 +8,7 @@ include Gemjars::Deux
 describe Transform do
   let(:samples) { File.expand_path("samples", File.dirname(__FILE__)) }
   let(:gem_file_path) { File.join(samples, "rspec-2.11.0.gem") }
+  let(:binscript_gem_file_path) { File.join(samples, "rspec-core-2.11.0.gem") }
   let(:native_gem_file_path) { File.join(samples, "activefacts-0.6.0.gem") }
   let(:unsatisfied_gem_file_path) { File.join(samples, "rspec-2.10.0.gem") }
   let(:maven_schema_path) { File.join(samples, "maven-v4_0_0.xsd") }
@@ -20,6 +21,24 @@ describe Transform do
     specs.stub(:minimum_version).with("rspec-core", ["~> 2.11.0"]).and_return("1.0.0")
     specs.stub(:minimum_version).with("rspec-expectations", ["~> 2.11.0"]).and_return("1.0.0")
     specs.stub(:minimum_version).with("rspec-mocks", ["~> 2.11.0"]).and_return("1.0.0")
+  end
+
+  it "should transform a gem into a jar with binscripts" do
+    gem_input_stream = Java::JavaIo::FileInputStream.new(binscript_gem_file_path)
+
+    transform = Transform.new("rspec-core", "2.11.0", gem_input_stream.channel)
+
+    transform.to_mvn(specs) do |h|
+      h.success do |jar, pom|
+        @success_called = true
+
+        entries = ZipReader.new(jar).map {|e| [e.name, e.read]}
+
+        entries.map {|e| e[0] }.should include "bin/rspec"
+      end
+    end
+
+    raise unless @success_called
   end
 
   it "should transform a gem into a jar" do
