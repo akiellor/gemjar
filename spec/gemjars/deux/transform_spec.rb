@@ -3,6 +3,7 @@ require 'nokogiri'
 require 'gemjars/deux/transform'
 require 'set'
 require 'tempfile'
+require 'bundler'
 
 include Gemjars::Deux
 
