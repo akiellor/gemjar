@@ -48,7 +48,7 @@ describe Pom do
     it "should not be satisfied" do
       specs.stub(:minimum_version).with("bar", ["= 2.0.0"]).and_return(nil)
       
-      pom.should_not be_satisfied(specs)
+      pom.unsatisfied_dependencies(specs).should == [["bar", ["= 2.0.0"]]]
     end
   end
 end

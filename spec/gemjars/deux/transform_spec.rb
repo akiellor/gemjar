@@ -82,7 +82,8 @@ describe Transform do
 
     transform = Transform.new("rspec", "2.10.0", gem_channel)
     transform.to_mvn(specs) do |h|
-      h.unsatisfied_dependency do
+      h.unsatisfied_dependencies do |deps|
+        deps.should == [["rspec-core", ["~> 2.10.0"]], ["rspec-expectations", ["~> 2.10.0"]], ["rspec-mocks", ["~> 2.10.0"]]]
         @unsatisfied_called = true
       end
     end

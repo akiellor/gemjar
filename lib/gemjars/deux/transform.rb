@@ -32,10 +32,11 @@ module Gemjars
             jar.add_entry "specifications/#@name-#@version.gemspec", Streams.to_channel(Java::JavaIo::ByteArrayInputStream.new(spec.to_ruby_for_cache.to_java_bytes))
 
             Pom.new(spec).tap do |p|
-              if p.satisfied?(specifications)
+              unsatisfied_deps = p.unsatisfied_dependencies(specifications)
+              if unsatisfied_deps.empty?
                 p.write_to(pom, specifications) 
               else
-                handler.unsatisfied_dependency
+                handler.unsatisfied_dependencies unsatisfied_deps
                 return
               end
             end

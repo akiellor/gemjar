@@ -11,8 +11,10 @@ module Gemjars
         @spec = spec
       end
 
-      def satisfied? specs
-        @spec.runtime_dependencies.all? {|dep| Pom.to_maven_version(dep.name, dep.requirement.as_list, specs) }
+      def unsatisfied_dependencies specs
+        @spec.runtime_dependencies.
+          reject {|dep| Pom.to_maven_version(dep.name, dep.requirement.as_list, specs) }.
+          map {|dep| [dep.name, dep.requirement.as_list]}
       end
 
       def write_to io, specs
