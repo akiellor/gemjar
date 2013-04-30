@@ -26,7 +26,7 @@ queue = Queue.new
 
 specs.each { |s| queue << s }
 
-pool = (0..5).to_a.map do |i|
+pool = (0..30).to_a.map do |i|
   Gemjars::Deux::Worker.spawn("Worker #{i}", queue, index, http, repo, specs)
 end
 
