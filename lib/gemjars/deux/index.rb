@@ -1,6 +1,7 @@
 require 'yaml'
 require 'celluloid'
 require 'set'
+require 'digest/md5'
 
 module Gemjars
   module Deux
@@ -11,15 +12,19 @@ module Gemjars
 
       def initialize store
         @store = store
-        @index = load_index
+        @hashes = Set.new
+        @index = Set.new
+        load_index
       end
 
       def handled? spec
-        @index.include?(spec)
+        @hashes.include?(signature(spec.name, spec.version, spec.platform))
       end
 
-      def add spec
-        @index << spec
+      def add spec, metadata = {}
+        inner_add 'spec' => {'name' => spec.name, 'version' => spec.version, 'platform' => spec.platform},
+                  'metadata' => metadata
+
         if @index.size % 500 == 0
           flush
         end
@@ -36,7 +41,20 @@ module Gemjars
       
       def load_index
         io = @store.get("index.yml")
-        io ? Set.new(YAML.load(Streams.read_channel(io))) : Set.new
+        if io
+          YAML.load(Streams.read_channel(io)).each do |definition|
+            inner_add definition
+          end
+        end
+      end
+
+      def inner_add definition
+        @index << definition
+        @hashes << signature(definition['spec']['name'], definition['spec']['version'], definition['spec']['platform'])
+      end
+
+      def signature name, version, platform
+        Digest::MD5.hexdigest("#{name}:#{version}:#{platform}")
       end
     end
   end

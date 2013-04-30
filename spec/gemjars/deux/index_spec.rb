@@ -33,16 +33,17 @@ describe Index do
       
       store.stub(:put).with("index.yml").and_return(w)
 
-      subject.add spec
+      subject.add spec, :unresolved_dependencies => []
       subject.flush
 
-      YAML.load(Streams.read_channel(r)).should include spec 
+      YAML.load(Streams.read_channel(r)).should include 'spec' => {'name' => 'foo', 'version' => '1.2.3', 'platform' => 'ruby'},
+                                                        'metadata' => {:unresolved_dependencies => []}
     end
   end
 
   context "indexed zzzzzz 0.1.0 ruby" do
     before(:each) do
-      channel = Streams.to_channel(Java::JavaIo::ByteArrayInputStream.new(YAML.dump([Specification.new("zzzzzz", "0.1.0", "ruby")]).to_java_bytes))
+      channel = Streams.to_channel(Java::JavaIo::ByteArrayInputStream.new(YAML.dump([{'spec' => {'name' => "zzzzzz", 'version' => "0.1.0", 'platform' => "ruby"}, 'metadata' => {}}]).to_java_bytes))
       store.stub(:get).with("index.yml").and_return(channel)
     end
 
