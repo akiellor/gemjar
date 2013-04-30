@@ -8,7 +8,7 @@ module Gemjars
         config = YAML.load(File.read(File.expand_path(path)))
         bucket_name = config['bucket']
         s3 = AWS::S3.new(access_key_id: config['access_key_id'], secret_access_key: config['secret_access_key'])
-        bucket = s3.buckets.create(bucket_name)
+        bucket = s3.buckets.create(bucket_name, :acl => :public_read)
         executor = Java::JavaUtilConcurrent::Executors.new_fixed_thread_pool(10)
         new(bucket, executor)
       end
