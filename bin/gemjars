@@ -8,7 +8,7 @@ require 'celluloid/autostart'
 
 require 'gemjars/deux/transform'
 require 'gemjars/deux/maven_repository'
-require 'gemjars/deux/file_store'
+require 'gemjars/deux/aws_store'
 require 'gemjars/deux/specifications'
 require 'gemjars/deux/http'
 require 'gemjars/deux/index'
@@ -18,7 +18,7 @@ include Gemjars::Deux
 
 http = Http.default
 specs = Specifications.rubygems + Specifications.prerelease_rubygems
-store = FileStore.new("./out")
+store = AWSStore.from_file("~/.gemjars")
 repo = MavenRepository.new(store)
 index = Index.spawn(store)
 
@@ -26,14 +26,16 @@ queue = Queue.new
 
 specs.each { |s| queue << s }
 
-pool = (0..30).to_a.map do |i|
+pool = (0..5).to_a.map do |i|
   Gemjars::Deux::Worker.spawn("Worker #{i}", queue, index, http, repo, specs)
 end
 
 Signal.trap("INT") do
+  puts "Stopping..."
   until queue.empty?
     queue.pop
   end
+  puts "Queue Drained..."
   
   Timeout::timeout(3 * pool.size) do
     until pool.all?(&:done?)
