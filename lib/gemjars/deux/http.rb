@@ -19,9 +19,9 @@ module Gemjars
 
         response = @client.execute(request)
         io = response.entity.content
-        yield Streams.to_channel(io)
-      ensure
-        io.close if io
+        out = Java::JavaIo::ByteArrayOutputStream.new
+        Streams.copy_channel Streams.to_channel(io), Streams.to_channel(out)
+        yield Streams.to_channel(Java::JavaIo::ByteArrayInputStream.new(out.to_byte_array))
       end
     end
   end
