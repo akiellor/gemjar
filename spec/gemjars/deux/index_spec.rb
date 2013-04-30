@@ -6,12 +6,23 @@ require 'gemjars/deux/streams'
 include Gemjars::Deux
 
 describe Index do
+  class MessageSink
+    def method_missing *args, &block
+    end
+  end
+
   subject { Index.new(store) }
   let(:store) { mock(:store) }
 
   context "no indexed gems" do
     before(:each) do
       store.stub(:get).with("index.yml").and_return(nil)
+    end
+
+    it "should flush every 500 additional gems" do
+      store.should_receive(:put).exactly(2).times.and_return(MessageSink.new)
+
+      1000.times {|i| subject.add Specification.new("foo", "1.2.#{i}", "ruby") }
     end
 
     it { should_not be_handled(Specification.new("zzzzzz", "0.1.0", "ruby")) }

@@ -20,6 +20,9 @@ module Gemjars
 
       def add spec
         @index << spec
+        if @index.size % 500 == 0
+          flush
+        end
       end
 
       def flush
