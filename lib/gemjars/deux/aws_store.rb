@@ -22,7 +22,7 @@ module Gemjars
         r, w = Streams.pipe_channel
         @executor.submit proc {
           begin
-            @bucket.objects.create name, Streams.to_input_stream(r).to_io, {:estimated_content_length => 2048 * 1024}.merge(opts)
+            @bucket.objects.create name, Streams.to_input_stream(r).to_io, {:estimated_content_length => 2048 * 1024, :acl => :public_read}.merge(opts)
           rescue => e
             puts e
           end
