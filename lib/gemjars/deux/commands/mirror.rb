@@ -11,8 +11,30 @@ module Gemjars
           Integer(s)
         end
 
+        option ["--out"], "OUTPUT_DIRECTORY", "output directory", :attribute_name => :output_directory, :required => true
+
         option ["--log"], "LOG_PATH", "log file path", :default => File.new(File.expand_path("log"), "w+") do |s|
           File.new(s, "w+")
+        end
+
+        def http
+          @http ||= Http.default
+        end
+
+        def specs
+          @specs ||= Specifications.rubygems + Specifications.prerelease_rubygems
+        end
+
+        def store
+          @store ||= FileStore.new(output_directory)
+        end
+
+        def repo
+          @repo ||= MavenRepository.new(store)
+        end
+
+        def index
+          @index = Index.spawn(store)
         end
 
         def execute
@@ -20,12 +42,6 @@ module Gemjars
           require 'celluloid/autostart'
 
           Celluloid.logger = Logger.new(log)
-
-          http = Http.default
-          specs = Specifications.rubygems + Specifications.prerelease_rubygems
-          store = FileStore.new("./out")
-          repo = MavenRepository.new(store)
-          index = Index.spawn(store)
 
           queue = Queue.new
 
