@@ -6,6 +6,15 @@ include Gemjars::Deux
 describe Specifications do
   let(:specifications) { Specifications.new(specs) }
   let(:specs) { [["zzzzzz", Gem::Version.new("0.0.3"), "ruby"]] }
+  
+  it "should have number_of_releases" do
+    specifications.number_of_releases("zzzzzz").should == 1
+  end
+
+  it "should have zero releases" do
+    specifications.number_of_releases("foobar").should == 0
+  end
+
 
   it "should have a single spec" do
     specifications["zzzzzz"].should == Set.new([Specification.new("zzzzzz", "0.0.3", "ruby")])
@@ -59,6 +68,10 @@ describe Specifications do
         Specification.new("zzzzzz", "1.0", "ruby"),
         Specification.new("zzzzzz", "0.2", "ruby")
       ]
+    end
+
+    it "should have number_of_releases" do
+      specifications.number_of_releases("zzzzzz").should == 3
     end
   end
 end

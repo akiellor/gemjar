@@ -63,6 +63,10 @@ module Gemjars
         spec && spec.version
       end
 
+      def number_of_releases name
+        (@specs[name] || []).size
+      end
+
       def == other
         Set.new(self.to_a) == Set.new(other.to_a)
       end

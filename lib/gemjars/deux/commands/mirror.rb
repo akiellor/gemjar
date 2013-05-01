@@ -43,15 +43,15 @@ module Gemjars
 
           Celluloid.logger = Logger.new(log)
 
-          queue = Queue.new
+          task_queue = PriorityQueue.new(specs)
 
-          specs.each { |s| queue << s }
+          specs.each { |s| task_queue << s }
 
           pool = (1..workers_count).to_a.map do |i|
-            Gemjars::Deux::Worker.spawn("Worker #{i}", queue, index, http, repo, specs)
+            Gemjars::Deux::Worker.spawn("Worker #{i}", task_queue, index, http, repo, specs)
           end
 
-          workers = Workers.new(queue, pool)
+          workers = Workers.new(task_queue, pool)
 
           Signal.trap("INT") do
             workers.halt!
