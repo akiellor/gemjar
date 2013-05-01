@@ -30,21 +30,26 @@ module Gemjars
 
               transform.to_mvn(specs) do |h|
                 h.success do |jar, pom|
+                  jar_size = nil
+                  pom_size = nil
+
                   repo.pipe_to(spec.name, spec.version) do |out_jar, out_pom|
-                    Streams.copy_channel jar, out_jar
-                    Streams.copy_channel pom, out_pom
+                    jar_size = Streams.copy_channel jar, out_jar
+                    pom_size = Streams.copy_channel pom, out_pom
                   end
 
-                  index.add spec
+                  index.add spec, :size => jar_size + pom_size
 
                   info "[#@name] Success -> #{{:spec => spec}.inspect}"
                 end
 
                 h.native do |exts|
+                  index.add spec, :native_extensions => exts
                   warn "[#@name] Native Extensions -> #{{:spec => spec, :exts => exts}.inspect}"
                 end
 
                 h.unsatisfied_dependencies do |deps|
+                  index.add spec, :unsatisfied_dependencies => deps
                   warn "[#@name] Unsatisfied Dependency -> #{{:spec => spec, :deps => deps}.inspect}"
                 end
               end

@@ -22,8 +22,8 @@ module Gemjars
       end
 
       def add spec, metadata = {}
-        inner_add 'spec' => {'name' => spec.name, 'version' => spec.version, 'platform' => spec.platform},
-                  'metadata' => metadata
+        inner_add :spec => {:name => spec.name, :version => spec.version, :platform => spec.platform},
+                  :metadata => metadata
 
         if @index.size % 500 == 0
           flush
@@ -32,7 +32,7 @@ module Gemjars
 
       def flush
         out = @store.put("index.yml")
-        out.write Streams.to_buffer(YAML.dump(@index))
+        out.write Streams.to_buffer(YAML.dump(@index.to_a))
       ensure
         out.close if out
       end
@@ -50,7 +50,7 @@ module Gemjars
 
       def inner_add definition
         @index << definition
-        @hashes << signature(definition['spec']['name'], definition['spec']['version'], definition['spec']['platform'])
+        @hashes << signature(definition[:spec][:name], definition[:spec][:version], definition[:spec][:platform])
       end
 
       def signature name, version, platform

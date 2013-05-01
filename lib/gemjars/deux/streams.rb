@@ -53,12 +53,14 @@ module Gemjars
 
       def self.copy_channel channel_in, channel_out
         buffer = Java::JavaNio::ByteBuffer.allocate(1024)
-        
+        size = 0
         while channel_in.read(buffer) != -1
+          size = size + buffer.capacity - buffer.remaining
           buffer.flip
           channel_out.write buffer
           buffer.rewind
         end
+        size
       end
     end
   end
