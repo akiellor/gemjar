@@ -3,50 +3,8 @@
 $LOAD_PATH << File.expand_path(File.join(File.dirname(__FILE__), "..", "lib"))
 $CLASSPATH << Dir[File.join(File.expand_path(File.join(File.dirname(__FILE__), "..", "vendor")), "*")]
 
-require 'thread'
-require 'celluloid/autostart'
-
-require 'gemjars/deux/transform'
-require 'gemjars/deux/maven_repository'
-require 'gemjars/deux/aws_store'
-require 'gemjars/deux/specifications'
-require 'gemjars/deux/http'
-require 'gemjars/deux/index'
-require 'gemjars/deux/worker'
+require 'gemjars/deux'
 
 include Gemjars::Deux
 
-http = Http.default
-specs = Specifications.rubygems + Specifications.prerelease_rubygems
-store = AWSStore.from_file("~/.gemjars")
-repo = MavenRepository.new(store)
-index = Index.spawn(store)
-
-queue = Queue.new
-
-specs.each { |s| queue << s }
-
-pool = (0..30).to_a.map do |i|
-  Gemjars::Deux::Worker.spawn("Worker #{i}", queue, index, http, repo, specs)
-end
-
-Signal.trap("INT") do
-  puts "Stopping..."
-  until queue.empty?
-    queue.pop
-  end
-  puts "Queue Drained..."
-  
-  Timeout::timeout(3 * pool.size) do
-    until pool.all?(&:done?)
-      sleep 1
-    end
-  end
-
-  exit
-end
-
-pool.each {|w| w.async.run }
-
-pool.each {|w| w.thread.join }
-
+Commands::Mirror.run
