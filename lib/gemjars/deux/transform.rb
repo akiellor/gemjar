@@ -18,11 +18,11 @@ module Gemjars
 
         jar_out = Java::JavaIo::ByteArrayOutputStream.new
         jar = ZipWriter.new(Streams.to_channel(jar_out))
-        pom_out = Java::JavaIo::ByteArrayOutputStream.new
-        pom = pom_out.to_io
 
         jar.add_entry "gems"
         jar.add_entry "specifications"
+
+        pom = nil
 
         visit Handler.new {|h|
           h.on_file {|name, content|
@@ -35,14 +35,12 @@ module Gemjars
             end
             jar.add_entry "specifications/#@name-#@version.gemspec", Streams.to_channel(Java::JavaIo::ByteArrayInputStream.new(spec.to_ruby_for_cache.to_java_bytes))
 
-            Pom.new(spec).tap do |p|
-              unsatisfied_deps = p.unsatisfied_dependencies(specifications)
-              if unsatisfied_deps.empty?
-                p.write_to(pom, specifications) 
-              else
-                handler.unsatisfied_dependencies unsatisfied_deps
-                return
-              end
+            pom = Pom.new(spec, specifications)
+
+            unsatisfied_deps = pom.unsatisfied_dependencies
+            unless unsatisfied_deps.empty?
+              handler.unsatisfied_dependencies unsatisfied_deps
+              return
             end
 
             spec.executables && spec.executables.each do |executable|
@@ -52,12 +50,10 @@ module Gemjars
           }
           h.finish {
             jar.close
-            pom.close
 
             jar_in = Java::JavaIo::ByteArrayInputStream.new(jar_out.to_byte_array)
-            pom_in = Java::JavaIo::ByteArrayInputStream.new(pom_out.to_byte_array)
 
-            handler.success Streams.to_channel(jar_in), Streams.to_channel(pom_in)
+            handler.success Streams.to_channel(jar_in), pom
           }
         }
       end

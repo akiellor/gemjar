@@ -35,7 +35,7 @@ module Gemjars
 
                   repo.pipe_to(spec.name, spec.version) do |out_jar, out_pom|
                     jar_size = Streams.copy_channel jar, out_jar
-                    pom_size = Streams.copy_channel pom, out_pom
+                    pom_size = Streams.copy_channel pom.channel, out_pom
                   end
 
                   index.add spec, :size => jar_size + pom_size

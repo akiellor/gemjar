@@ -109,7 +109,7 @@ describe Transform do
     transform.to_mvn(specs) do |h|
       h.success do |jar, pom|
         @success_called = true
-        Streams.read_channel(pom).should be_valid_xml(File.read(maven_schema_path))
+        Streams.read_channel(pom.channel).should be_valid_xml(File.read(maven_schema_path))
       end
     end
 
