@@ -37,4 +37,13 @@ describe Workers do
 
     workers.halt!
   end
+
+  it "should async run and join each worker" do
+    worker.stub_chain("async.run").and_return(nil)
+    worker.async.should_receive(:run)
+    worker.stub_chain("thread.join").and_return(nil)
+    worker.thread.should_receive(:join)
+
+    workers.run!
+  end
 end

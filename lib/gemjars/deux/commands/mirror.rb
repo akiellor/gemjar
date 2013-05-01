@@ -58,9 +58,7 @@ module Gemjars
             exit
           end
 
-          pool.each {|w| w.async.run }
-
-          pool.each {|w| w.thread.join }
+          workers.run!
         end
       end
     end

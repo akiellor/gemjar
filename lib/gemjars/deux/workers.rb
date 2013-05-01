@@ -16,6 +16,11 @@ module Gemjars
         await_workers
       end
 
+      def run!
+        @workers.each {|w| w.async.run }
+        @workers.each {|w| w.thread.join }
+      end
+
       private
 
       def await_workers
