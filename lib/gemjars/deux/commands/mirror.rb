@@ -7,7 +7,7 @@ module Gemjars
       class Mirror < ::Clamp::Command
         include Commands::Dsl
 
-        option ["-w", "--workers"], "WORKERS", "worker count", :default => 5 do |s|
+        option ["-w", "--workers"], "WORKERS", "worker count", :attribute_name => :workers_count, :default => 5 do |s|
           Integer(s)
         end
 
@@ -47,7 +47,7 @@ module Gemjars
 
           specs.each { |s| queue << s }
 
-          pool = (1..workers).to_a.map do |i|
+          pool = (1..workers_count).to_a.map do |i|
             Gemjars::Deux::Worker.spawn("Worker #{i}", queue, index, http, repo, specs)
           end
 
