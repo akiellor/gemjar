@@ -29,6 +29,12 @@ describe Pom do
     pom_string.should have_xpath_value "//xmlns:dependency/xmlns:version", "1.0.0"
   end
 
+  it "should have dependencies" do
+    specs.should_receive(:satisfactory_spec).with("bar", ["= 2.0.0"]).and_return(Specification.new("bar", "1.0.0", "ruby"))
+
+    pom.dependencies.should == [Specification.new("bar", "1.0.0", "ruby")]
+  end
+
   context "missing version" do
     let(:specs) { mock(:specs) }
     

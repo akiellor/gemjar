@@ -15,6 +15,12 @@ module Gemjars
           map {|dep| [dep.name, dep.requirement.as_list]}
       end
 
+      def dependencies
+        @spec.runtime_dependencies.map do |dep|
+          @specifications.satisfactory_spec(dep.name, dep.requirement.as_list)
+        end
+      end
+
       def channel
         Streams.to_channel(Java::JavaIo::ByteArrayInputStream.new(to_xml.to_java_bytes))
       end
@@ -32,11 +38,11 @@ module Gemjars
           project.version @spec.version.to_s
 
           project.dependencies do |deps_node|
-            @spec.runtime_dependencies.each do |dep|
+            self.dependencies.each do |dep|
               deps_node.dependency do |dependency_node|
                 dependency_node.groupId "org.rubygems"
                 dependency_node.artifactId dep.name
-                dependency_node.version @specifications.satisfactory_spec(dep.name, dep.requirement.as_list).version
+                dependency_node.version dep.version
               end
             end
           end
