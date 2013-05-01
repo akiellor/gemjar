@@ -51,19 +51,10 @@ module Gemjars
             Gemjars::Deux::Worker.spawn("Worker #{i}", queue, index, http, repo, specs)
           end
 
+          workers = Workers.new(queue, pool)
+
           Signal.trap("INT") do
-            puts "Stopping..."
-            until queue.empty?
-              queue.pop
-            end
-            puts "Queue Drained..."
-
-            Timeout::timeout(3 * pool.size) do
-              until pool.all?(&:done?)
-                sleep 1
-              end
-            end
-
+            workers.halt!
             exit
           end
 
