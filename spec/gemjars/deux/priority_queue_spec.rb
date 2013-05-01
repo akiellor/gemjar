@@ -29,6 +29,14 @@ describe PriorityQueue do
     queue.should be_empty
   end
 
+  it "should not be empty when queue has forced specs" do
+    queue.force Specification.new("rails", "2", "ruby")
+
+    queue.should_not be_empty
+    queue.pop
+    queue.should be_empty
+  end
+
   it "should prioritize specs with more released versions" do
     specs.stub(:number_of_releases).with("rails").and_return(50)
     specs.stub(:number_of_releases).with("rspec").and_return(10)
@@ -48,6 +56,23 @@ describe PriorityQueue do
 
     queue.pop.version.should == "2"
     queue.pop.version.should == "1"
+  end
+
+  it "should prioritize forced specs first" do
+    specs.stub(:number_of_releases).with("rails").and_return(50)
+    specs.stub(:number_of_releases).with("rspec").and_return(10)
+    
+    queue << Specification.new("rails", "2", "ruby")
+    queue << Specification.new("rails", "3", "ruby")
+    queue.force Specification.new("rails", "0", "ruby")
+    queue.force Specification.new("rails", "1", "ruby")
+    queue << Specification.new("rails", "5", "ruby")
+
+    queue.pop.version.should == "1"
+    queue.pop.version.should == "0"
+    queue.pop.version.should == "5"
+    queue.pop.version.should == "3"
+    queue.pop.version.should == "2"
   end
 end
 

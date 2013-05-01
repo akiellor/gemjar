@@ -20,19 +20,24 @@ module Gemjars
       def initialize specifications
         @specifications = specifications
         @queue = Java::JavaUtilConcurrent::PriorityBlockingQueue.new
+        @force_queue = Java::JavaUtilConcurrent::PriorityBlockingQueue.new
       end
 
       def << spec
         @queue.offer Entry.new(spec, @specifications.number_of_releases(spec.name))
       end
 
+      def force spec
+        @force_queue.offer Entry.new(spec, 0)
+      end
+
       def pop
-        e = @queue.poll
+        e = (@force_queue.poll || @queue.poll)
         e && e.spec
       end
 
       def empty?
-        @queue.empty?
+        @force_queue.empty? && @queue.empty?
       end
     end
   end
