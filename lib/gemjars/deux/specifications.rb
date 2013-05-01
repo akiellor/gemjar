@@ -53,14 +53,12 @@ module Gemjars
         end
       end
 
-      def minimum_version name, specifier
+      def satisfactory_spec name, specifier
         requirement = ::Gem::Requirement.new(specifier)
-        spec = self[name] && self[name].
+        self[name] && self[name].
           select {|s| requirement.satisfied_by?(::Gem::Version.new(s.version)) }.
           sort_by {|s| ::Gem::Version.new(s.version) }.
           first
-        
-        spec && spec.version
       end
 
       def number_of_releases name

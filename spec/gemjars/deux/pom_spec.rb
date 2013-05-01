@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'gemjars/deux/pom'
+require 'gemjars/deux/specification'
 
 include Gemjars::Deux
 
@@ -14,7 +15,7 @@ describe Pom do
   let(:specs) { mock(:specs) }
  
   it "should generate pom from spec" do
-    specs.should_receive(:minimum_version).with("bar", ["= 2.0.0"]).and_return("1.0.0")
+    specs.should_receive(:satisfactory_spec).with("bar", ["= 2.0.0"]).and_return(Specification.new("bar", "1.0.0", "ruby"))
 
     pom_string = Streams.read_channel(pom.channel)
     
@@ -28,23 +29,11 @@ describe Pom do
     pom_string.should have_xpath_value "//xmlns:dependency/xmlns:version", "1.0.0"
   end
 
-  context "version translation" do
-    let(:specs) { mock(:specs) }
-
-    it "should translate '=' version to maven style'" do
-      specs.should_receive(:minimum_version).with("rspec", "2.0.0").and_return("1.0.0")
-      
-      version = Pom.to_maven_version "rspec", "2.0.0", specs
-
-      version.should == "1.0.0"
-    end
-  end
-
   context "missing version" do
     let(:specs) { mock(:specs) }
     
     it "should not be satisfied" do
-      specs.stub(:minimum_version).with("bar", ["= 2.0.0"]).and_return(nil)
+      specs.stub(:satisfactory_spec).with("bar", ["= 2.0.0"]).and_return(nil)
       
       pom.unsatisfied_dependencies.should == [["bar", ["= 2.0.0"]]]
     end

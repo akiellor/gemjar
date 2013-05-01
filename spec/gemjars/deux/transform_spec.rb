@@ -17,12 +17,12 @@ describe Transform do
   let(:specs) { mock(:specs) }
 
   before(:each) do
-    specs.stub(:minimum_version).with("rspec-core", ["~> 2.10.0"]).and_return(nil)
-    specs.stub(:minimum_version).with("rspec-expectations", ["~> 2.10.0"]).and_return(nil)
-    specs.stub(:minimum_version).with("rspec-mocks", ["~> 2.10.0"]).and_return(nil)
-    specs.stub(:minimum_version).with("rspec-core", ["~> 2.11.0"]).and_return("1.0.0")
-    specs.stub(:minimum_version).with("rspec-expectations", ["~> 2.11.0"]).and_return("1.0.0")
-    specs.stub(:minimum_version).with("rspec-mocks", ["~> 2.11.0"]).and_return("1.0.0")
+    specs.stub(:satisfactory_spec).with("rspec-core", ["~> 2.10.0"]).and_return(nil)
+    specs.stub(:satisfactory_spec).with("rspec-expectations", ["~> 2.10.0"]).and_return(nil)
+    specs.stub(:satisfactory_spec).with("rspec-mocks", ["~> 2.10.0"]).and_return(nil)
+    specs.stub(:satisfactory_spec).with("rspec-core", ["~> 2.11.0"]).and_return(Specification.new("rspec-core", "1.0.0", "ruby"))
+    specs.stub(:satisfactory_spec).with("rspec-expectations", ["~> 2.11.0"]).and_return(Specification.new("rspec-expectations", "1.0.0", "ruby"))
+    specs.stub(:satisfactory_spec).with("rspec-mocks", ["~> 2.11.0"]).and_return(Specification.new("rspec-mocks", "1.0.0", "ruby"))
   end
 
   it "should transform a gem into a jar with binscripts" do

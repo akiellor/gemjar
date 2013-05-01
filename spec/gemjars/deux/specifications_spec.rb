@@ -50,16 +50,16 @@ describe Specifications do
       ["zzzzzz", Gem::Version.new("0.2"), "ruby"]
     ]}
     
-    it "should return the minimum version for gem" do
-      specifications.minimum_version("zzzzzz", "~> 0.1").should == "0.2"
+    it "should return the satisfactory spec for gem" do
+      specifications.satisfactory_spec("zzzzzz", "~> 0.1").should == Specification.new("zzzzzz", "0.2", "ruby")
     end
 
     it "should return nil for unknown gem" do
-      specifications.minimum_version("foobar", "~> 0.1").should be_nil
+      specifications.satisfactory_spec("foobar", "~> 0.1").should be_nil
     end
 
     it "should return nil for unknown gem version" do
-      specifications.minimum_version("zzzzzz", "~> 7.0").should be_nil
+      specifications.satisfactory_spec("zzzzzz", "~> 7.0").should be_nil
     end
 
     it "should be enumerable" do
