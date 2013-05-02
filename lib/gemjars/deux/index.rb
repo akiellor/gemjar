@@ -1,4 +1,4 @@
-require 'yaml'
+require 'json'
 require 'celluloid'
 require 'set'
 require 'digest/md5'
@@ -31,8 +31,8 @@ module Gemjars
       end
 
       def flush
-        out = @store.put("index.yml")
-        out.write Streams.to_buffer(YAML.dump(@index.to_a))
+        out = @store.put("index.json")
+        out.write Streams.to_buffer(JSON.dump(@index.to_a))
       ensure
         out.close if out
       end
@@ -40,9 +40,9 @@ module Gemjars
       private
       
       def load_index
-        io = @store.get("index.yml")
+        io = @store.get("index.json")
         if io
-          YAML.load(Streams.read_channel(io)).each do |definition|
+          JSON.load(Streams.read_channel(io), nil, :symbolize_names => true).each do |definition|
             inner_add definition
           end
         end
