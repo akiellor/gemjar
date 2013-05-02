@@ -40,6 +40,10 @@ module Gemjars
 
                   index.add spec, :size => jar_size + pom_size
 
+                  pom.dependencies.each do |spec|
+                    queue.force spec
+                  end
+
                   info "[#@name] Success -> #{{:spec => spec}.inspect}"
                 end
 
