@@ -22,7 +22,7 @@ module Gemjars
         end
 
         def specs
-          @specs ||= Specifications.rubygems + Specifications.prerelease_rubygems
+          @specs ||= (Specifications.rubygems + Specifications.prerelease_rubygems)
         end
 
         def store
@@ -34,7 +34,7 @@ module Gemjars
         end
 
         def index
-          @index = Index.spawn(store)
+          @index ||= Index.new(store)
         end
 
         def execute
@@ -45,7 +45,7 @@ module Gemjars
 
           task_queue = PriorityQueue.new(specs)
 
-          specs.each { |s| task_queue << s }
+          specs.each { |s| task_queue << s unless index.handled?(s) }
 
           pool = (1..workers_count).to_a.map do |i|
             Gemjars::Deux::Worker.spawn("Worker #{i}", task_queue, index, http, repo, specs)
@@ -54,7 +54,11 @@ module Gemjars
           workers = Workers.new(task_queue, pool)
 
           Signal.trap("INT") do
-            workers.halt!
+            begin
+              workers.halt!
+            ensure
+              index.flush
+            end
             exit
           end
 

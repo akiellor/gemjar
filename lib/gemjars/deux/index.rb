@@ -1,48 +1,54 @@
-require 'json'
-require 'celluloid'
+require 'gson'
+require 'multi_json'
+require 'thread'
 require 'set'
 require 'digest/md5'
 
 module Gemjars
   module Deux
     class Index
-      include Celluloid
-
-      finalizer :flush
-
       def initialize store
         @store = store
         @hashes = Set.new
         @index = Set.new
+        @mutex = Mutex.new
         load_index
       end
 
       def handled? spec
-        @hashes.include?(signature(spec.name, spec.version, spec.platform))
+        @mutex.synchronize do
+          @hashes.include?(signature(spec.name, spec.version, spec.platform))
+        end
       end
 
       def add spec, metadata = {}
-        inner_add :spec => {:name => spec.name, :version => spec.version, :platform => spec.platform},
-                  :metadata => metadata
+        @mutex.synchronize do
+          inner_add :spec => {:name => spec.name, :version => spec.version, :platform => spec.platform},
+            :metadata => metadata
 
-        if @index.size % 500 == 0
-          flush
+          if @index.size % 500 == 0
+            flush_inner
+          end
         end
       end
 
       def flush
+        @mutex.synchronize { flush_inner }
+      end
+
+      private
+
+      def flush_inner
         out = @store.put("index.json")
-        out.write Streams.to_buffer(JSON.dump(@index.to_a))
+        out.write Streams.to_buffer(MultiJson.dump(@index.to_a))
       ensure
         out.close if out
       end
 
-      private
-      
       def load_index
         io = @store.get("index.json")
         if io
-          JSON.load(Streams.read_channel(io), nil, :symbolize_names => true).each do |definition|
+          MultiJson.load(Streams.read_channel(io), :symbolize_keys => true).each do |definition|
             inner_add definition
           end
         end

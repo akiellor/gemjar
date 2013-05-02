@@ -36,14 +36,14 @@ describe Index do
       subject.add spec, :unresolved_dependencies => []
       subject.flush
 
-      JSON.load(Streams.read_channel(r), nil, :symbolize_names => true).should include :spec => {:name => 'foo', :version => '1.2.3', :platform => 'ruby'},
+      MultiJson.load(Streams.read_channel(r), :symbolize_keys => true).should include :spec => {:name => 'foo', :version => '1.2.3', :platform => 'ruby'},
                                                         :metadata => {:unresolved_dependencies => []}
     end
   end
 
   context "indexed zzzzzz 0.1.0 ruby" do
     before(:each) do
-      channel = Streams.to_channel(Java::JavaIo::ByteArrayInputStream.new(JSON.dump([{:spec => {:name => "zzzzzz", :version => "0.1.0", :platform => "ruby"}, :metadata => {}}]).to_java_bytes))
+      channel = Streams.to_channel(Java::JavaIo::ByteArrayInputStream.new(MultiJson.dump([{:spec => {:name => "zzzzzz", :version => "0.1.0", :platform => "ruby"}, :metadata => {}}]).to_java_bytes))
       store.stub(:get).with("index.json").and_return(channel)
     end
 
