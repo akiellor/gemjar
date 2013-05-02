@@ -7,6 +7,8 @@ module Gemjars
     class Specifications
       include Enumerable
 
+      attr_reader :size
+
       def self.rubygems http = Http.default
         http.get("http://rubygems.org/specs.4.8.gz") do |channel|
           from_gzip channel
@@ -31,6 +33,7 @@ module Gemjars
 
       def initialize specs
         @specs = {}
+        @size = specs.size
         specs.each do |spec|
           @specs[spec[0]] ||= Set.new
           @specs[spec[0]] << Specification.new(spec[0], spec[1].to_s, spec[2])

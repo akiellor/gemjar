@@ -25,6 +25,7 @@ describe PriorityQueue do
     queue << Specification.new("rails", "2", "ruby")
 
     queue.should_not be_empty
+    queue.size.should == 1
     queue.pop
     queue.should be_empty
   end
@@ -54,6 +55,8 @@ describe PriorityQueue do
     queue << Specification.new("rails", "1", "ruby")
     queue << Specification.new("rails", "2", "ruby")
 
+    queue.size.should == 2
+
     queue.pop.version.should == "2"
     queue.pop.version.should == "1"
   end
@@ -67,6 +70,8 @@ describe PriorityQueue do
     queue.force Specification.new("rails", "0", "ruby")
     queue.force Specification.new("rails", "1", "ruby")
     queue << Specification.new("rails", "5", "ruby")
+    
+    queue.size.should == 5
 
     queue.pop.version.should == "1"
     queue.pop.version.should == "0"

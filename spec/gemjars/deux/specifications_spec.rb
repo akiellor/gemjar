@@ -15,6 +15,9 @@ describe Specifications do
     specifications.number_of_releases("foobar").should == 0
   end
 
+  it "should have size" do
+    specifications.size.should == 1
+  end
 
   it "should have a single spec" do
     specifications["zzzzzz"].should == Set.new([Specification.new("zzzzzz", "0.0.3", "ruby")])
@@ -60,6 +63,10 @@ describe Specifications do
 
     it "should return nil for unknown gem version" do
       specifications.satisfactory_spec("zzzzzz", "~> 7.0").should be_nil
+    end
+    
+    it "should have size" do
+      specifications.size.should == 3
     end
 
     it "should be enumerable" do

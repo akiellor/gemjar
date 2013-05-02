@@ -61,6 +61,9 @@ module Gemjars
           rescue => e
             error "[#@name] Exception -> #{{:spec => spec, :exception => e, :backtrace => e.backtrace}.inspect}"
           end
+
+          $stdout.print "  #{queue.size}/#{specs.size}  #{((queue.size.to_f / specs.size.to_f) * 100).to_i}% #{" " * 100}\r"
+          $stdout.flush
         end
         @done = true
       end

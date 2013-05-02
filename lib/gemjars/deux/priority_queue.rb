@@ -39,6 +39,10 @@ module Gemjars
       def empty?
         @force_queue.empty? && @queue.empty?
       end
+
+      def size
+        @force_queue.size + @queue.size
+      end
     end
   end
 end
