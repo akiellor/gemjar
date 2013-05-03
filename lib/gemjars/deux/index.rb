@@ -39,16 +39,16 @@ module Gemjars
       private
 
       def flush_inner
-        out = @store.put("index.json")
+        out = Streams.to_gzip_write_channel(@store.put("index.json.gz"))
         out.write Streams.to_buffer(MultiJson.dump(@index.to_a))
       ensure
         out.close if out
       end
 
       def load_index
-        io = @store.get("index.json")
+        io = @store.get("index.json.gz")
         if io
-          MultiJson.load(Streams.read_channel(io), :symbolize_keys => true).each do |definition|
+          MultiJson.load(Streams.read_channel(Streams.to_gzip_read_channel(io)), :symbolize_keys => true).each do |definition|
             inner_add definition
           end
         end

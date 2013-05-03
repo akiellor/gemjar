@@ -22,9 +22,7 @@ module Gemjars
       end
 
       def self.from_gzip channel
-        input_stream = Streams.to_input_stream(channel)
-        gunzip_channel = Streams.to_channel(Java::JavaUtilZip::GZIPInputStream.new(input_stream))
-        from_channel gunzip_channel 
+        from_channel Streams.to_gzip_read_channel(channel)
       end
 
       def self.from_channel channel

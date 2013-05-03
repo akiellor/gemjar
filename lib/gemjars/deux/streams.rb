@@ -25,6 +25,16 @@ module Gemjars
         Java::JavaNioChannels::Channels.new_channel(stream)
       end
 
+      def self.to_gzip_write_channel write_channel
+        output_stream = Streams.to_output_stream(write_channel)
+        Streams.to_channel(Java::JavaUtilZip::GZIPOutputStream.new(output_stream))
+      end
+
+      def self.to_gzip_read_channel read_channel
+        input_stream = Streams.to_input_stream(read_channel)
+        Streams.to_channel(Java::JavaUtilZip::GZIPInputStream.new(input_stream))
+      end
+
       def self.to_input_stream channel
         Java::JavaNioChannels::Channels.new_input_stream(channel)
       end
