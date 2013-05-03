@@ -17,6 +17,16 @@ module Gemjars
           File.new(s, "w+")
         end
 
+        parameter "GEMS ...", "gem names to mirror", :required => false, :attribute_name => :gems
+
+        def primer
+          if gems.empty?
+            UnhandledPrimer.new(index)
+          else
+            SpecifiedPrimer.new(gems)
+          end
+        end
+
         def http
           @http ||= Http.default
         end
@@ -45,7 +55,7 @@ module Gemjars
 
           task_queue = PriorityQueue.new(specs)
 
-          specs.each { |s| task_queue << s unless index.handled?(s) }
+          primer.prime specs, task_queue
 
           pool = (1..workers_count).to_a.map do |i|
             Gemjars::Deux::Worker.spawn("Worker #{i}", task_queue, index, http, repo, specs)
