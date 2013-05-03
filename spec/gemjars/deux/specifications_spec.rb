@@ -81,4 +81,34 @@ describe Specifications do
       specifications.number_of_releases("zzzzzz").should == 3
     end
   end
+
+  context "many platforms for the same version" do
+    let(:specs) { [
+      ["zzzzzz", Gem::Version.new("0.2"), "ruby"],
+      ["zzzzzz", Gem::Version.new("0.1"), "ruby"],
+      ["zzzzzz", Gem::Version.new("0.1"), "java"],
+      ["zzzzzz", Gem::Version.new("0.1"), "x86-mswin32"],
+      ["zzzzzz", Gem::Version.new("0.3"), "x86-mswin32"]
+    ]}
+
+    it "should not include anything not java or ruby" do
+      specifications.should_not include Specification.new("zzzzzz", "0.1", "x86-mswin32")
+    end
+
+    it "should not include ruby in the presense of java" do
+      specifications.should_not include Specification.new("zzzzzz", "0.1", "ruby")
+    end
+
+    it "should include only java" do
+      specifications.should include Specification.new("zzzzzz", "0.1", "java")
+    end
+
+    it "should include ruby when no java available for that version" do
+      specifications.should include Specification.new("zzzzzz", "0.2", "ruby")
+    end
+
+    it "should never include non java or ruby even if only one available" do
+      specifications.should_not include Specification.new("zzzzzz", "0.3", "x86-mswin32")
+    end
+  end
 end

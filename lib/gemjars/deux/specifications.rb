@@ -36,7 +36,16 @@ module Gemjars
         @size = specs.size
         specs.each do |spec|
           @specs[spec[0]] ||= Set.new
-          @specs[spec[0]] << Specification.new(spec[0], spec[1].to_s, spec[2])
+          group = @specs[spec[0]]
+          specification = Specification.new(spec[0], spec[1].to_s, spec[2])
+
+          if specification.ruby? && !group.include?(specification.with_platform("java"))
+            group << specification
+          end
+          if specification.java?
+            group.delete specification.with_platform("ruby")
+            group << specification
+          end
         end
       end
 
