@@ -22,7 +22,7 @@ module Gemjars
         until queue.empty?
           spec = queue.pop
 
-          next if index.handled?(spec)
+          next unless spec && !index.handled?(spec)
 
           begin
             http.get(spec.gem_uri) do |gem_channel|
