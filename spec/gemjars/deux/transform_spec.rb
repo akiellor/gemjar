@@ -85,12 +85,15 @@ describe Transform do
         entries = ZipReader.new(jar).map {|e| [e.name, e.read]}
 
         Set.new(entries.map {|e| e[0] }).should == Set.new(%w{
-          gems
+          gems/
+          gems/rspec-2.11.0/
+          gems/rspec-2.11.0/lib/
+          gems/rspec-2.11.0/lib/rspec/
           gems/rspec-2.11.0/lib/rspec/version.rb
           gems/rspec-2.11.0/lib/rspec.rb
           gems/rspec-2.11.0/License.txt
           gems/rspec-2.11.0/README.md
-          specifications
+          specifications/
           specifications/rspec-2.11.0.gemspec
         })
 

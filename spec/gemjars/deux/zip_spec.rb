@@ -33,4 +33,33 @@ describe ZipWriter do
 
     reader.map {|e| [e.name, e.read] }.should == [["foo", "bar"]]
   end
+
+  it "should create a zip with a single directory" do
+    writer.add_directory "foo/"
+    writer.close
+
+    reader.map {|e| e.name }.should == ["foo/"]
+  end
+
+  it "should append trailing slash to directory" do
+    writer.add_directory "foo"
+    writer.close
+
+    reader.map {|e| e.name }.should == ["foo/"]
+  end
+
+  it "should not fail when additional directories added" do
+    writer.add_directory "foo"
+    writer.add_directory "foo"
+    writer.close
+
+    reader.map {|e| e.name }.should == ["foo/"]
+  end
+
+  it "should make intermediate directories when adding entries" do
+    writer.add_entry "foo/bar/baz", Streams.to_channel(Java::JavaIo::ByteArrayInputStream.new("bar".to_java_bytes))
+    writer.close
+
+    reader.map {|e| e.name }.should == ["foo/", "foo/bar/", "foo/bar/baz"]
+  end
 end

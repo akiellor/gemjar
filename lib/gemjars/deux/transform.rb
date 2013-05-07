@@ -19,9 +19,6 @@ module Gemjars
         jar_out = Java::JavaIo::ByteArrayOutputStream.new
         jar = ZipWriter.new(Streams.to_channel(jar_out))
 
-        jar.add_entry "gems"
-        jar.add_entry "specifications"
-
         pom = nil
 
         visit Handler.new {|h|
