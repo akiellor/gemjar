@@ -9,6 +9,7 @@ require 'gemjars/deux/worker'
 require 'gemjars/deux/workers'
 require 'gemjars/deux/specified_primer'
 require 'gemjars/deux/unhandled_primer'
+require 'gemjars/deux/exact_version_primer'
 require 'gemjars/deux/commands/dsl'
 require 'gemjars/deux/commands/mirror'
 

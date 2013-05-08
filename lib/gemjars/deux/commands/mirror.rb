@@ -20,10 +20,14 @@ module Gemjars
           File.new(s, "w+")
         end
 
+        option ["--exact-version"], :flag, "specify exact version"
+
         parameter "GEMS ...", "gem names to mirror", :required => false, :attribute_name => :gems
 
         def primer
-          if gems.empty?
+          if exact_version?
+            ExactVersionPrimer.new(gems.each_slice(2).to_a)
+          elsif gems.empty?
             UnhandledPrimer.new(index)
           else
             SpecifiedPrimer.new(gems)
