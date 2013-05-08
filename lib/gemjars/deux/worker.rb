@@ -26,7 +26,7 @@ module Gemjars
 
           begin
             http.get(spec.gem_uri) do |gem_channel|
-              transform = Transform.new(spec.name, spec.version, gem_channel)
+              transform = Transform.new(spec, gem_channel)
 
               transform.to_mvn(specs) do |h|
                 h.success do |jar, pom|

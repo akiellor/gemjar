@@ -8,8 +8,7 @@ module Gemjars
   module Deux
     class Transform
       def initialize spec, channel
-        @name = spec.name
-        @version = spec.version
+        @spec = spec
         @channel = channel
       end
 
@@ -23,14 +22,14 @@ module Gemjars
 
         visit Handler.new {|h|
           h.on_file {|name, content|
-            jar.add_entry "gems/#@name-#@version/#{name}", content
+            jar.add_entry "gems/#{@spec.identifier}/#{name}", content
           } 
           h.on_spec {|spec|
             if !spec.extensions.empty?
               handler.native spec.extensions
               return
             end
-            jar.add_entry "specifications/#@name-#@version.gemspec", Streams.to_channel(Java::JavaIo::ByteArrayInputStream.new(spec.to_ruby_for_cache.to_java_bytes))
+            jar.add_entry "specifications/#{@spec.identifier}.gemspec", Streams.to_channel(Java::JavaIo::ByteArrayInputStream.new(spec.to_ruby_for_cache.to_java_bytes))
 
             pom = Pom.new(spec, specifications)
 
