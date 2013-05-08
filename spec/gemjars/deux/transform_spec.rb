@@ -28,7 +28,7 @@ describe Transform do
   it "should transform a gem into a jar with binscripts" do
     gem_input_stream = Java::JavaIo::FileInputStream.new(binscript_gem_file_path)
 
-    transform = Transform.new("rspec-core", "2.11.0", gem_input_stream.channel)
+    transform = Transform.new(Specification.new("rspec-core", "2.11.0", "ruby"), gem_input_stream.channel)
 
     transform.to_mvn(specs) do |h|
       h.success do |jar, pom|
@@ -49,7 +49,7 @@ describe Transform do
     jar_out_file = Java::JavaIo::File.new(jar_out_path)
     jar_out_stream = Java::JavaIo::FileOutputStream.new(jar_out_file)
 
-    transform = Transform.new("rspec-core", "2.11.0", gem_input_stream.channel)
+    transform = Transform.new(Specification.new("rspec-core", "2.11.0", "ruby"), gem_input_stream.channel)
 
     transform.to_mvn(specs) do |h|
       h.success do |jar, pom|
@@ -76,7 +76,7 @@ describe Transform do
   it "should transform a gem into a jar" do
     gem_input_stream = Java::JavaIo::FileInputStream.new(gem_file_path)
 
-    transform = Transform.new("rspec", "2.11.0", gem_input_stream.channel)
+    transform = Transform.new(Specification.new("rspec", "2.11.0", "ruby"), gem_input_stream.channel)
 
     transform.to_mvn(specs) do |h|
       h.success do |jar, pom|
@@ -108,7 +108,7 @@ describe Transform do
   it "should transform a gem into a pom file" do
     gem_input_stream = Java::JavaIo::FileInputStream.new(gem_file_path)
 
-    transform = Transform.new("rspec", "2.11.0", gem_input_stream.channel)
+    transform = Transform.new(Specification.new("rspec", "2.11.0", "ruby"), gem_input_stream.channel)
     transform.to_mvn(specs) do |h|
       h.success do |jar, pom|
         @success_called = true
@@ -122,7 +122,7 @@ describe Transform do
   it "should report native extensions" do
     gem_channel = Java::JavaIo::FileInputStream.new(native_gem_file_path).channel
 
-    transform = Transform.new("activefacts", "0.6.0", gem_channel)
+    transform = Transform.new(Specification.new("activefacts", "0.6.0", "ruby"), gem_channel)
     transform.to_mvn(specs) do |h|
       h.native do |extensions|
         @native_called = true
@@ -136,7 +136,7 @@ describe Transform do
   it "should report unsatisfied dependencies" do
     gem_channel = Java::JavaIo::FileInputStream.new(unsatisfied_gem_file_path).channel
 
-    transform = Transform.new("rspec", "2.10.0", gem_channel)
+    transform = Transform.new(Specification.new("rspec", "2.10.0", "ruby"), gem_channel)
     transform.to_mvn(specs) do |h|
       h.unsatisfied_dependencies do |deps|
         deps.should == [["rspec-core", ["~> 2.10.0"]], ["rspec-expectations", ["~> 2.10.0"]], ["rspec-mocks", ["~> 2.10.0"]]]

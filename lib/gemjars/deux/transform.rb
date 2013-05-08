@@ -7,9 +7,9 @@ require 'gemjars/deux/binscript'
 module Gemjars
   module Deux
     class Transform
-      def initialize name, version, channel
-        @name = name
-        @version = version
+      def initialize spec, channel
+        @name = spec.name
+        @version = spec.version
         @channel = channel
       end
 
