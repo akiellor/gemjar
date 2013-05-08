@@ -10,11 +10,13 @@ describe Specification do
     let(:platform) { "ruby" }
     
     its(:gem_uri) { should == "http://rubygems.org/gems/foo-1.2.gem"}
+    its(:identifier) { should == "foo-1.2" }
   end
 
   context "java platform" do
     let(:platform) { "java" }
 
     its(:gem_uri) { should == "http://rubygems.org/gems/foo-1.2-java.gem"}
+    its(:identifier) { should == "foo-1.2-java" }
   end
 end

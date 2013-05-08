@@ -2,10 +2,14 @@ module Gemjars
   module Deux
     class Specification < Struct.new(:name, :version, :platform)
       def gem_uri
-        if platform == "ruby"
-          "http://rubygems.org/gems/#{name}-#{version}.gem"
+        "http://rubygems.org/gems/#{identifier}.gem"
+      end
+
+      def identifier
+        if ruby?
+          "#{name}-#{version}"
         else
-          "http://rubygems.org/gems/#{name}-#{version}-#{platform}.gem"
+          "#{name}-#{version}-#{platform}"
         end
       end
 
