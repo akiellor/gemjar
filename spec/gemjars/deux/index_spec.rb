@@ -51,6 +51,23 @@ describe Index do
 
     it { should be_handled(Specification.new("zzzzzz", "0.1.0", "ruby")) }
     it { should_not be_handled(Specification.new("foo", "0.1.0", "ruby")) }
+    
+    it "should remove all specified gems from index" do
+      r, w = Streams.pipe_channel
+      
+      store.stub(:put).with("index.json.gz").and_return(w)
+
+      subject.should be_handled(Specification.new("zzzzzz", "0.1.0", "ruby"))
+      subject.delete_all [["zzzzzz", "0.1.0"]]
+      subject.should_not be_handled(Specification.new("zzzzzz", "0.1.0", "ruby"))
+    end
+
+    it "should flush after deleting all specified gems" do
+      r, w = Streams.pipe_channel
+      store.should_receive(:put).with("index.json.gz").once.and_return(w)
+
+      subject.delete_all [["zzzzzz", "0.1.0"]]
+    end
   end 
 end
 

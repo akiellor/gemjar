@@ -32,6 +32,20 @@ module Gemjars
         end
       end
 
+      def delete_all gems
+        @mutex.synchronize do
+          to_delete = @index.select do |definition|
+            gems.include?([definition[:spec][:name], definition[:spec][:version]])
+          end
+
+          to_delete.each do |definition|
+            inner_delete definition
+          end
+
+          flush_inner
+        end
+      end
+
       def flush
         @mutex.synchronize { flush_inner }
       end
@@ -57,6 +71,11 @@ module Gemjars
       def inner_add definition
         @index << definition
         @hashes << signature(definition[:spec][:name], definition[:spec][:version], definition[:spec][:platform])
+      end
+
+      def inner_delete definition
+        @index.delete definition
+        @hashes.delete signature(definition[:spec][:name], definition[:spec][:version], definition[:spec][:platform])
       end
 
       def signature name, version, platform

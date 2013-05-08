@@ -83,6 +83,18 @@ module Gemjars
         jar.close if jar
         pom.close if pom
       end
+
+      def delete_all gems
+        gems.each do |g|
+          name, version = *g
+          @store.delete("org/rubygems/#{name}/#{version}/#{name}-#{version}.jar")
+          @store.delete("org/rubygems/#{name}/#{version}/#{name}-#{version}.jar.md5")
+          @store.delete("org/rubygems/#{name}/#{version}/#{name}-#{version}.jar.sha1")
+          @store.delete("org/rubygems/#{name}/#{version}/#{name}-#{version}.pom")
+          @store.delete("org/rubygems/#{name}/#{version}/#{name}-#{version}.pom.md5")
+          @store.delete("org/rubygems/#{name}/#{version}/#{name}-#{version}.pom.sha1")
+        end
+      end
     end
   end
 end

@@ -63,4 +63,15 @@ describe MavenRepository do
     pom_sha1_r.should be_a_channel_with("f1d2d2f924e986ac86fdf7b36c94bcdf32beec15")
     pom_sha1_w.should_not be_open
   end
+
+  it "should delete jar and pom" do
+    store.should_receive(:delete).with("org/rubygems/foo/1/foo-1.jar")
+    store.should_receive(:delete).with("org/rubygems/foo/1/foo-1.jar.md5")
+    store.should_receive(:delete).with("org/rubygems/foo/1/foo-1.jar.sha1")
+    store.should_receive(:delete).with("org/rubygems/foo/1/foo-1.pom")
+    store.should_receive(:delete).with("org/rubygems/foo/1/foo-1.pom.md5")
+    store.should_receive(:delete).with("org/rubygems/foo/1/foo-1.pom.sha1")
+
+    repository.delete_all [["foo", "1"]]
+  end
 end

@@ -1,6 +1,7 @@
 require 'clamp'
 require 'gemjars/deux/file_store'
 require 'gemjars/deux/aws_store'
+require 'gemjars/deux/commands/dsl'
 
 module Gemjars
   module Deux

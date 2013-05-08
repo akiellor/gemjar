@@ -7,4 +7,4 @@ require 'gemjars/deux'
 
 include Gemjars::Deux
 
-Commands::Mirror.run
+Commands::Main.run

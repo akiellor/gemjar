@@ -10,6 +10,7 @@ module Gemjars
         s3 = AWS::S3.new(access_key_id: config['access_key_id'], secret_access_key: config['secret_access_key'])
         bucket = s3.buckets.create(bucket_name, :acl => :public_read)
         executor = Java::JavaUtilConcurrent::Executors.new_fixed_thread_pool(10)
+        at_exit { executor.shutdown }
         new(bucket, executor)
       end
 
@@ -46,6 +47,10 @@ module Gemjars
           end
         }.to_java(Java::JavaLang::Runnable)
         r
+      end
+
+      def delete name
+        @bucket.objects.delete name
       end
     end
   end

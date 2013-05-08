@@ -21,6 +21,13 @@ module Gemjars
           nil
         end
       end
+
+      def delete name
+        path = Pathname.new(File.expand_path(name, @dir))
+        if path.file?
+          path.delete
+        end
+      end
     end
   end
 end
