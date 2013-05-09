@@ -24,4 +24,13 @@ describe Commands::YankPredicate do
     ]
     specs.map(&predicate).should == [false, true]
   end
+
+  it "should match when name matches" do
+    predicate = Commands::YankPredicate.new(["name:foo"])
+    specs = [
+      Specification.new("rspec", "2.11.0", "ruby"),
+      Specification.new("foo", "2.11.0", "ruby")
+    ]
+    specs.map(&predicate).should == [false, true]
+  end
 end

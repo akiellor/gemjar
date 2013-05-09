@@ -7,7 +7,7 @@ module Gemjars
         end
 
         def to_proc
-          _or(exact_match_predicate, platform_predicate)
+          _or(exact_match_predicate, platform_predicate, name_predicate)
         end
 
         private
@@ -26,6 +26,14 @@ module Gemjars
             map {|p| p.sub("platform:", "")}
 
           proc {|s| platforms.include?(s.platform) }
+        end
+
+        def name_predicate
+          names = @parts.
+            select {|p| p =~ /^name:/}.
+            map {|p| p.sub("name:", "")}
+
+          proc {|s| names.include?(s.name) }
         end
       end
     end
