@@ -7,12 +7,21 @@ describe Commands::YankPredicate do
   it "should match exact versions" do
     predicate = Commands::YankPredicate.new(["rspec", "2.11.0"])
     specs = [
-      {:spec => {:name => "rspec", :version => "2.11.0", :platform => "ruby"}},
-      {:spec => {:name => "rspec", :version => "2.11.0", :platform => "java"}},
-      {:spec => {:name => "rspec", :version => "0", :platform => "ruby"}},
-      {:spec => {:name => "foo", :version => "2.11.0", :platform => "ruby"}},
-      {:spec => {:name => "foo", :version => "0", :platform => "ruby"}}
+      Specification.new("rspec", "2.11.0", "ruby"),
+      Specification.new("rspec", "2.11.0", "java"),
+      Specification.new("rspec", "0", "ruby"),
+      Specification.new("foo", "2.11.0", "ruby"),
+      Specification.new("foo", "0", "ruby")
     ]
     specs.map(&predicate).should == [true, true, false, false, false]
+  end
+
+  it "should match when platform matches" do
+    predicate = Commands::YankPredicate.new(["platform:java"])
+    specs = [
+      Specification.new("rspec", "2.11.0", "ruby"),
+      Specification.new("rspec", "2.11.0", "java")
+    ]
+    specs.map(&predicate).should == [false, true]
   end
 end
