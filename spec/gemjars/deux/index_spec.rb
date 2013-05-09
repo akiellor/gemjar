@@ -51,6 +51,10 @@ describe Index do
 
     it { should be_handled(Specification.new("zzzzzz", "0.1.0", "ruby")) }
     it { should_not be_handled(Specification.new("foo", "0.1.0", "ruby")) }
+
+    it "should be enumerable" do
+      subject.to_a.should == [Specification.new("zzzzzz", "0.1.0", "ruby")]
+    end
     
     it "should remove all specified gems from index" do
       r, w = Streams.pipe_channel
@@ -58,7 +62,7 @@ describe Index do
       store.stub(:put).with("index.json.gz").and_return(w)
 
       subject.should be_handled(Specification.new("zzzzzz", "0.1.0", "ruby"))
-      subject.delete_all [["zzzzzz", "0.1.0"]]
+      subject.delete_all [Specification.new("zzzzzz", "0.1.0", "ruby")]
       subject.should_not be_handled(Specification.new("zzzzzz", "0.1.0", "ruby"))
     end
 
@@ -66,7 +70,7 @@ describe Index do
       r, w = Streams.pipe_channel
       store.should_receive(:put).with("index.json.gz").once.and_return(w)
 
-      subject.delete_all [["zzzzzz", "0.1.0"]]
+      subject.delete_all [Specification.new("zzzzzz", "0.1.0", "ruby")]
     end
   end 
 end

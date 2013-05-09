@@ -13,6 +13,10 @@ module Gemjars
         end
       end
 
+      def signature
+        Digest::MD5.hexdigest("#{name}:#{version}:#{platform}")
+      end
+
       def java?
         platform == "java"
       end

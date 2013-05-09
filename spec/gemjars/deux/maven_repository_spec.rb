@@ -72,6 +72,6 @@ describe MavenRepository do
     store.should_receive(:delete).with("org/rubygems/foo/1/foo-1.pom.md5")
     store.should_receive(:delete).with("org/rubygems/foo/1/foo-1.pom.sha1")
 
-    repository.delete_all [["foo", "1"]]
+    repository.delete_all [Specification.new("foo", "1", "ruby")]
   end
 end

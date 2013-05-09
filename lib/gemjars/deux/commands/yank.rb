@@ -35,9 +35,15 @@ module Gemjars
           @index ||= Index.new(store)
         end
 
+        def predicate
+          YankPredicate.new(gems)
+        end
+
         def execute
-          repo.delete_all gems.each_slice(2)
-          index.delete_all gems.each_slice(2)
+          to_delete = index.select &predicate
+
+          repo.delete_all to_delete
+          index.delete_all to_delete
         end
       end
     end

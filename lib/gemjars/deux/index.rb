@@ -7,6 +7,8 @@ require 'digest/md5'
 module Gemjars
   module Deux
     class Index
+      include Enumerable
+
       def initialize store
         @store = store
         @hashes = Set.new
@@ -17,7 +19,7 @@ module Gemjars
 
       def handled? spec
         @mutex.synchronize do
-          @hashes.include?(signature(spec.name, spec.version, spec.platform))
+          @hashes.include?(spec.signature)
         end
       end
 
@@ -32,10 +34,16 @@ module Gemjars
         end
       end
 
-      def delete_all gems
+      def each
+        @mutex.synchronize do
+          @index.each {|h| yield to_spec(h) }
+        end
+      end
+
+      def delete_all specs
         @mutex.synchronize do
           to_delete = @index.select do |definition|
-            gems.include?([definition[:spec][:name], definition[:spec][:version]])
+            specs.include?(to_spec(definition))
           end
 
           to_delete.each do |definition|
@@ -70,16 +78,18 @@ module Gemjars
 
       def inner_add definition
         @index << definition
-        @hashes << signature(definition[:spec][:name], definition[:spec][:version], definition[:spec][:platform])
+        @hashes << to_spec(definition).signature
       end
 
       def inner_delete definition
         @index.delete definition
-        @hashes.delete signature(definition[:spec][:name], definition[:spec][:version], definition[:spec][:platform])
+        @hashes.delete to_spec(definition).signature
       end
 
-      def signature name, version, platform
-        Digest::MD5.hexdigest("#{name}:#{version}:#{platform}")
+      private
+
+      def to_spec definition
+        Specification.new(definition[:spec][:name], definition[:spec][:version], definition[:spec][:platform])
       end
     end
   end
