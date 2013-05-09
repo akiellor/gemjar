@@ -49,8 +49,8 @@ module Gemjars
         r
       end
 
-      def delete name
-        @bucket.objects.delete name
+      def delete_all *names
+        @bucket.objects.delete *names
       end
     end
   end

@@ -65,12 +65,12 @@ describe MavenRepository do
   end
 
   it "should delete jar and pom" do
-    store.should_receive(:delete).with("org/rubygems/foo/1/foo-1.jar")
-    store.should_receive(:delete).with("org/rubygems/foo/1/foo-1.jar.md5")
-    store.should_receive(:delete).with("org/rubygems/foo/1/foo-1.jar.sha1")
-    store.should_receive(:delete).with("org/rubygems/foo/1/foo-1.pom")
-    store.should_receive(:delete).with("org/rubygems/foo/1/foo-1.pom.md5")
-    store.should_receive(:delete).with("org/rubygems/foo/1/foo-1.pom.sha1")
+    store.should_receive(:delete_all).with("org/rubygems/foo/1/foo-1.jar",
+                                           "org/rubygems/foo/1/foo-1.jar.md5",
+                                           "org/rubygems/foo/1/foo-1.jar.sha1",
+                                           "org/rubygems/foo/1/foo-1.pom",
+                                           "org/rubygems/foo/1/foo-1.pom.md5",
+                                           "org/rubygems/foo/1/foo-1.pom.sha1")
 
     repository.delete_all [Specification.new("foo", "1", "ruby")]
   end

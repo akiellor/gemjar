@@ -85,15 +85,17 @@ module Gemjars
       end
 
       def delete_all gems
-        gems.each do |g|
+        names = gems.reduce([]) do |m, g|
           name, version = *g
-          @store.delete("org/rubygems/#{name}/#{version}/#{name}-#{version}.jar")
-          @store.delete("org/rubygems/#{name}/#{version}/#{name}-#{version}.jar.md5")
-          @store.delete("org/rubygems/#{name}/#{version}/#{name}-#{version}.jar.sha1")
-          @store.delete("org/rubygems/#{name}/#{version}/#{name}-#{version}.pom")
-          @store.delete("org/rubygems/#{name}/#{version}/#{name}-#{version}.pom.md5")
-          @store.delete("org/rubygems/#{name}/#{version}/#{name}-#{version}.pom.sha1")
+          m + ["org/rubygems/#{name}/#{version}/#{name}-#{version}.jar",
+           "org/rubygems/#{name}/#{version}/#{name}-#{version}.jar.md5",
+           "org/rubygems/#{name}/#{version}/#{name}-#{version}.jar.sha1",
+           "org/rubygems/#{name}/#{version}/#{name}-#{version}.pom",
+           "org/rubygems/#{name}/#{version}/#{name}-#{version}.pom.md5",
+           "org/rubygems/#{name}/#{version}/#{name}-#{version}.pom.sha1"]
         end
+
+        @store.delete_all *names
       end
     end
   end

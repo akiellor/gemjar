@@ -42,6 +42,8 @@ module Gemjars
         def execute
           to_delete = index.select &predicate
 
+          puts "Yanking #{to_delete.size} gemjars..."
+
           repo.delete_all to_delete
           index.delete_all to_delete
         end

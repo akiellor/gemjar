@@ -22,10 +22,12 @@ module Gemjars
         end
       end
 
-      def delete name
-        path = Pathname.new(File.expand_path(name, @dir))
-        if path.file?
-          path.delete
+      def delete_all *names
+        names.each do |name|
+          path = Pathname.new(File.expand_path(name, @dir))
+          if path.file?
+            path.delete
+          end
         end
       end
     end

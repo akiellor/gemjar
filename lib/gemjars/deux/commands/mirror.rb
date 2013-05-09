@@ -21,18 +21,10 @@ module Gemjars
           File.new(s, "w+")
         end
 
-        option ["--exact-version"], :flag, "specify exact version"
+        parameter "FILTERS ...", "filter gems to mirror", :required => false, :attribute_name => :filters
 
-        parameter "GEMS ...", "gem names to mirror", :required => false, :attribute_name => :gems
-
-        def primer
-          if exact_version?
-            ExactVersionPrimer.new(gems.each_slice(2).to_a)
-          elsif gems.empty?
-            UnhandledPrimer.new(index)
-          else
-            SpecifiedPrimer.new(gems)
-          end
+        def predicate
+          @predicate ||= filters.empty? ? proc { true } : YankPredicate.new(filters).to_proc
         end
 
         def http
@@ -69,7 +61,7 @@ module Gemjars
 
           task_queue = PriorityQueue.new(specs)
 
-          primer.prime specs, task_queue
+          specs.each {|s| task_queue << s if predicate.call(s) }
 
           pool = (1..workers_count).to_a.map do |i|
             Gemjars::Deux::Worker.spawn("Worker #{i}", task_queue, index, http, repo, specs)
