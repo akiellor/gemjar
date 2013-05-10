@@ -50,7 +50,7 @@ module Gemjars
         end
 
         def index
-          @index ||= Index.new(store)
+          @index ||= Deux::Index.new(store)
         end
 
         def execute

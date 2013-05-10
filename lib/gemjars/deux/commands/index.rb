@@ -1,21 +1,23 @@
 require 'clamp'
-require 'gemjars/deux/file_store'
-require 'gemjars/deux/aws_store'
 require 'gemjars/deux/commands/dsl'
-
-AWS.config(:log_formatter => AWS::Core::LogFormatter.colored)
 
 module Gemjars
   module Deux
     module Commands
-      class Yank < ::Clamp::Command
+      class Index < Clamp::Command
         include Commands::Dsl
 
         option ["--out"], "OUTPUT_DIRECTORY", "output directory", :attribute_name => :output_directory
 
         option ["--s3"], "S3_CONFIG_FILE", "s3 config file", :attribute_name => :s3_config_file
 
-        parameter "GEMS ...", "gemjars to remove from mirror", :required => true, :attribute_name => :gems
+        def http
+          @http ||= Http.default
+        end
+
+        def specs
+          @specs ||= (Specifications.rubygems + Specifications.prerelease_rubygems)
+        end
 
         def store
           if output_directory
@@ -27,27 +29,23 @@ module Gemjars
           end
         end
 
-        def repo
-          @repo ||= MavenRepository.new(store)
-        end
-
         def index
           @index ||= Deux::Index.new(store)
         end
 
-        def predicate
-          YankPredicate.new(gems)
-        end
-
         def execute
-          to_delete = index.select &predicate
-
-          puts "Yanking #{to_delete.size} gemjars..."
-
-          repo.delete_all to_delete
-          index.delete_all to_delete
+          specs.each do |spec|
+            if index.handled?(spec)
+              puts "A #{spec.identifier}"
+            elsif index.include?(spec)
+              puts "U #{spec.identifier}"
+            else
+              puts "E #{spec.identifier}"
+            end
+          end
         end
       end
     end
   end
 end
+
