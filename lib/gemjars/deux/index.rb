@@ -34,6 +34,10 @@ module Gemjars
         end
       end
 
+      def include? spec
+        @hashes.include?(spec.signature)
+      end
+
       def each
         @mutex.synchronize do
           @index.each {|h| yield to_spec(h) }
