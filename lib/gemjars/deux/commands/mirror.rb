@@ -56,8 +56,9 @@ module Gemjars
         def execute
           require 'thread'
           require 'celluloid/autostart'
-
-          Celluloid.logger = Logger.new(log)
+          logger = ::Gemjars::Deux::Logger.new
+          logger.info { "Mirroring..." }
+          Celluloid.logger = logger
 
           task_queue = PriorityQueue.new(specs)
 
