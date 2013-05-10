@@ -39,7 +39,7 @@ module Gemjars
               return
             end
 
-            spec.executables && spec.executables.each do |executable|
+            spec.executables && spec.executables.uniq.each do |executable|
               binscript = Binscript.new(spec, executable)
               jar.add_entry "bin/#{executable}", Streams.to_channel(Java::JavaIo::ByteArrayInputStream.new(binscript.to_s.to_java_bytes))
             end

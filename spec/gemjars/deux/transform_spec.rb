@@ -12,6 +12,7 @@ describe Transform do
   let(:gem_file_path) { File.join(samples, "rspec-2.11.0.gem") }
   let(:binscript_gem_file_path) { File.join(samples, "rspec-core-2.11.0.gem") }
   let(:native_gem_file_path) { File.join(samples, "activefacts-0.6.0.gem") }
+  let(:duplicate_executable_gem_file_path) { File.join(samples, "hx-0.4.1.gem") }
   let(:unsatisfied_gem_file_path) { File.join(samples, "rspec-2.10.0.gem") }
   let(:maven_schema_path) { File.join(samples, "maven-v4_0_0.xsd") }
   let(:specs) { mock(:specs) }
@@ -146,6 +147,17 @@ describe Transform do
 
     raise unless @unsatisfied_called
   end
+
+  it "should successfully transform gem with duplicate executable entries in gemspec" do
+    gem_channel = Java::JavaIo::FileInputStream.new(duplicate_executable_gem_file_path).channel
+
+    transform = Transform.new(Specification.new("hx", "0.4.1", "ruby"), gem_channel)
+    transform.to_mvn(specs) do |h|
+      h.success do
+        @success_called = true
+      end
+    end
+
+    raise unless @success_called
+  end
 end
-
-
