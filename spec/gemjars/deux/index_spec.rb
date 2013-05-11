@@ -41,6 +41,7 @@ describe Index do
       subject { Index.new(store, :foo) }
 
       its([:foo]) { should be_empty }
+      its([:bar]) { should be_nil }
 
       context "with a spec with :foo" do
         before :each do

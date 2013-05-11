@@ -34,7 +34,8 @@ module Gemjars
       end
 
       def [] metadata_key
-        @metadata_indexes[metadata_key].map {|d| to_spec(d) }
+        index = @metadata_indexes[metadata_key]
+        index && index.map {|d| to_spec(d) }
       end
 
       def include? spec
