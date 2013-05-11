@@ -18,9 +18,7 @@ module Gemjars
       end
 
       def handled? spec
-        @mutex.synchronize do
-          @hashes.include?(spec.signature)
-        end
+        include? spec
       end
 
       def add spec, metadata = {}
@@ -35,7 +33,9 @@ module Gemjars
       end
 
       def include? spec
-        @hashes.include?(spec.signature)
+        @mutex.synchronize do
+          @hashes.include?(spec.signature)
+        end
       end
 
       def each
