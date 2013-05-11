@@ -13,7 +13,7 @@ module Gemjars
         @store = store
         @hashes = Set.new
         @index = Set.new
-        @metadata_indexes = Hash[metadata_indexes.map {|n| [n, []] }]
+        @metadata_indexes = Hash[metadata_indexes.map {|n| [n, Set.new] }]
         @mutex = Mutex.new
         load_index
       end
@@ -34,8 +34,7 @@ module Gemjars
       end
 
       def [] metadata_key
-        index = @metadata_indexes[metadata_key]
-        index && index.map {|d| to_spec(d) }
+        @metadata_indexes[metadata_key]
       end
 
       def include? spec
@@ -89,7 +88,7 @@ module Gemjars
       def inner_add definition
         definition[:metadata].each do |k, v|
           if @metadata_indexes.has_key?(k)
-            @metadata_indexes[k] << definition
+            @metadata_indexes[k] << to_spec(definition)
           end
         end
         @index << definition

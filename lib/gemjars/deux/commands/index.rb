@@ -30,15 +30,17 @@ module Gemjars
         end
 
         def index
-          @index ||= Deux::Index.new(store)
+          @index ||= Deux::Index.new(store, :size, :unhandled_dependencies, :native_extensions)
         end
 
         def execute
           specs.each do |spec|
-            if index.handled?(spec)
+            if index[:size].include?(spec)
               puts "A #{spec.identifier}"
-            elsif index.include?(spec)
+            elsif index[:unhandled_dependencies].include?(spec)
               puts "U #{spec.identifier}"
+            elsif index[:native_extensions].include?(spec)
+              puts "N #{spec.identifier}"
             else
               puts "E #{spec.identifier}"
             end
