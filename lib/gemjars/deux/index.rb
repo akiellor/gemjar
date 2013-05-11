@@ -9,10 +9,11 @@ module Gemjars
     class Index
       include Enumerable
 
-      def initialize store
+      def initialize store, *metadata_indexes
         @store = store
         @hashes = Set.new
         @index = Set.new
+        @metadata_indexes = Hash[metadata_indexes.map {|n| [n, []] }]
         @mutex = Mutex.new
         load_index
       end
@@ -30,6 +31,10 @@ module Gemjars
             flush_inner
           end
         end
+      end
+
+      def [] metadata_key
+        @metadata_indexes[metadata_key].map {|d| to_spec(d) }
       end
 
       def include? spec
@@ -81,6 +86,11 @@ module Gemjars
       end
 
       def inner_add definition
+        definition[:metadata].each do |k, v|
+          if @metadata_indexes.has_key?(k)
+            @metadata_indexes[k] << definition
+          end
+        end
         @index << definition
         @hashes << to_spec(definition).signature
       end

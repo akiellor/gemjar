@@ -36,6 +36,20 @@ describe Index do
       json.should include :spec => {:name => 'foo', :version => '1.2.3', :platform => 'ruby'},
                                                         :metadata => {:unresolved_dependencies => []}
     end
+
+    context "with index on :foo metadata" do
+      subject { Index.new(store, :foo) }
+
+      its([:foo]) { should be_empty }
+
+      context "with a spec with :foo" do
+        before :each do
+          subject.add Specification.new("foo", "1.2.3", "ruby"), :foo => true
+        end
+
+        its([:foo]) { should_not be_empty }
+      end
+    end
   end
 
   context "indexed zzzzzz 0.1.0 ruby" do
