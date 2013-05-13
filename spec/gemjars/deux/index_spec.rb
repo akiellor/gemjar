@@ -11,7 +11,7 @@ describe Index do
 
   context "no indexed gems" do
     before(:each) do
-      store.stub(:get).with("index.json.gz").and_return(nil)
+      store.stub(:get).with("index").and_return(nil)
     end
 
     it "should flush every 500 additional gems" do
@@ -26,7 +26,7 @@ describe Index do
       r, w = Streams.pipe_channel
       spec = Specification.new("foo", "1.2.3", "ruby")
       
-      store.stub(:put).with("index.json.gz").and_return(w)
+      store.stub(:put).with("index").and_return(w)
 
       subject.add spec, :unresolved_dependencies => []
       subject.flush
@@ -61,7 +61,7 @@ describe Index do
         gzip_channel.write Streams.to_buffer(MultiJson.dump([{:spec => {:name => "zzzzzz", :version => "0.1.0", :platform => "ruby"}, :metadata => {}}]))
         gzip_channel.close
       end
-      store.stub(:get).with("index.json.gz").and_return(r)
+      store.stub(:get).with("index").and_return(r)
     end
 
     it { should be_handled(Specification.new("zzzzzz", "0.1.0", "ruby")) }
@@ -74,7 +74,7 @@ describe Index do
     it "should remove all specified gems from index" do
       r, w = Streams.pipe_channel
       
-      store.stub(:put).with("index.json.gz").and_return(w)
+      store.stub(:put).with("index").and_return(w)
 
       subject.should be_handled(Specification.new("zzzzzz", "0.1.0", "ruby"))
       subject.delete_all [Specification.new("zzzzzz", "0.1.0", "ruby")]
@@ -83,7 +83,7 @@ describe Index do
 
     it "should flush after deleting all specified gems" do
       r, w = Streams.pipe_channel
-      store.should_receive(:put).with("index.json.gz").once.and_return(w)
+      store.should_receive(:put).with("index").once.and_return(w)
 
       subject.delete_all [Specification.new("zzzzzz", "0.1.0", "ruby")]
     end
