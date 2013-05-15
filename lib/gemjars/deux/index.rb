@@ -21,8 +21,14 @@ module Gemjars
           return unless channel
           reader = Java::JavaIo::BufferedReader.new(Java::JavaIo::InputStreamReader.new(Streams.to_input_stream(Streams.to_gzip_read_channel(channel))))
           while definition_json = reader.read_line
-            yield MultiJson.load(definition_json, :symbolize_keys => true)
+            yield *to_spec_and_metadata(MultiJson.load(definition_json, :symbolize_keys => true))
           end
+        end
+
+        private
+
+        def to_spec_and_metadata definition
+          [Specification.new(definition[:spec][:name], definition[:spec][:version], definition[:spec][:platform]), definition[:metadata]]
         end
       end
 
@@ -32,19 +38,25 @@ module Gemjars
           @out = Streams.to_gzip_write_channel(@store.put("index"))
         end
 
-        def << definition
-          @out.write Streams.to_buffer(MultiJson.dump(definition) + "\n")
+        def add spec, metadata
+          @out.write Streams.to_buffer(MultiJson.dump(to_definition(spec, metadata)) + "\n")
         end
 
         def close
           @out.close
         end
+
+        private
+
+        def to_definition spec, metadata
+          {:spec => {:name => spec.name, :version => spec.version, :platform => spec.platform}, :metadata => metadata}
+        end
       end
 
       def initialize store, *metadata_indexes
         @store = store
-        @hashes = Set.new
         @index = Set.new
+        @metadata = {}
         @metadata_indexes = Hash[metadata_indexes.map {|n| [n, Set.new] }]
         @mutex = Mutex.new
         @in = In.new(@store)
@@ -57,8 +69,7 @@ module Gemjars
 
       def add spec, metadata = {}
         @mutex.synchronize do
-          inner_add :spec => {:name => spec.name, :version => spec.version, :platform => spec.platform},
-            :metadata => metadata
+          inner_add spec, metadata
 
           if @index.size % 500 == 0
             flush_inner
@@ -72,24 +83,21 @@ module Gemjars
 
       def include? spec
         @mutex.synchronize do
-          @hashes.include?(spec.signature)
+          @index.include?(spec)
         end
       end
 
       def each
         @mutex.synchronize do
-          @index.each {|h| yield to_spec(h) }
+          @index.each {|s| yield s }
         end
       end
 
       def delete_all specs
         @mutex.synchronize do
-          to_delete = @index.select do |definition|
-            specs.include?(to_spec(definition))
-          end
-
-          to_delete.each do |definition|
-            inner_delete definition
+          specs.each do |spec|
+            @index.delete(spec)
+            @metadata.delete(spec)
           end
 
           flush_inner
@@ -104,34 +112,25 @@ module Gemjars
 
       def flush_inner
         out = Out.new(@store)
-        @index.each {|d| out << d }
+        @index.each {|spec| out.add spec, @metadata[spec] }
       ensure
         out.close if out
       end
 
       def load_index
-        @in.each do |definition|
-          inner_add definition
+        @in.each do |spec, metadata|
+          inner_add spec, metadata
         end
       end
 
-      def inner_add definition
-        definition[:metadata].each do |k, v|
+      def inner_add spec, metadata
+        metadata.each do |k, v|
           if @metadata_indexes.has_key?(k)
-            @metadata_indexes[k] << to_spec(definition)
+            @metadata_indexes[k] << spec
           end
         end
-        @index << definition
-        @hashes << to_spec(definition).signature
-      end
-
-      def inner_delete definition
-        @index.delete definition
-        @hashes.delete to_spec(definition).signature
-      end
-
-      def to_spec definition
-        Specification.new(definition[:spec][:name], definition[:spec][:version], definition[:spec][:platform])
+        @metadata[spec] = metadata
+        @index << spec
       end
     end
   end

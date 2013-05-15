@@ -11,7 +11,8 @@ describe Specification do
     
     its(:gem_uri) { should == "http://rubygems.org/gems/foo-1.2.gem"}
     its(:identifier) { should == "foo-1.2" }
-    its(:signature) { should == "5cd314f5c9723993684c380563df642a" }
+    its(:hash) { should == Specification.new("foo", "1.2", platform).hash }
+    it { should == Specification.new("foo", "1.2", platform) }
   end
 
   context "java platform" do
@@ -19,6 +20,7 @@ describe Specification do
 
     its(:gem_uri) { should == "http://rubygems.org/gems/foo-1.2-java.gem"}
     its(:identifier) { should == "foo-1.2-java" }
-    its(:signature) { should == "744e88dc7d418269952d6739d6e3bf7c" }
+    its(:hash) { should == Specification.new("foo", "1.2", platform).hash }
+    it { should == Specification.new("foo", "1.2", platform) }
   end
 end
