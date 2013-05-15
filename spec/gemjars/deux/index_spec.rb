@@ -31,7 +31,9 @@ describe Index do
       subject.add spec, :unresolved_dependencies => []
       subject.flush
 
-      json = MultiJson.load(Streams.read_channel(Streams.to_gzip_read_channel(r)), :symbolize_keys => true)
+      json = Streams.read_channel(Streams.to_gzip_read_channel(r)).split("\n").map do |entry|
+        MultiJson.load(entry, :symbolize_keys => true)
+      end
       
       json.should include :spec => {:name => 'foo', :version => '1.2.3', :platform => 'ruby'},
                                                         :metadata => {:unresolved_dependencies => []}
@@ -58,7 +60,7 @@ describe Index do
       r, w = Streams.pipe_channel
       Thread.new do
         gzip_channel = Streams.to_gzip_write_channel(w)
-        gzip_channel.write Streams.to_buffer(MultiJson.dump([{:spec => {:name => "zzzzzz", :version => "0.1.0", :platform => "ruby"}, :metadata => {}}]))
+        gzip_channel.write Streams.to_buffer(MultiJson.dump({:spec => {:name => "zzzzzz", :version => "0.1.0", :platform => "ruby"}, :metadata => {}}) + "\n")
         gzip_channel.close
       end
       store.stub(:get).with("index").and_return(r)

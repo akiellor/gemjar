@@ -71,17 +71,19 @@ module Gemjars
 
       def flush_inner
         out = Streams.to_gzip_write_channel(@store.put("index"))
-        out.write Streams.to_buffer(MultiJson.dump(@index.to_a))
+        @index.each do |definition|
+          out.write Streams.to_buffer(MultiJson.dump(definition) + "\n")
+        end
       ensure
         out.close if out
       end
 
       def load_index
-        io = @store.get("index")
-        if io
-          MultiJson.load(Streams.read_channel(Streams.to_gzip_read_channel(io)), :symbolize_keys => true).each do |definition|
-            inner_add definition
-          end
+        channel = @store.get("index")
+        return unless channel
+        reader = Java::JavaIo::BufferedReader.new(Java::JavaIo::InputStreamReader.new(Streams.to_input_stream(Streams.to_gzip_read_channel(channel))))
+        while definition_json = reader.read_line
+          inner_add MultiJson.load(definition_json, :symbolize_keys => true)
         end
       end
 
