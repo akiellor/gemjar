@@ -26,6 +26,21 @@ module Gemjars
         end
       end
 
+      class Out
+        def initialize store
+          @store = store
+          @out = Streams.to_gzip_write_channel(@store.put("index"))
+        end
+
+        def << definition
+          @out.write Streams.to_buffer(MultiJson.dump(definition) + "\n")
+        end
+
+        def close
+          @out.close
+        end
+      end
+
       def initialize store, *metadata_indexes
         @store = store
         @hashes = Set.new
@@ -88,10 +103,8 @@ module Gemjars
       private
 
       def flush_inner
-        out = Streams.to_gzip_write_channel(@store.put("index"))
-        @index.each do |definition|
-          out.write Streams.to_buffer(MultiJson.dump(definition) + "\n")
-        end
+        out = Out.new(@store)
+        @index.each {|d| out << d }
       ensure
         out.close if out
       end
