@@ -9,12 +9,30 @@ module Gemjars
     class Index
       include Enumerable
 
+      class In
+        include Enumerable
+
+        def initialize store
+          @store = store
+        end
+
+        def each
+          channel = @store.get("index")
+          return unless channel
+          reader = Java::JavaIo::BufferedReader.new(Java::JavaIo::InputStreamReader.new(Streams.to_input_stream(Streams.to_gzip_read_channel(channel))))
+          while definition_json = reader.read_line
+            yield MultiJson.load(definition_json, :symbolize_keys => true)
+          end
+        end
+      end
+
       def initialize store, *metadata_indexes
         @store = store
         @hashes = Set.new
         @index = Set.new
         @metadata_indexes = Hash[metadata_indexes.map {|n| [n, Set.new] }]
         @mutex = Mutex.new
+        @in = In.new(@store)
         load_index
       end
 
@@ -79,11 +97,8 @@ module Gemjars
       end
 
       def load_index
-        channel = @store.get("index")
-        return unless channel
-        reader = Java::JavaIo::BufferedReader.new(Java::JavaIo::InputStreamReader.new(Streams.to_input_stream(Streams.to_gzip_read_channel(channel))))
-        while definition_json = reader.read_line
-          inner_add MultiJson.load(definition_json, :symbolize_keys => true)
+        @in.each do |definition|
+          inner_add definition
         end
       end
 
@@ -101,8 +116,6 @@ module Gemjars
         @index.delete definition
         @hashes.delete to_spec(definition).signature
       end
-
-      private
 
       def to_spec definition
         Specification.new(definition[:spec][:name], definition[:spec][:version], definition[:spec][:platform])
