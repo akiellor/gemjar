@@ -19,9 +19,9 @@ module Gemjars
         def each
           channel = @store.get("index")
           return unless channel
-          reader = Java::JavaIo::BufferedReader.new(Java::JavaIo::InputStreamReader.new(Streams.to_input_stream(Streams.to_gzip_read_channel(channel))))
-          while definition_json = reader.read_line
-            yield *to_spec_and_metadata(MultiJson.load(definition_json, :symbolize_keys => true))
+          io = Streams.to_gzip_read_channel(channel).to_io
+          while definition_json = io.gets
+            yield to_spec_and_metadata(MultiJson.load(definition_json, :symbolize_keys => true))
           end
         end
 
